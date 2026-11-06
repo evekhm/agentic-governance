@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic Governance Series — Architecture &amp; Zero-Trust Engineering</title>
+<style>
+  :root {
+    --bg: #f6f8fb;
+    --panel: #ffffff;
+    --panel-2: #f8fafc;
+    --ink: #0f172a;
+    --muted: #475569;
+    --line: #cbd5e1;
+    --line-2: #e2e8f0;
+    --cyan: #0369a1;
+    --cyan-soft: rgba(3, 105, 161, 0.09);
+    --good: #15803d;
+    --good-soft: rgba(21, 128, 61, 0.09);
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.6;
+  }
+  .wrap { max-width: 1020px; margin: 0 auto; padding: 44px 24px 72px; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+  }
+  .badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--cyan);
+    background: var(--cyan-soft);
+    padding: 4px 10px;
+    border-radius: 5px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  h1 { margin: 0 0 10px; font-size: 28px; letter-spacing: -0.02em; }
+  h2 { margin: 0 0 12px; font-size: 20px; }
+  p { margin: 0 0 16px; color: var(--muted); }
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+  .btn {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1.5px solid var(--cyan);
+    background: var(--cyan);
+    color: #fff;
+  }
+  .btn.alt {
+    background: var(--panel-2);
+    color: var(--cyan);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .ref-item {
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    background: var(--panel-2);
+  }
+  .ref-item h3 { margin: 0 0 6px; font-size: 15px; }
+  .ref-item p { margin: 0 0 10px; font-size: 13px; }
+  .ref-links a {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cyan);
+    text-decoration: none;
+    margin-right: 12px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <span class="badge">Agentic Governance Publication Series</span>
+      <h1>Episode 01: Securing the Agent-to-Database Connection</h1>
+      <p>
+        From a naive 3-box prototype to a production Zero-Trust architecture: platform-agnostic Envoy Proxy enforcement (<code>ext_authz</code> + <code>ext_proc</code>), SPIFFE mTLS &amp; OAuth 2.1 On-Behalf-Of token exchange, L4 Private Service Connect, VPC Service Controls, Parameterized MCP Toolbox, and Row/Column-Level Database Security.
+      </p>
+      <div class="btn-row">
+        <a class="btn" href="ep01_securing_agent_to_database.html">Read Episode 01 (Interactive HTML) →</a>
+        <a class="btn alt" href="ep01_securing_agent_to_database.pdf">Download Episode 01 (PDF)</a>
+        <a class="btn alt" href="ref/agnostic-architecture.html">Platform-Agnostic Architecture Blueprint</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="badge">Companion Reference Deep Dives</span>
+      <h2>Technical Reference Pages (`ref/`)</h2>
+      <div class="grid">
+        <div class="ref-item">
+          <h3>0. Platform-Agnostic Architecture</h3>
+          <p>16 vendor-agnostic boxes, Hops 1–10 wire protocols, Envoy <code>ext_proc</code> guardrail, and GCP/AWS/Azure/K8s mappings.</p>
+          <div class="ref-links"><a href="ref/agnostic-architecture.html">HTML →</a><a href="ref/agnostic-architecture.pdf">PDF</a></div>
+        </div>
+        <div class="ref-item">
+          <h3>1. MCP Tool Server Options</h3>
+          <p>Custom FastMCP vs. MCP Toolbox for Databases (<code>tools.yaml</code>) vs. Google-Managed Remote MCP (<code>execute_sql</code>).</p>
+          <div class="ref-links"><a href="ref/mcp-tool-server-options.html">HTML →</a><a href="ref/mcp-tool-server-options.pdf">PDF</a></div>
+        </div>
+        <div class="ref-item">
+          <h3>2. Row- &amp; Column-Level Security</h3>
+          <p>BigQuery stateless HTTP per-query OAuth vs. Cloud SQL stateful pooled TCP sockets, Parameterized Secure Views, and PG RLS.</p>
+          <div class="ref-links"><a href="ref/rls-cls.html">HTML →</a><a href="ref/rls-cls.pdf">PDF</a></div>
+        </div>
+        <div class="ref-item">
+          <h3>3. mTLS, SPIFFE &amp; Token Exchange</h3>
+          <p>One-Way TLS vs. mTLS, Bearer vs. RFC 9449 DPoP, PKCE, and RFC 8693 OBO vs. KMS-Signed Context JWTs.</p>
+          <div class="ref-links"><a href="ref/mtls-and-tokens.html">HTML →</a><a href="ref/mtls-and-tokens.pdf">PDF</a></div>
+        </div>
+        <div class="ref-item">
+          <h3>4. Envoy Proxy at Ingress &amp; Egress</h3>
+          <p>Managed Agent Gateway vs. self-managed 3-container Cloud Run pod (<code>agent</code> + <code>envoy</code> + <code>tokenx</code>).</p>
+          <div class="ref-links"><a href="ref/envoy-proxy.html">HTML →</a><a href="ref/envoy-proxy.pdf">PDF</a></div>
+        </div>
+        <div class="ref-item">
+          <h3>5. Model Armor &amp; Cloud SDP</h3>
+          <p>Inline <code>ext_proc</code> screening, canonical <code>normalize()</code>, fail-closed handling, and reversible PII tokenization.</p>
+          <div class="ref-links"><a href="ref/model-armor.html">HTML →</a><a href="ref/model-armor.pdf">PDF</a></div>
+        </div>
+        <div class="ref-item">
+          <h3>6. PSC (3 Doors) &amp; VPC-SC</h3>
+          <p>PSC Network Attachment (<code>10.10.9.2/28</code>), PSC Endpoint for Google APIs (<code>vpc-sc</code>), and VPC-SC ingress rules.</p>
+          <div class="ref-links"><a href="ref/psc-and-vpc-sc.html">HTML →</a><a href="ref/psc-and-vpc-sc.pdf">PDF</a></div>
+        </div>
+        <div class="ref-item">
+          <h3>7. Audit, Trace &amp; Kill Switch</h3>
+          <p>W3C <code>traceparent</code> correlation, 400-day WORM audit sink, Principal Access Boundary, and 3-step emergency containment.</p>
+          <div class="ref-links"><a href="ref/audit-and-containment.html">HTML →</a><a href="ref/audit-and-containment.pdf">PDF</a></div>
+        </div>
+        <div class="ref-item">
+          <h3>8. 22-Row OWASP Top 10 Matrix</h3>
+          <p>Complete mapping across OWASP Agentic Top 10 2026 (<code>ASI01–ASI10</code>), LLM Top 10 2025 (<code>LLM01–LLM10</code>), and BOLA/SQLi.</p>
+          <div class="ref-links"><a href="ref/owasp-mapping.html">HTML →</a><a href="ref/owasp-mapping.pdf">PDF</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reference — Row &amp; Column Access Controls: Stateless HTTP (BigQuery) vs. Stateful Pooled TCP (Cloud SQL)</title>
+<style>
+  :root,
+  html[data-theme="light"] {
+    --bg: #f6f8fb;
+    --bg-grid: rgba(15, 23, 42, 0.035);
+    --panel: #ffffff;
+    --panel-2: #f8fafc;
+    --panel-3: #f1f5f9;
+    --ink: #0f172a;
+    --muted: #475569;
+    --dim: #64748b;
+    --line: #cbd5e1;
+    --line-2: #e2e8f0;
+    --cyan: #0369a1;
+    --cyan-soft: rgba(3, 105, 161, 0.09);
+    --prussian: #1d4ed8;
+    --prussian-soft: rgba(29, 78, 216, 0.09);
+    --teal: #0f766e;
+    --teal-soft: rgba(15, 118, 110, 0.09);
+    --amber: #b45309;
+    --amber-soft: rgba(180, 83, 9, 0.10);
+    --good: #15803d;
+    --good-soft: rgba(21, 128, 61, 0.09);
+    --warn: #c2410c;
+    --warn-soft: rgba(194, 65, 12, 0.10);
+    --stop: #b91c1c;
+    --stop-soft: rgba(185, 28, 28, 0.08);
+    --violet: #6d28d9;
+    --violet-soft: rgba(109, 40, 217, 0.09);
+    --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #09131c;
+    --bg-grid: rgba(148, 198, 235, 0.055);
+    --panel: #0e1c2a;
+    --panel-2: #132536;
+    --panel-3: #0b1723;
+    --ink: #ecf3fb;
+    --muted: #b5c9de;
+    --dim: #7f9ab5;
+    --line: #21405c;
+    --line-2: #183149;
+    --cyan: #5fd4ff;
+    --cyan-soft: rgba(95, 212, 255, 0.13);
+    --prussian: #60a5fa;
+    --prussian-soft: rgba(96, 165, 250, 0.14);
+    --teal: #2dd4bf;
+    --teal-soft: rgba(45, 212, 191, 0.14);
+    --amber: #ffbe55;
+    --amber-soft: rgba(255, 190, 85, 0.14);
+    --good: #52e29a;
+    --good-soft: rgba(82, 226, 154, 0.13);
+    --warn: #ff9a52;
+    --warn-soft: rgba(255, 154, 82, 0.14);
+    --stop: #ff6b7c;
+    --stop-soft: rgba(255, 107, 124, 0.14);
+    --violet: #b695ff;
+    --violet-soft: rgba(182, 149, 255, 0.14);
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(to right, var(--bg-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--bg-grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 28px;
+    background: color-mix(in srgb, var(--panel) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cyan);
+  }
+  .brand-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 0 3px var(--cyan-soft);
+  }
+  .navlinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .navlinks a, .theme-btn {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--line-2);
+    background: var(--panel-2);
+    color: var(--muted);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .navlinks a:hover, .theme-btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  .app {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 72px;
+  }
+
+  .sheet {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .sheet-h {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--line-2);
+    background: var(--panel-2);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .sec-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--cyan);
+    background: var(--cyan-soft);
+    padding: 3px 9px;
+    border-radius: 5px;
+    border: 1px solid color-mix(in srgb, var(--cyan) 30%, transparent);
+    display: inline-block;
+    margin-bottom: 6px;
+  }
+  .sheet-h h1, .sheet-h h2 {
+    margin: 0;
+    font-size: 23px;
+    letter-spacing: -0.015em;
+  }
+  .sheet-h p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 14.5px;
+  }
+  .sheet-b {
+    padding: 28px;
+  }
+
+  .post-prose {
+    max-width: 920px;
+    font-size: 16.5px;
+    line-height: 1.75;
+    color: var(--ink);
+  }
+  .post-prose p { margin: 0 0 16px; }
+  .post-prose h3 {
+    margin: 26px 0 10px;
+    font-size: 19.5px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .post-prose ul, .post-prose ol {
+    margin: 8px 0 18px 22px;
+    padding: 0;
+  }
+  .post-prose li { margin-bottom: 8px; }
+
+  .diagram-frame {
+    background: var(--panel-2);
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+    margin: 20px 0 4px;
+    overflow-x: auto;
+  }
+  .diagram-frame svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .fig-caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line-2);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .zone-box { fill: var(--panel); stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  .zone-vpc { fill: var(--panel); stroke: var(--violet); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  .node-card { fill: var(--panel); stroke: var(--line); stroke-width: 1.75; }
+  .node-blue { fill: var(--prussian-soft); stroke: var(--prussian); stroke-width: 1.8; }
+  .node-teal { fill: var(--teal-soft); stroke: var(--teal); stroke-width: 1.8; }
+  .node-good { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.8; }
+  .node-warn { fill: var(--warn-soft); stroke: var(--warn); stroke-width: 1.6; }
+  .node-bad { fill: var(--stop-soft); stroke: var(--stop); stroke-width: 1.8; }
+  .node-violet { fill: var(--violet-soft); stroke: var(--violet); stroke-width: 1.8; }
+
+  .t-zone { font-family: var(--mono); font-size: 11px; font-weight: 700; fill: var(--muted); letter-spacing: 0.08em; }
+  .t-title { font-family: var(--sans); font-size: 14.5px; font-weight: 700; fill: var(--ink); }
+  .t-sub { font-family: var(--sans); font-size: 12px; fill: var(--muted); }
+  .t-mono { font-family: var(--mono); font-size: 11.2px; font-weight: 600; fill: var(--ink); }
+
+  .edge-line { stroke: var(--ink); stroke-width: 2; fill: none; }
+  .edge-teal { stroke: var(--teal); stroke-width: 2.2; fill: none; }
+  .edge-violet { stroke: var(--violet); stroke-width: 2.2; fill: none; }
+
+  .tbl-wrap { overflow-x: auto; margin: 18px 0 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line-2); }
+  th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); background: var(--panel-2); }
+  td code, .post-prose code { font-family: var(--mono); font-size: 0.9em; background: var(--panel-3); padding: 1px 5px; border-radius: 4px; }
+
+  .mode-3-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 18px 0;
+  }
+  @media (max-width: 960px) { .mode-3-grid { grid-template-columns: 1fr; } }
+  .mode-card {
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--cyan);
+    border-radius: 10px;
+    background: var(--panel-2);
+    padding: 16px 18px;
+    font-size: 14px;
+  }
+  .mode-card.m-teal { border-top-color: var(--teal); }
+  .mode-card.m-violet { border-top-color: var(--violet); }
+  .mode-card .leg-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--cyan);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .mode-card.m-teal .leg-tag { color: var(--teal); }
+  .mode-card.m-violet .leg-tag { color: var(--violet); }
+  .mode-card h4 { margin: 0 0 8px; font-size: 16px; }
+  .mode-card ol { margin: 8px 0 0 18px; padding: 0; }
+  .mode-card li { margin-bottom: 6px; }
+
+  .duo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 960px) { .duo-grid { grid-template-columns: 1fr; } }
+
+  .code-card {
+    background: #0f172a;
+    color: #f1f5f9;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 8px 0;
+    overflow-x: auto;
+  }
+  .code-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    letter-spacing: 0.04em;
+  }
+  .code-pre {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.52;
+    white-space: pre;
+    color: #f1f5f9;
+  }
+
+  @media print {
+    .topbar { display: none; }
+    .app { max-width: 100%; padding: 0; }
+    .sheet { break-inside: avoid; box-shadow: none; margin-bottom: 16px; }
+    table { font-size: 11px; }
+    .code-pre { font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-dot"></span>
+    <span>Agentic Governance · Reference Deep Dive (Chapter 5)</span>
+  </div>
+  <nav class="navlinks">
+    <a href="../ep01_securing_agent_to_database.html#part-05">← Back to Episode 01 (Chapter 5)</a>
+    <a href="#sec-connection-split">Connection Model Split</a>
+    <a href="#sec-cloudsql-patterns">Cloud SQL Isolation Patterns</a>
+    <a href="#sec-arch-diagram">Architecture Map &amp; Matrix</a>
+    <a href="#sec-agent-modes">3 Agent Modes &amp; SQL</a>
+    <button class="theme-btn" id="theme-toggle" type="button">◑ Switch to Dark Mode</button>
+  </nav>
+</header>
+
+<main class="app">
+
+  <!-- ==================== SECTION 1: CONNECTION MODEL SPLIT ==================== -->
+  <section class="sheet" id="sec-connection-split">
+    <div class="sheet-h">
+      <div>
+        <span class="sec-badge">Reference · Chapter 5 Deep Dive</span>
+        <h1>Row &amp; Column Access Controls: Stateless HTTP (BigQuery) vs. Stateful Pooled TCP (Cloud SQL)</h1>
+        <p>Why BigQuery's stateless per-request HTTP connection model and Cloud SQL's stateful pooled TCP sockets fundamentally change how an AI agent enforces Row-Level and Column-Level Security.</p>
+      </div>
+    </div>
+    <div class="sheet-b">
+      <div class="post-prose">
+        <p>
+          The difference between enforcing row and column isolation in an analytical data warehouse versus an operational database comes down to <strong>BigQuery's stateless, per-request HTTP API connection model</strong> versus <strong>Cloud SQL's stateful, long-lived TCP connection-pooling model</strong>.
+        </p>
+        <p>
+          Because BigQuery evaluates an IAM/OAuth token on every individual HTTP query job, it natively enforces IAM-based Row-Level Security (RLS) and Column-Level Security (Policy Tags) per request. In contrast, Cloud SQL relies on a persistent pool of TCP connections authenticated under a single shared database role, meaning the database engine cannot natively distinguish which end user is behind an agent's query without re-authenticating or breaking the connection pool.
+        </p>
+
+        <h3>1. How BigQuery Connects: Stateless Per-Request Identity</h3>
+        <p>
+          When an ADK agent calls BigQuery (either via the BigQuery Remote MCP Server or <a href="https://github.com/googleapis/mcp-toolbox" target="_blank" rel="noopener">MCP Toolbox</a> with <code>useClientOAuth: true</code>), there is no logged-in session held open on a socket:
+        </p>
+        <ul>
+          <li>Each MCP tool call is an independent, stateless HTTP/gRPC request carrying <code>Authorization: Bearer &lt;End-User-OAuth-Token&gt;</code> in the header.</li>
+          <li>Even if 1,000 users talk to one agent, the agent or MCP server attaches each user's OAuth token to their HTTP request, and BigQuery inspects the IAM principal inside that token for that single query job.</li>
+          <li>BigQuery automatically evaluates its <strong>Row Access Policies</strong> (filtering rows matching the user's IAM identity via <code>SESSION_USER()</code> or app-level attributes via <code>SECURE_CONTEXT()</code>) and <strong>Column-Level Policy Tags</strong> (masking or denying sensitive PII columns) before scanning the table.</li>
+        </ul>
+
+        <h3>2. How Cloud SQL Connects: Stateful Pooled Sockets</h3>
+        <p>
+          Relational databases such as PostgreSQL, MySQL, and SQL Server were designed around stateful TCP connections where authentication happens once during the initial connection handshake:
+        </p>
+        <ul>
+          <li>Opening a new TCP connection and running an IAM handshake per query would exhaust <code>max_connections</code> and add high latency. Creating a separate database user/role for every end user does not scale in web or agent applications.</li>
+          <li>Instead, MCP Toolbox (or your application backend) opens a warm pool of persistent connections using one minimally-scoped service account or database role for all requests—so to the database, every query looks like it came from the exact same identity.</li>
+          <li>Because that single database role must have <code>SELECT</code> privileges on the multi-tenant table to serve all users, native database <code>GRANT</code> permissions alone cannot stop User A's agent session from querying User B's rows over that shared connection.</li>
+        </ul>
+
+        <h3>Architectural Comparison: BigQuery vs. Cloud SQL</h3>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:210px;">Architectural Dimension</th>
+              <th>BigQuery (Data Warehouse)</th>
+              <th>Cloud SQL — PostgreSQL / MySQL / SQL Server (OLTP)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>How the Connection is Made</b></td>
+              <td>Stateless HTTP/gRPC API calls. There is no persistent socket or connection pool; every query job is self-contained.</td>
+              <td>Stateful, long-lived TCP sockets managed via a connection pool (inside MCP Toolbox or Cloud SQL Auth Proxy).</td>
+            </tr>
+            <tr>
+              <td><b>Identity Seen by the Database</b></td>
+              <td>The individual End User's IAM Principal (<code>user:alice@company.com</code> or <code>group:...</code>) passed via OAuth header on each request (<code>useClientOAuth: true</code>).</td>
+              <td>A single shared Database Role / Service Account that owns the connection pool serving all application users.</td>
+            </tr>
+            <tr>
+              <td><b>Row-Level Security (RLS) Mechanism</b></td>
+              <td>IAM-Native DDL Policies (<code>CREATE ROW ACCESS POLICY ... GRANT TO ('user:...')</code>) evaluated automatically per API call. Also supports <code>SECURE_CONTEXT()</code> for app-level attributes.</td>
+              <td>DB-Internal Roles (<code>CREATE POLICY</code> + <code>FORCE ROW LEVEL SECURITY</code> with transaction-local <code>set_config</code> in PG) or Parameterized Secure Views (<code>@local_customer_id</code>) because end users are rarely individual DB/IAM users.</td>
+            </tr>
+            <tr>
+              <td><b>Column-Level Security (CLS) Mechanism</b></td>
+              <td>Dataplex / Data Catalog Policy Tags bound directly to IAM principals; unauthorized columns are blocked or masked per query.</td>
+              <td>Table/Column <code>GRANT SELECT (col1, col2)</code> tied to the database role on the connection—meaning all users sharing the pool get the exact same column visibility.</td>
+            </tr>
+            <tr>
+              <td><b>Why Raw <code>execute_sql</code> Differs in Risk</b></td>
+              <td>If End-User OAuth passthrough is enabled, <code>execute_sql</code> is still bounded by that specific user's IAM Row and Column policies in BigQuery.</td>
+              <td>Because the shared connection pool has permission to read the entire table across all tenants, raw <code>execute_sql</code> allows a prompt-injected agent to read any customer's rows.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 2: CLOUD SQL ISOLATION PATTERNS ==================== -->
+  <section class="sheet" id="sec-cloudsql-patterns">
+    <div class="sheet-h">
+      <div>
+        <span class="sec-badge">Cloud SQL Isolation Patterns</span>
+        <h2>How to Enforce Row and Column Isolation in Cloud SQL for Agents</h2>
+        <p>Three complementary mechanisms to isolate rows and columns over a single shared database role and connection pool.</p>
+      </div>
+    </div>
+    <div class="sheet-b">
+      <div class="post-prose">
+        <p>
+          Since you cannot rely on per-connection IAM identities in a Cloud SQL connection pool, Google Cloud provides two high-level solution patterns—which you can reinforce with transaction-local PostgreSQL Row-Level Security—to enforce row and column isolation while keeping a single shared database role and connection pool:
+        </p>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:250px;">Solution Pattern</th>
+              <th>How It Works Over a Shared Connection Pool</th>
+              <th style="width:280px;">When to Use It</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>1. MCP Toolbox Parameterized Tools + <code>bound_params</code> / <code>authServices</code></b></td>
+              <td>You define fixed SQL statements in <code>tools.yaml</code> (specifying only the allowed columns in <code>SELECT col1, col2</code> and locking the <code>WHERE user_id = $1</code> filter). Your ADK agent or MCP Toolbox <code>authServices</code> binds <code>user_id</code> server-side from the authenticated session so the LLM cannot alter columns or rows.</td>
+              <td>Best for custom transactional and lookup workflows where the agent maps intents to known query patterns.</td>
+            </tr>
+            <tr>
+              <td><b>2. Cloud SQL Parameterized Secure Views (<code>cloudsql_parameterized_secure_view</code> / <code>cloudsql.enable_parameterized_views</code>)</b></td>
+              <td>You create a restricted view (<code>CREATE VIEW v_orders WITH (security_invoker = true) AS SELECT col1, col2 FROM orders WHERE customer_id = @local_customer_id</code>) and grant the shared connection pool role access only to the view, not the base table. When using the Conversational Analytics <code>QueryData</code> API or MCP Toolbox, the application injects the verified user parameter so even AI-generated ad-hoc SQL is strictly confined to that user's rows and columns.</td>
+              <td>Best when you need open-ended natural-language-to-SQL analytics over Cloud SQL (supported in Cloud SQL for MySQL 8.0.43+ and PostgreSQL) without exposing other tenants' data.</td>
+            </tr>
+            <tr>
+              <td><b>3. Transaction-Local PostgreSQL <code>set_config</code> + <code>FORCE ROW LEVEL SECURITY</code></b></td>
+              <td>Inside each transaction on the shared pool (`BEGIN ... COMMIT`), the tool server stamps the verified user ID via <code>SELECT set_config('app.current_user_id', $1, true)</code> (`is_local = true` / `SET LOCAL`). A `RESTRICTIVE` policy with `FORCE ROW LEVEL SECURITY` filters every query against `current_setting('app.current_user_id', true)`, and the setting automatically resets when the transaction ends before the socket returns to the pool.</td>
+              <td>Best as an engine-level defense-in-depth safety net in Cloud SQL / AlloyDB for PostgreSQL so even a newly added tool that forgets a `WHERE` clause cannot leak rows across tenants.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 3: VISUAL ARCHITECTURE MAP & FULL MATRIX ==================== -->
+  <section class="sheet" id="sec-arch-diagram">
+    <div class="sheet-h">
+      <div>
+        <span class="sec-badge">Visual Architecture Map</span>
+        <h2>Side-by-Side Architecture: BigQuery (`SESSION_USER()`) vs. Cloud SQL / AlloyDB (`SET LOCAL` + `FORCE RLS`)</h2>
+        <p>How identity propagation, Row-Level Security, and Column-Level Security execute step by step in both engines.</p>
+      </div>
+    </div>
+    <div class="sheet-b">
+      <div class="diagram-frame" id="fig-rls-cls">
+        <svg viewBox="0 0 1220 555" role="img" aria-label="Row-Level Security and Column-Level Security Architecture — BigQuery vs. Cloud SQL and AlloyDB">
+          <defs>
+            <marker id="rc-arr-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" style="fill:var(--prussian)"/>
+            </marker>
+            <marker id="rc-arr-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" style="fill:var(--teal)"/>
+            </marker>
+            <marker id="rc-arr-violet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" style="fill:var(--violet)"/>
+            </marker>
+          </defs>
+
+          <!-- LEFT HALF: BIGQUERY -->
+          <rect class="zone-box" x="14" y="14" width="586" height="527" rx="10"/>
+          <text class="t-zone" x="32" y="38" style="fill:var(--prussian)">LEFT · BIGQUERY (OLAP · STATELESS HTTP API · PER-USER PRINCIPAL REACHES DB)</text>
+
+          <rect class="node-blue" x="32" y="54" width="550" height="106" rx="8"/>
+          <circle cx="54" cy="80" r="13" fill="var(--prussian)"/>
+          <text class="t-mono" x="54" y="84" text-anchor="middle" style="fill:#fff;font-weight:700">1</text>
+          <text class="t-title" x="75" y="84">Per-User Credential Propagation (useClientOAuth / OBO / STS)</text>
+          <text class="t-sub" x="48" y="106">Every BigQuery API call is stateless HTTP. The tool passes the caller's own Google OAuth token</text>
+          <text class="t-mono" x="48" y="124" style="fill:var(--prussian)">bigquery.Client(project="app-prod", credentials=Credentials(token=user_obo_token))</text>
+          <text class="t-sub" x="48" y="144">• Okta/Entra SSO? Swap IdP JWT at Google STS (sts.googleapis.com/v1/token, RFC 8693) -&gt; SESSION_USER() = 'alice@corp.com'</text>
+
+          <rect class="node-good" x="32" y="178" width="550" height="162" rx="8"/>
+          <circle cx="54" cy="204" r="13" fill="var(--good)"/>
+          <text class="t-mono" x="54" y="208" text-anchor="middle" style="fill:#fff;font-weight:700">2</text>
+          <text class="t-title" x="75" y="208">BigQuery Row-Level Security (CREATE ROW ACCESS POLICY)</text>
+          <text class="t-mono" x="48" y="230" style="fill:var(--good)">GRANT TO ("domain:corp.com") FILTER USING (customer_email = SESSION_USER())</text>
+          <text class="t-sub" x="48" y="250">• ONE policy covers 100,000+ users dynamically (hard limit: 100 policies/table; never 1 policy per user!)</text>
+          <text class="t-sub" x="48" y="268">• Also supports SECURE_CONTEXT() for app-level attributes or lookup subquery on opaque user_id</text>
+          <text class="t-sub" x="48" y="286">• Implicit deny: once ANY policy exists on a table, unmatched principals (incl. ETL SAs!) see 0 rows unless granted FILTER USING (TRUE)</text>
+          <text class="t-sub" x="48" y="304">• Side doors closed: filtered users cannot bq extract / copy table. Aggregate views enforce</text>
+          <text class="t-mono" x="48" y="322" style="fill:var(--good)">HAVING COUNT(DISTINCT customer_email) &gt;= 5  -- k-anonymity floor against difference attacks</text>
+
+          <rect class="node-teal" x="32" y="358" width="550" height="166" rx="8"/>
+          <circle cx="54" cy="384" r="13" fill="var(--teal)"/>
+          <text class="t-mono" x="54" y="388" text-anchor="middle" style="fill:#fff;font-weight:700">3</text>
+          <text class="t-title" x="75" y="388">BigQuery Column-Level Security (Dataplex Policy Tags + Masking)</text>
+          <text class="t-sub" x="48" y="408">Attach Dataplex taxonomy tags (PII.SSN, Financial.CardNumber) to columns. One table, 3 experiences:</text>
+          <rect class="node-card" x="48" y="420" width="518" height="28" rx="4"/>
+          <text class="t-mono" x="58" y="438">1. Fine-Grained Reader (roles/datacatalog.categoryFineGrainedReader) -&gt; 4111-1111-1111-1234</text>
+          <rect class="node-card" x="48" y="454" width="518" height="28" rx="4"/>
+          <text class="t-mono" x="58" y="472" style="fill:var(--teal)">2. Masked Reader (roles/bigquerydatapolicy.maskedReader · Agent SA)  -&gt; XXXX-XXXX-XXXX-1234</text>
+          <rect class="node-card" x="48" y="488" width="518" height="26" rx="4"/>
+          <text class="t-mono" x="58" y="505" style="fill:var(--stop)">3. Neither Role -&gt; 403 Access Denied on column (must SELECT * EXCEPT(card_number, ssn))</text>
+
+          <!-- RIGHT HALF: CLOUD SQL & ALLOYDB -->
+          <rect class="zone-vpc" x="620" y="14" width="586" height="527" rx="10"/>
+          <text class="t-zone" x="638" y="38" style="fill:var(--violet)">RIGHT · CLOUD SQL &amp; ALLOYDB (POSTGRESQL / MYSQL · SHARED TCP POOL · 1 IAM DB ROLE)</text>
+
+          <rect class="node-violet" x="638" y="54" width="550" height="106" rx="8"/>
+          <circle cx="660" cy="80" r="13" fill="var(--violet)"/>
+          <text class="t-mono" x="660" y="84" text-anchor="middle" style="fill:#fff;font-weight:700">1</text>
+          <text class="t-title" x="681" y="84">Why SESSION_USER Fails on Cloud SQL &amp; How Identity Arrives</text>
+          <text class="t-sub" x="654" y="106">Cloud SQL uses stateful TCP pools (max_connections ~ 100–1,000) signed in as ONE shared IAM role</text>
+          <text class="t-mono" x="654" y="124" style="fill:var(--violet)">SESSION_USER is ALWAYS "toolbox-sa@app-prod.iam" (never alice@corp.com!)</text>
+          <text class="t-sub" x="654" y="144">• Fix: Bind verified user_id via MCP Toolbox authServices ($1), Parameterized Secure Views (@local_customer_id), or SET LOCAL</text>
+
+          <rect class="node-good" x="638" y="178" width="550" height="162" rx="8"/>
+          <circle cx="660" cy="204" r="13" fill="var(--good)"/>
+          <text class="t-mono" x="660" y="208" text-anchor="middle" style="fill:#fff;font-weight:700">2</text>
+          <text class="t-title" x="681" y="208">Cloud SQL / AlloyDB Row-Level Security (SET LOCAL + FORCE RLS / Secure Views)</text>
+          <text class="t-mono" x="654" y="230" style="fill:var(--good)">SELECT set_config('app.current_user_id', $1, true); -- is_local=true (SET LOCAL)</text>
+          <text class="t-sub" x="654" y="250">• Must use is_local=true (SET LOCAL): automatically wipes on COMMIT/ROLLBACK before connection returns to pool!</text>
+          <text class="t-sub" x="654" y="268">• Or use Parameterized Secure Views (WHERE customer_id = @local_customer_id) for open-ended NL2SQL analytics</text>
+          <text class="t-mono" x="654" y="288">ALTER TABLE sales.orders ENABLE ROW LEVEL SECURITY;</text>
+          <text class="t-mono" x="654" y="304">ALTER TABLE sales.orders FORCE ROW LEVEL SECURITY;  -- applies even to table owner!</text>
+          <text class="t-mono" x="654" y="322" style="fill:var(--good)">USING (user_id = NULLIF(current_setting('app.current_user_id', true), ''))</text>
+
+          <rect class="node-teal" x="638" y="358" width="550" height="166" rx="8"/>
+          <circle cx="660" cy="384" r="13" fill="var(--teal)"/>
+          <text class="t-mono" x="660" y="388" text-anchor="middle" style="fill:#fff;font-weight:700">3</text>
+          <text class="t-title" x="681" y="388">Cloud SQL / AlloyDB Column-Level Security (4 Layers)</text>
+          <rect class="node-card" x="654" y="400" width="518" height="27" rx="4"/>
+          <text class="t-mono" x="664" y="418">1. Column Grants: REVOKE SELECT ON orders; GRANT SELECT (order_id, status, total) TO role;</text>
+          <rect class="node-card" x="654" y="431" width="518" height="27" rx="4"/>
+          <text class="t-mono" x="664" y="449" style="fill:var(--teal)">2. PG 15+ Security-Invoker View: CREATE VIEW agent_orders_v WITH (security_invoker = true)</text>
+          <rect class="node-card" x="654" y="462" width="518" height="27" rx="4"/>
+          <text class="t-mono" x="664" y="480">3. Cloud SDP Tokenization: CryptoDeterministicConfig surrogate tokens for free-text PII</text>
+          <rect class="node-card" x="654" y="493" width="518" height="25" rx="4"/>
+          <text class="t-mono" x="664" y="510" style="fill:var(--violet)">4. Write Column Lock: Zero UPDATE grant; EXECUTE only on SECURITY DEFINER stored proc</text>
+
+          <path class="edge-line" style="stroke:var(--prussian)" d="M307 160 V174" marker-end="url(#rc-arr-blue)"/>
+          <path class="edge-teal" d="M307 340 V354" marker-end="url(#rc-arr-teal)"/>
+          <path class="edge-violet" d="M913 160 V174" marker-end="url(#rc-arr-violet)"/>
+          <path class="edge-teal" d="M913 340 V354" marker-end="url(#rc-arr-teal)"/>
+        </svg>
+        <div class="fig-caption">
+          <span>Figure 1 — Row-Level Security (RLS) and Column-Level Security (CLS) Architecture: BigQuery (`SESSION_USER()` + Dataplex Policy Tags) vs. Cloud SQL / AlloyDB (`set_config(..., true)` `SET LOCAL` + `FORCE RLS` + Parameterized Secure Views + Column Grants).</span>
+        </div>
+      </div>
+
+      <div class="post-prose" style="margin-top:22px;">
+        <h3>Critical Implementation Gotchas: BigQuery vs. Cloud SQL / AlloyDB</h3>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:190px;">Governance Dimension</th>
+              <th>BigQuery (OLAP / Stateless HTTP)</th>
+              <th>Cloud SQL &amp; AlloyDB for PostgreSQL (OLTP / Pooled TCP)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>1. What <code>SESSION_USER</code> Returns</b></td>
+              <td>Returns the authenticated human's email (<code>alice@corp.com</code>) or Workforce principal when called with OBO / <code>useClientOAuth: true</code> credentials; returns the service account only for background ETL jobs.</td>
+              <td><b>Always returns the shared pool service account</b> (<code>toolbox-sa@app-prod.iam</code>). A policy checking <code>SESSION_USER</code> cannot distinguish Alice from Bob.</td>
+            </tr>
+            <tr>
+              <td><b>2. Critical RLS Gotchas &amp; Footguns</b></td>
+              <td>
+                • <b>Hard limit of 100 policies/table:</b> Write 1 policy with <code>SESSION_USER()</code>, never 1 policy per user.<br>
+                • <b>Implicit Zero-Row Deny:</b> Once <i>any</i> policy exists on a table, unmatched principals (including nightly ETL SAs) see <code>0</code> rows unless granted an explicit <code>FILTER USING (TRUE)</code> policy.<br>
+                • <b>Without RLS, OBO does not filter rows:</b> <code>roles/bigquery.dataViewer</code> is table-wide; without a Row Access Policy, <code>SELECT *</code> returns all tenants' rows even with <code>user_creds</code>.
+              </td>
+              <td>
+                • <b>Never use plain <code>SET</code> on a pool:</b> Plain <code>SET app.current_user_id</code> persists on the TCP socket after the query finishes, leaking Alice's rows to Bob's next request. Always pass <code>is_local = true</code> (<code>SET LOCAL</code>) inside a transaction.<br>
+                • <b>Guard empty strings with <code>NULLIF</code>:</b> Use <code>NULLIF(current_setting('app.tenant_id', true), '')::uuid</code> so an unset GUC returns <code>0</code> rows instead of throwing an invalid UUID cast error.
+              </td>
+            </tr>
+            <tr>
+              <td><b>3. Dynamic Data Masking &amp; PII Tokenization</b></td>
+              <td><b>BigQuery Data Policies (<code>roles/bigquerydatapolicy.maskedReader</code>):</b> Attach a masking rule (<code>SHA256</code>, <code>DEFAULT_MASKING_VALUE</code>, <code>LAST_FOUR_CHARACTERS</code>, <code>NULLIFY</code>) to the Dataplex Policy Tag. The AI agent's query succeeds without failing on <code>SELECT *</code>, receiving masked values automatically.</td>
+              <td>
+                • <b>In SQL View:</b> Mask structured columns inline (<code>'***-**-' || right(ssn, 4) AS ssn_masked</code>) on a <code>WITH (security_invoker = true)</code> view (never omit <code>security_invoker = true</code>, or the view runs as the view owner and bypasses RLS).<br>
+                • <b>In MCP / ADK Callback:</b> Call <b>Cloud Sensitive Data Protection (SDP)</b> <code>deidentify_content</code> or deterministic AES-SIV surrogate tokenization (<code>CryptoDeterministicConfig</code>).
+              </td>
+            </tr>
+            <tr>
+              <td><b>4. Aggregate &amp; Side-Door Leak Prevention</b></td>
+              <td>Filtered users are blocked from <code>bq extract</code>, table copy, and unfiltered Storage Read API. On aggregate views exposed to agents, enforce a <b><code>k</code>-anonymity threshold (<code>HAVING COUNT(DISTINCT customer_email) &gt;= 5</code>)</b> so difference attacks cannot isolate 1 employee's salary.</td>
+              <td>Enforce <code>LIMIT 50</code> on every read tool, point read tools at a read replica with <code>default_transaction_read_only = on</code>, <code>statement_timeout = '5s'</code>, and <code>CONNECTION LIMIT 20</code> on the agent's database role.</td>
+            </tr>
+            <tr>
+              <td><b>5. Write / Mutation Column Control</b></td>
+              <td>Agents should not mutate OLAP tables directly; if required, append proposals to an insert-only staging table merged by a scheduled batch job.</td>
+              <td>Revoke all <code>INSERT, UPDATE, DELETE</code> on tables from the agent role. Grant <code>EXECUTE</code> only on a <b><code>SECURITY DEFINER</code> stored procedure</b> (with <code>SET search_path = sales, pg_temp</code>) that checks row ownership, idempotency <code>request_id</code>, and autonomous dollar caps (<code>&lt;= $100</code>).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 4: 3 AGENT MODES & RUNNABLE SQL/PYTHON ==================== -->
+  <section class="sheet" id="sec-agent-modes">
+    <div class="sheet-h">
+      <div>
+        <span class="sec-badge">Execution Modes &amp; Reference Code</span>
+        <h2>How Verified Identity Reaches RLS Across All 3 Agent Execution Modes</h2>
+        <p>Designing for interactive browser sessions (Mode 1), event-driven webhooks (Mode 2), and scheduled autonomous jobs (Mode 3), followed by runnable SQL and ADK 2.x reference implementations.</p>
+      </div>
+    </div>
+    <div class="sheet-b">
+      <div class="post-prose">
+        <p>
+          Designing RLS only for an interactive browser user (`Mode 1`) leaves a gap when an autonomous agent wakes up at 3:00 AM from a webhook, email, or schedule (`Modes 2 & 3`) with no live browser JWT. Across all three modes, the rule is the same: <strong>resolve and verify the identity envelope before the LLM runs, lock it into out-of-band state, and remove `user_id` from the LLM's tool schema.</strong>
+        </p>
+      </div>
+
+      <div class="mode-3-grid">
+        <div class="mode-card">
+          <span class="leg-tag">Mode 01 · Interactive Chat Agent</span>
+          <h4>Human Online at Browser Now</h4>
+          <ol>
+            <li>Browser sends <code>Authorization: Bearer &lt;JWT&gt;</code> to <code>/chat</code>.</li>
+            <li>Entrypoint verifies signature, expiry, and audience via <code>id_token.verify_oauth2_token()</code> before the LLM runs.</li>
+            <li>Writes verified <code>claims["sub"]</code> into <code>session.state["user:id"]</code>.</li>
+            <li>Tool schema is <code>get_my_orders(status)</code>—zero <code>user_id</code> parameter exposed to the model.</li>
+            <li><b>BigQuery:</b> Runs with OBO / <code>useClientOAuth: true</code> (<code>SESSION_USER()</code>).<br><b>Cloud SQL:</b> Binds <code>$1</code> via MCP Toolbox <code>authServices</code>, Parameterized Secure Views (<code>@local_customer_id</code>), or <code>set_config('app.current_user_id', :uid, true)</code>.</li>
+          </ol>
+        </div>
+        <div class="mode-card m-teal">
+          <span class="leg-tag">Mode 02 · Event-Driven Autonomous Agent</span>
+          <h4>Webhook / Email / Pub/Sub at 3:00 AM</h4>
+          <ol>
+            <li>Partner webhook arrives at the Ingestion Gateway with <code>X-Hub-Signature-256</code> (HMAC-SHA256).</li>
+            <li>Gateway verifies HMAC against Secret Manager, resolves partner account to <code>verified_uid = "user_1001"</code>, and publishes to an IAM-locked Pub/Sub topic.</li>
+            <li><code>verified_uid</code> sits in trusted Pub/Sub <code>attributes</code>; untrusted ticket/webhook text sits in <code>data</code>.</li>
+            <li>Worker verifies Pub/Sub push OIDC token and locks <code>session.state["user:id"] = msg.attributes["verified_uid"]</code> before Gemini reads <code>data</code>.</li>
+            <li>Even if the webhook body says <i>"Refund user_1002 $5000"</i>, Postgres RLS + <code>SECURITY DEFINER</code> proc scopes strictly to <code>user_1001</code> and caps auto-refunds at <code>&lt;= $100</code>.</li>
+          </ol>
+        </div>
+        <div class="mode-card m-violet">
+          <span class="leg-tag">Mode 03 · Scheduled Autonomous Agent</span>
+          <h4>User Offline (1-Hour JWT Expired Days Ago)</h4>
+          <ol>
+            <li><b>Setup Phase (Monday, Alice Online):</b> Alice creates a recurring job with her live JWT. Backend verifies JWT and writes an immutable, HMAC/KMS-signed <b>Task Mandate row</b> (<code>task_id</code>, <code>owner_uid="user_1001"</code>, <code>max_usd=100</code>, <code>expires_at</code>, <code>hmac_sig</code>).</li>
+            <li><b>Execution Phase (Friday 3:00 AM):</b> Cloud Scheduler fires an OIDC push carrying only <code>{"task_id": "T-55"}</code>.</li>
+            <li>Worker loads Mandate <code>T-55</code>, verifies <code>hmac_sig</code> and <code>now() &lt; expires_at</code>, and locks <code>session.state["user:id"] = mandate.owner_uid</code>.</li>
+            <li><b>Cloud SQL:</b> Uses <code>mandate.owner_uid</code> in <code>set_config(..., true)</code> or bound parameters.<br><b>BigQuery:</b> Uses KMS-encrypted Refresh Token or Workforce STS to mint a fresh 1-hour OBO token.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="duo-grid">
+        <div class="code-card">
+          <div class="code-head">
+            <span>bigquery_rls_cls_setup.sql · BigQuery Row Access Policies, Policy Tag CLS &amp; k-Anonymity</span>
+          </div>
+          <pre class="code-pre">-- 1. Per-User Row Access Policy (ONE policy covers 100k+ users via SESSION_USER())
+CREATE ROW ACCESS POLICY customer_own_orders
+ON `app-prod.sales.orders`
+GRANT TO ("domain:corp.com", "group:customers@corp.com")
+FILTER USING (customer_email = SESSION_USER());
+
+-- 2. Mapping-Table Subquery Policy (when table stores opaque user_id instead of email)
+CREATE ROW ACCESS POLICY orders_by_uid_lookup
+ON `app-prod.sales.orders`
+GRANT TO ("allAuthenticatedUsers")
+FILTER USING (
+  user_id IN (
+    SELECT u.user_id FROM `app-prod.sales.users` AS u
+    WHERE u.email = SESSION_USER()
+  )
+);
+
+-- 3. Explicit Pipeline SA Policy (REQUIRED: once any policy exists, unmatched SAs see 0 rows!)
+CREATE ROW ACCESS POLICY etl_pipeline_full_read
+ON `app-prod.sales.orders`
+GRANT TO ("serviceAccount:analytics-etl@app-prod.iam.gserviceaccount.com")
+FILTER USING (TRUE);
+
+-- 4. Column-Level Security (CLS) via Dataplex Policy Tags + Dynamic Masking:
+--    Attach policyTag "projects/app-prod/locations/us/taxonomies/1/policyTags/card_num"
+--    Grant Agent SA: roles/bigquerydatapolicy.maskedReader (sees XXXX-XXXX-XXXX-1234, never raw PAN!)
+SELECT order_id, customer_email, card_number, total
+FROM `app-prod.sales.orders`
+LIMIT 20;
+
+-- 5. Aggregate View with k-Anonymity Floor (k >= 5 distinct users blocks difference attacks)
+CREATE OR REPLACE VIEW `app-prod.agent_views.regional_order_stats_v` AS
+SELECT
+  region,
+  status,
+  COUNT(*) AS order_count,
+  ROUND(AVG(total), 2) AS avg_order_total
+FROM `app-prod.sales.orders`
+GROUP BY region, status
+HAVING COUNT(DISTINCT customer_email) >= 5;</pre>
+        </div>
+
+        <div class="code-card">
+          <div class="code-head">
+            <span>bigquery_obo_sts_agent.py · Verifying JWT + RFC 8693 STS Exchange for BigQuery RLS/CLS</span>
+          </div>
+          <pre class="code-pre">import requests
+from google.auth.transport import requests as google_requests
+from google.cloud import bigquery
+from google.oauth2 import id_token
+from google.oauth2.credentials import Credentials
+
+SERVICE_URL = "https://orders-agent-uc.a.run.app"
+STS_URL = "https://sts.googleapis.com/v1/token"
+WORKFORCE_AUD = "//iam.googleapis.com/locations/global/workforcePools/corp-pool/providers/entra-oidc"
+
+def verify_caller_jwt(auth_header: str) -> dict:
+    """Verifies signature, expiry &amp; audience; extracts immutable 'sub' and 'email'."""
+    raw_jwt = auth_header.removeprefix("Bearer ").strip()
+    return id_token.verify_oauth2_token(raw_jwt, google_requests.Request(), audience=SERVICE_URL)
+
+def exchange_idp_jwt_for_bq_creds(incoming_idp_jwt: str) -> Credentials:
+    """RFC 8693 OBO Token Exchange via Google STS so SESSION_USER() = human caller."""
+    resp = requests.post(
+        STS_URL,
+        json={
+            "grantType": "urn:ietf:params:oauth:grant-type:token-exchange",
+            "audience": WORKFORCE_AUD,
+            "scope": "https://www.googleapis.com/auth/bigquery.readonly",
+            "requestedTokenType": "urn:ietf:params:oauth:token-type:access_token",
+            "subjectToken": incoming_idp_jwt,
+            "subjectTokenType": "urn:ietf:params:oauth:token-type:jwt",
+        },
+        timeout=(2, 5),
+    )
+    resp.raise_for_status()
+    return Credentials(token=resp.json()["access_token"])
+
+def query_orders_with_bq_rls_and_cls(auth_header: str) -> list[dict]:
+    claims = verify_caller_jwt(auth_header)
+    raw_jwt = auth_header.removeprefix("Bearer ").strip()
+    user_creds = exchange_idp_jwt_for_bq_creds(raw_jwt)
+
+    # Query runs as Alice: BigQuery enforces Row Access Policy + Policy Tag CLS masking!
+    user_bq = bigquery.Client(project="app-prod", credentials=user_creds)
+    job_cfg = bigquery.QueryJobConfig(
+        maximum_bytes_billed=100 * 1024 * 1024,  # 100 MB FinOps / LLM10 guardrail
+        query_parameters=[bigquery.ScalarQueryParameter("email", "STRING", claims["email"])],
+        labels={"acting_agent": "orders-agent", "caller": claims["sub"][:40]},
+    )
+    sql = """
+      SELECT order_id, status, total, card_number
+      FROM `app-prod.sales.orders`
+      WHERE customer_email = @email
+      ORDER BY created_at DESC LIMIT 50
+    """
+    return [dict(r) for r in user_bq.query(sql, job_config=job_cfg).result(timeout=20)]</pre>
+        </div>
+      </div>
+
+      <div class="duo-grid">
+        <div class="code-card">
+          <div class="code-head">
+            <span>cloudsql_rls_cls_setup.sql · Cloud SQL Column Grants, Secure Views, FORCE RLS &amp; Stored Proc</span>
+          </div>
+          <pre class="code-pre">-- 1. Column-Level Security (Layer 1): Revoke broad SELECT; grant ONLY safe columns
+REVOKE ALL ON TABLE sales.orders FROM PUBLIC, "toolbox-sa@app-prod.iam";
+GRANT SELECT (order_id, user_id, owner_email, status, total, updated_at)
+  ON TABLE sales.orders TO "toolbox-sa@app-prod.iam";
+
+-- 2a. Security-Invoker View with inline masking (PG 15+)
+CREATE OR REPLACE VIEW sales.agent_orders_v WITH (security_invoker = true) AS
+SELECT
+  order_id,
+  user_id,
+  owner_email,
+  status,
+  total,
+  '***-***-' || right(contact_phone, 4) AS contact_phone_masked,
+  updated_at
+FROM sales.orders;
+GRANT SELECT ON sales.agent_orders_v TO "toolbox-sa@app-prod.iam";
+
+-- 2b. Cloud SQL Parameterized Secure View (for Conversational Analytics / NL2SQL)
+-- Requires flag: cloudsql.enable_parameterized_views = on
+CREATE VIEW sales.v_customer_orders WITH (security_invoker = true) AS
+SELECT order_id, status, total, updated_at
+FROM sales.orders
+WHERE user_id = @local_customer_id;
+
+-- 3. Row-Level Security (RLS): ENABLE + FORCE ROW LEVEL SECURITY on shared pool role
+ALTER TABLE sales.orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sales.orders FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY agent_user_isolation ON sales.orders
+  AS RESTRICTIVE
+  FOR SELECT TO "toolbox-sa@app-prod.iam"
+  USING (
+    status &lt;&gt; 'DELETED'
+    AND user_id = NULLIF(current_setting('app.current_user_id', true), '')
+  );
+
+-- 4. Write Column &amp; Row Lock: Zero UPDATE/DELETE grants; mutate ONLY via SECURITY DEFINER proc
+CREATE OR REPLACE FUNCTION sales.request_or_issue_refund(
+  p_order_id TEXT,
+  p_amount   NUMERIC,
+  p_idem_key TEXT
+) RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = sales, pg_temp
+AS $$
+DECLARE
+  v_uid   TEXT := NULLIF(current_setting('app.current_user_id', true), '');
+  v_total NUMERIC;
+BEGIN
+  IF v_uid IS NULL THEN
+    RAISE EXCEPTION 'Missing transaction user context (app.current_user_id)';
+  END IF;
+  IF EXISTS (SELECT 1 FROM sales.refund_ledger WHERE idempotency_key = p_idem_key) THEN
+    RETURN jsonb_build_object('status', 'already_processed', 'idempotency_key', p_idem_key);
+  END IF;
+  SELECT total INTO v_total FROM sales.orders WHERE order_id = p_order_id AND user_id = v_uid FOR UPDATE;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Order % not found or not owned by %', p_order_id, v_uid;
+  END IF;
+  IF p_amount &gt; 100.00 THEN
+    INSERT INTO sales.refund_approval_queue (idempotency_key, order_id, user_id, amount, status)
+    VALUES (p_idem_key, p_order_id, v_uid, p_amount, 'PENDING_HUMAN_APPROVAL');
+    RETURN jsonb_build_object('status', 'queued_for_human_approval', 'order_id', p_order_id);
+  END IF;
+  INSERT INTO sales.refund_ledger (idempotency_key, order_id, user_id, amount)
+  VALUES (p_idem_key, p_order_id, v_uid, p_amount);
+  UPDATE sales.orders SET status = 'REFUNDED', updated_at = now()
+  WHERE order_id = p_order_id AND user_id = v_uid;
+  RETURN jsonb_build_object('status', 'refunded', 'order_id', p_order_id, 'amount', p_amount);
+END;
+$$;
+REVOKE ALL ON FUNCTION sales.request_or_issue_refund(TEXT, NUMERIC, TEXT) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION sales.request_or_issue_refund(TEXT, NUMERIC, TEXT) TO "toolbox-writer-sa@app-prod.iam";</pre>
+        </div>
+
+        <div class="code-card">
+          <div class="code-head">
+            <span>cloudsql_adk_rls_worker.py · Out-of-Band ToolContext + Transaction-Local SET LOCAL</span>
+          </div>
+          <pre class="code-pre">from typing import Literal
+from google.adk import Agent
+from google.adk.tools import ToolContext
+from google.genai import types
+from sqlalchemy import create_engine, text
+
+# Shared Cloud SQL / AlloyDB pool signed in as least-privilege IAM role
+db_engine = create_engine(
+    "postgresql+pg8000://toolbox-sa%40app-prod.iam@10.10.2.50:5432/prod_db",
+    pool_size=10,
+)
+
+# Notice: NO user_id parameter in the function signature! The LLM cannot see or spoof it.
+def get_my_orders(
+    status: Literal["OPEN", "SHIPPED", "REFUNDED"],
+    tool_context: ToolContext,
+) -> dict:
+    """Fetch the authenticated caller's orders filtered by status."""
+    # 1. Read verified user_id locked into ADK session state by the HTTP/PubSub entrypoint:
+    verified_uid = tool_context.state.get("user:id")
+    if not verified_uid:
+        raise PermissionError("Missing verified user:id in session state")
+
+    # 2. Borrow a pooled connection inside a transaction (BEGIN ... COMMIT):
+    with db_engine.begin() as conn:
+        # 3. Stamp verified_uid onto THIS transaction only (is_local=true -> SET LOCAL):
+        conn.execute(
+            text("SELECT set_config('app.current_user_id', :uid, true)"),
+            {"uid": verified_uid},
+        )
+        # 4. Query the security_invoker view; Postgres FORCE RLS also enforces user_id match!
+        rows = conn.execute(
+            text("""
+                SELECT order_id, status, total, contact_phone_masked, updated_at
+                FROM sales.agent_orders_v
+                WHERE status = :st
+                ORDER BY updated_at DESC LIMIT 50
+            """),
+            {"st": status},
+        ).mappings().all()
+    # <-- Transaction ends here; app.current_user_id is wiped before returning to the pool!
+    return {"orders": [dict(r) for r in rows]}
+
+orders_agent = Agent(
+    name="orders_agent",
+    model="gemini-3.8-flash",
+    mode="single_turn",
+    generate_content_config=types.GenerateContentConfig(
+        thinking_config=types.ThinkingConfig(thinking_level="LOW")
+    ),
+    tools=[get_my_orders],
+)</pre>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<script>
+document.getElementById("theme-toggle").addEventListener("click", function() {
+  const root = document.documentElement;
+  const current = root.getAttribute("data-theme") || "light";
+  const next = current === "light" ? "dark" : "light";
+  root.setAttribute("data-theme", next);
+  this.textContent = next === "light" ? "◑ Switch to Dark Mode" : "◐ Switch to Light Mode";
+});
+</script>
+</body>
+</html>

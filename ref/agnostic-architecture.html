@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Platform-Agnostic Zero-Trust Agent-to-Database Reference Architecture — Episode 01 Reference</title>
+<style>
+  :root,
+  html[data-theme="light"] {
+    --bg: #f6f8fb;
+    --bg-grid: rgba(15, 23, 42, 0.035);
+    --panel: #ffffff;
+    --panel-2: #f8fafc;
+    --panel-3: #f1f5f9;
+    --ink: #0f172a;
+    --muted: #475569;
+    --dim: #64748b;
+    --line: #cbd5e1;
+    --line-2: #e2e8f0;
+    --cyan: #0369a1;
+    --cyan-soft: rgba(3, 105, 161, 0.09);
+    --amber: #b45309;
+    --amber-soft: rgba(180, 83, 9, 0.10);
+    --good: #15803d;
+    --good-soft: rgba(21, 128, 61, 0.09);
+    --warn: #c2410c;
+    --warn-soft: rgba(194, 65, 12, 0.10);
+    --stop: #b91c1c;
+    --stop-soft: rgba(185, 28, 28, 0.08);
+    --violet: #6d28d9;
+    --violet-soft: rgba(109, 40, 217, 0.09);
+    --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #09131c;
+    --bg-grid: rgba(148, 198, 235, 0.055);
+    --panel: #0e1c2a;
+    --panel-2: #132536;
+    --panel-3: #0b1723;
+    --ink: #ecf3fb;
+    --muted: #b5c9de;
+    --dim: #7f9ab5;
+    --line: #21405c;
+    --line-2: #183149;
+    --cyan: #5fd4ff;
+    --cyan-soft: rgba(95, 212, 255, 0.13);
+    --amber: #ffbe55;
+    --amber-soft: rgba(255, 190, 85, 0.14);
+    --good: #52e29a;
+    --good-soft: rgba(82, 226, 154, 0.13);
+    --warn: #ff9a52;
+    --warn-soft: rgba(255, 154, 82, 0.14);
+    --stop: #ff6b7c;
+    --stop-soft: rgba(255, 107, 124, 0.14);
+    --violet: #b695ff;
+    --violet-soft: rgba(182, 149, 255, 0.14);
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(to right, var(--bg-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--bg-grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 28px;
+    background: color-mix(in srgb, var(--panel) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cyan);
+  }
+  .brand-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 0 3px var(--cyan-soft);
+  }
+  .navlinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .navlinks a, .theme-btn {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--line-2);
+    background: var(--panel-2);
+    color: var(--muted);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .navlinks a:hover, .theme-btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  .app {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 72px;
+  }
+
+  .sheet {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .sheet-h {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--line-2);
+    background: var(--panel-2);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .sec-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--cyan);
+    background: var(--cyan-soft);
+    padding: 3px 9px;
+    border-radius: 5px;
+    border: 1px solid color-mix(in srgb, var(--cyan) 30%, transparent);
+    display: inline-block;
+    margin-bottom: 6px;
+  }
+  .sheet-h h1, .sheet-h h2 {
+    margin: 0;
+    font-size: 23px;
+    letter-spacing: -0.015em;
+  }
+  .sheet-h p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 14.5px;
+  }
+  .sheet-b {
+    padding: 28px;
+  }
+
+  .post-prose {
+    max-width: 880px;
+    font-size: 17px;
+    line-height: 1.78;
+    color: var(--ink);
+  }
+  .post-prose p {
+    margin: 0 0 18px;
+  }
+  .post-prose h3 {
+    margin: 26px 0 10px;
+    font-size: 20px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .scenario-callout {
+    margin: 20px 0;
+    padding: 16px 20px;
+    border-left: 4px solid var(--cyan);
+    background: var(--cyan-soft);
+    border-radius: 0 10px 10px 0;
+    font-size: 16px;
+  }
+  .scenario-callout strong {
+    color: var(--cyan);
+  }
+
+  .diagram-frame {
+    background: var(--panel-2);
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+    margin: 20px 0 4px;
+    overflow-x: auto;
+  }
+  .diagram-frame svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .fig-caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line-2);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend-items {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .swatch-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    border: 1.5px solid;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+
+  .zone-box { fill: var(--panel); stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  .node-card { fill: var(--panel); stroke: var(--line); stroke-width: 1.75; }
+  .node-cyan { fill: var(--cyan-soft); stroke: var(--cyan); stroke-width: 1.8; }
+  .node-amber { fill: var(--amber-soft); stroke: var(--amber); stroke-width: 1.8; }
+  .node-good { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.8; }
+  .node-warn { fill: var(--warn-soft); stroke: var(--warn); stroke-width: 1.6; }
+  .node-bad { fill: var(--stop-soft); stroke: var(--stop); stroke-width: 1.8; }
+  .node-violet { fill: var(--violet-soft); stroke: var(--violet); stroke-width: 1.8; }
+
+  .t-zone { font-family: var(--mono); font-size: 11px; font-weight: 700; fill: var(--muted); letter-spacing: 0.08em; }
+  .t-title { font-family: var(--sans); font-size: 15px; font-weight: 700; fill: var(--ink); }
+  .t-sub { font-family: var(--sans); font-size: 12px; fill: var(--muted); }
+  .t-mono { font-family: var(--mono); font-size: 11.5px; font-weight: 600; fill: var(--ink); }
+
+  .edge-line { stroke: var(--ink); stroke-width: 2; fill: none; }
+  .edge-cyan { stroke: var(--cyan); stroke-width: 2.2; fill: none; }
+  .edge-amber { stroke: var(--amber); stroke-width: 2.2; fill: none; }
+  .edge-bad { stroke: var(--stop); stroke-width: 2.2; stroke-dasharray: 6 4; fill: none; }
+
+  .node-callout { fill: var(--panel); stroke: var(--stop); stroke-width: 1.4; stroke-dasharray: 5 3; }
+  .t-callout { font-family: var(--mono); font-size: 11px; fill: var(--ink); }
+  .t-callout-h { font-family: var(--mono); font-size: 11px; font-weight: 700; fill: var(--stop); letter-spacing: 0.04em; }
+  .t-badge { font-family: var(--mono); font-size: 10.5px; font-weight: 700; fill: #fff; text-anchor: middle; }
+  .badge-dot { fill: var(--stop); stroke: var(--panel); stroke-width: 1.5; }
+  .badge-dot.add { fill: var(--good); }
+  .tbl-wrap { overflow-x: auto; margin: 18px 0 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line-2); }
+  th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); background: var(--panel-2); }
+  td code, .post-prose code { font-family: var(--mono); font-size: 0.9em; background: var(--panel-3); padding: 1px 5px; border-radius: 4px; }
+  .b-pill { display: inline-block; font-family: var(--mono); font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin: 1px 2px 1px 0; white-space: nowrap; border: 1px solid; }
+  .b-pill.asi { color: var(--violet); background: var(--violet-soft); border-color: color-mix(in srgb, var(--violet) 35%, transparent); }
+  .b-pill.llm { color: var(--cyan); background: var(--cyan-soft); border-color: color-mix(in srgb, var(--cyan) 35%, transparent); }
+  .b-pill.api { color: var(--amber); background: var(--amber-soft); border-color: color-mix(in srgb, var(--amber) 35%, transparent); }
+  .b-pill.t { color: var(--stop); background: var(--stop-soft); border-color: color-mix(in srgb, var(--stop) 35%, transparent); }
+  .b-pill.g { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 35%, transparent); }
+  .opt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 18px 0; }
+  @media (max-width: 900px) { .opt-grid { grid-template-columns: 1fr; } }
+  .opt-card { border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); padding: 16px 18px; font-size: 14.5px; }
+  .opt-card h4 { margin: 0 0 6px; font-size: 16px; }
+  .opt-card .opt-tag { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--cyan); }
+  .opt-card ul { margin: 8px 0 0 18px; padding: 0; }
+  .opt-card li { margin-bottom: 5px; }
+  .code-card { background: #0f172a; color: #f1f5f9; border-radius: 10px; padding: 14px 16px; margin: 12px 0 18px; overflow-x: auto; }
+  .code-card .code-title { font-family: var(--mono); font-size: 11px; color: #94a3b8; margin-bottom: 8px; letter-spacing: 0.06em; }
+  .code-card pre { margin: 0; font-family: var(--mono); font-size: 12.5px; line-height: 1.55; white-space: pre; }
+
+  .beat { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--cyan); margin: 22px 0 6px; }
+  .beat:first-child { margin-top: 0; }
+  .closes { display: flex; gap: 14px; flex-wrap: wrap; margin: 14px 0 6px; padding: 12px 16px; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--line-2); font-family: var(--mono); font-size: 12.5px; }
+  .closes b { color: var(--good); }
+  .closes i { color: var(--stop); font-style: normal; }
+  .deeper { margin: 10px 0 0; font-size: 14.5px; }
+  .deeper a { color: var(--cyan); font-weight: 600; }
+  .node-dim { fill: var(--panel-3); stroke: var(--line); stroke-width: 1.2; }
+  .t-dim { font-family: var(--sans); font-size: 11px; fill: var(--dim); }
+  .node-new { fill: var(--good-soft); stroke: var(--good); stroke-width: 2.2; }
+  .node-done { fill: var(--panel); stroke: var(--good); stroke-width: 1.4; }
+
+
+  /* Progressive Hero Build Styles */
+  .prog-hero-frame svg text { font-family: var(--sans); font-size: 13.5px; fill: var(--ink); }
+  .prog-hero-frame .pt-b { font-weight: 600; font-size: 14px; }
+  .prog-hero-frame .pt-d { font-size: 17px; font-weight: 700; }
+  .prog-hero-frame .pt-s { font-size: 12px; fill: var(--muted); }
+  .prog-hero-frame .pt-m { font-family: var(--mono); font-size: 11.5px; }
+  .prog-hero-frame .pt-c { text-anchor: middle; }
+  .prog-hero-frame .p-zone { fill: var(--panel-3); stroke: var(--line-2); stroke-width: 1; }
+  .prog-hero-frame .p-zl { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .1em; fill: var(--muted); }
+  .prog-hero-frame .p-zl-v { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .1em; fill: var(--violet); }
+  .prog-hero-frame .p-edge { fill: none; stroke: var(--ink); stroke-width: 2; }
+  .prog-hero-frame .p-edge-id { fill: none; stroke: var(--good); stroke-width: 3; }
+
+  .prog-hero-frame .p-new rect.pb { fill: var(--good-soft); stroke: var(--good); stroke-width: 2.8; }
+  .prog-hero-frame .p-new text.pt-b, .prog-hero-frame .p-new text.pt-d { fill: var(--good); }
+  .prog-hero-frame .p-done rect.pb { fill: var(--panel); stroke: var(--good); stroke-width: 1.6; }
+  .prog-hero-frame .p-wait { opacity: 0.28; }
+  .prog-hero-frame .p-wait rect.pb { fill: var(--panel-3); stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 4 3; }
+
+  .prog-hero-frame .p-vpc-rect { fill: var(--violet-soft); stroke: var(--violet); stroke-width: 1.5; }
+  .prog-hero-frame .p-prod-rect { fill: var(--panel); stroke: var(--violet); stroke-width: 1.2; stroke-dasharray: 4 3; }
+  .prog-hero-frame .p-new .p-vpc-rect, .prog-hero-frame .p-new .p-prod-rect { stroke: var(--good); stroke-width: 2.6; }
+
+  .prog-hero-frame .p-perim-rect { fill: none; stroke: var(--warn); stroke-width: 2; stroke-dasharray: 10 6; }
+  .prog-hero-frame .p-perim-txt { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; fill: var(--warn); }
+  .prog-hero-frame .p-wait-perim { opacity: 0.22; }
+  .prog-hero-frame .p-new-perim .p-perim-rect { stroke: var(--good); stroke-width: 3.2; }
+  .prog-hero-frame .p-new-perim .p-perim-txt { fill: var(--good); }
+
+  /* Lethal Trifecta & Mode Cards & Spotlight Grids */
+  .trifecta-grid, .mode-3-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin: 18px 0;
+  }
+  .tri-card, .mode-card {
+    border: 1.5px solid var(--line);
+    border-top: 4px solid var(--stop);
+    border-radius: 8px;
+    padding: 16px 18px;
+    background: var(--panel-2);
+  }
+  .mode-card { border-top-color: var(--cyan); }
+  .mode-card.m-teal { border-top-color: var(--good); }
+  .mode-card.m-violet { border-top-color: var(--violet); }
+  .tri-card .leg-tag, .mode-card .leg-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--stop);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .mode-card .leg-tag { color: var(--cyan); }
+  .mode-card.m-teal .leg-tag { color: var(--good); }
+  .mode-card.m-violet .leg-tag { color: var(--violet); }
+  .tri-card h4, .mode-card h4 { margin: 0 0 8px; font-size: 16.5px; }
+  .tri-card p, .mode-card p, .mode-card li { margin: 0; font-size: 14px; line-height: 1.55; }
+  .mode-card ol { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 5px; }
+
+  .duo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 18px 0;
+    align-items: start;
+  }
+  .info-card {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 20px;
+    background: var(--panel-2);
+    font-size: 14.5px;
+  }
+  .info-card h3, .info-card h4 { margin: 0 0 10px; font-size: 17px; }
+  .info-card ul, .info-card ol { margin: 0; padding-left: 20px; display: grid; gap: 7px; }
+
+  .threat-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .t-card-full {
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--stop);
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: var(--panel-2);
+    font-size: 13.8px;
+  }
+  .t-card-full h4 { margin: 4px 0 6px; font-size: 15.5px; color: var(--ink); }
+  .t-card-full p { margin: 0 0 8px; color: var(--muted); }
+  .t-card-full pre {
+    margin: 0 0 8px;
+    padding: 8px 10px;
+    background: var(--panel);
+    border: 1px solid var(--line-2);
+    border-radius: 5px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    white-space: pre-wrap;
+  }
+  .t-fix-row {
+    font-size: 12.8px;
+    padding: 6px 9px;
+    border-radius: 5px;
+    margin-top: 5px;
+    background: var(--panel);
+    border-left: 3px solid var(--good);
+  }
+  .t-fix-row.mit { border-left-color: var(--amber); }
+
+  .p-stage {
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+    background: var(--panel-2);
+    margin-bottom: 14px;
+  }
+  .p-stage-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .p-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .p-col {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
+    background: var(--panel);
+    font-size: 13.5px;
+  }
+  .p-col.flawed-col { border-left: 4px solid var(--stop); }
+  .p-col.guarded-col { border-left: 4px solid var(--good); }
+  .p-col-title { font-family: var(--mono); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; display: block; margin-bottom: 6px; }
+  .p-col.flawed-col .p-col-title { color: var(--stop); }
+  .p-col.guarded-col .p-col-title { color: var(--good); }
+  .p-code { font-family: var(--mono); font-size: 12px; background: var(--panel-2); padding: 8px 10px; border-radius: 5px; white-space: pre-wrap; margin-bottom: 8px; border: 1px solid var(--line-2); }
+
+  @media (max-width: 960px) {
+    .trifecta-grid, .mode-3-grid, .duo-grid, .threat-cards-grid, .p-cols { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    table { font-size: 11px; }
+    th, td { padding: 6px 7px; }
+    .b-pill { font-size: 9px; padding: 1px 4px; }
+    .tbl-wrap { break-inside: auto; }
+    .topbar { display: none !important; }
+    .app { max-width: 100%; padding: 0; }
+    .sheet { break-inside: auto; box-shadow: none; margin-bottom: 18px; }
+    .diagram-frame, .opt-card, .code-card { break-inside: avoid; }
+    tr { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<nav class="topbar">
+  <div class="brand">
+    <span class="brand-dot"></span>
+    <span>Agentic Governance · Reference Deep Dive · Platform-Agnostic Architecture</span>
+  </div>
+  <div class="navlinks">
+    <a href="../ep01_securing_agent_to_database.html">← Back to Episode 01 Post</a>
+    <a href="#fig-agnostic-hero">Agnostic Diagram</a>
+    <a href="#fig-agnostic-guardrail">Envoy ext_proc Guardrail</a>
+    <button class="theme-btn" id="theme-toggle" type="button">◑ Switch to Dark Mode</button>
+  </div>
+</nav>
+<main class="app">
+  <section class="sheet">
+    <div class="sheet-h">
+      <div>
+        <span class="sec-badge">Vendor-Agnostic Reference Blueprint · Architecture, Protocols &amp; Mappings</span>
+        <h1>The Platform-Agnostic Zero-Trust Agent-to-Database Architecture</h1>
+        <p>Every component, wire protocol, Envoy filter (`ext_authz` / `ext_proc`), cryptographic token, and cross-cloud mapping explained from first principles.</p>
+      </div>
+    </div>
+    <div class="sheet-b">
+      
+      <div class="post-prose">
+        <h3>1. Platform-Agnostic Zero-Trust Blueprint (Before Vendor Mapping)</h3>
+        <p>
+          Products like <strong>Vertex AI Agent Engine</strong>, <strong>Google Cloud Agent Gateway</strong>, and <strong>Model Armor</strong> are cloud-specific implementations of deeper architectural primitives. In any production environment—whether you run on Google Cloud, AWS, Azure, or self-hosted Kubernetes—the security of an agent-to-database connection depends on <strong>16 vendor-agnostic building blocks</strong> across <strong>5 trust zones</strong> and <strong>10 cryptographically verified wire hops</strong>.
+        </p>
+        <p>
+          In the platform-agnostic reference diagram below (<strong>Figure 0A</strong>), <strong>Envoy Proxy</strong> serves as the policy enforcement point at both Ingress (<code>B1</code>) and Egress (<code>B3</code>), and content safety ("Model Armor") is represented by its underlying architectural pattern: an inline <strong>Envoy External Processor (<code>ext_proc</code>) gRPC Guardrail + Deterministic DLP Tokenizer</strong>.
+        </p>
+      </div>
+
+      
+      <div class="diagram-frame" id="fig-agnostic-hero">
+        <style>
+          #fig-agnostic-hero text { font-family: var(--sans); font-size: 13px; fill: var(--ink); }
+          #fig-agnostic-hero .t-b { font-weight: 700; font-size: 13.8px; }
+          #fig-agnostic-hero .t-d { font-size: 16.5px; font-weight: 700; }
+          #fig-agnostic-hero .t-s { font-size: 11.5px; fill: var(--muted); }
+          #fig-agnostic-hero .t-m { font-family: var(--mono); font-size: 11px; fill: var(--cyan); font-weight: 600; }
+          #fig-agnostic-hero .t-p { font-family: var(--mono); font-size: 10.5px; fill: var(--good); font-weight: 600; }
+          #fig-agnostic-hero .t-c { text-anchor: middle; }
+          #fig-agnostic-hero .zone { fill: var(--panel-3); stroke: var(--line-2); stroke-width: 1.2; }
+          #fig-agnostic-hero .zl { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .09em; fill: var(--muted); }
+          #fig-agnostic-hero .zl-v { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .09em; fill: var(--violet); }
+          #fig-agnostic-hero .t-perim { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .07em; fill: var(--warn); }
+          #fig-agnostic-hero .vpcz { fill: var(--violet-soft); stroke: var(--violet); stroke-width: 1.6; }
+          #fig-agnostic-hero .prod { fill: var(--panel); stroke: var(--violet); stroke-width: 1.4; stroke-dasharray: 5 3; }
+          #fig-agnostic-hero .perim { fill: none; stroke: var(--warn); stroke-width: 2.2; stroke-dasharray: 10 6; }
+          #fig-agnostic-hero .band { fill: var(--panel-3); stroke: var(--line); }
+          #fig-agnostic-hero rect.b { fill: var(--panel); stroke: var(--line); stroke-width: 1.4; }
+          #fig-agnostic-hero .k-gate rect.b { fill: var(--panel); stroke: var(--cyan); stroke-width: 2; }
+          #fig-agnostic-hero .k-gbox rect.b { fill: var(--cyan-soft); stroke: var(--cyan); stroke-width: 1.3; }
+          #fig-agnostic-hero .k-core rect.b { fill: var(--panel); stroke: var(--good); stroke-width: 2; }
+          #fig-agnostic-hero .k-agentin rect.b { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.4; }
+          #fig-agnostic-hero .k-inner rect.b { fill: var(--panel-3); stroke: var(--line); stroke-width: 1.3; }
+          #fig-agnostic-hero .k-ma rect.b { fill: var(--stop-soft); stroke: var(--stop); stroke-width: 1.4; }
+          #fig-agnostic-hero .k-svc rect.b { fill: var(--panel); stroke: var(--violet); stroke-width: 2; }
+          #fig-agnostic-hero .k-nic rect.b { fill: var(--cyan-soft); stroke: var(--cyan); stroke-width: 1.6; }
+          #fig-agnostic-hero .edge { fill: none; stroke: var(--ink); stroke-width: 2.1; }
+          #fig-agnostic-hero .edge.e-id { stroke: var(--good); stroke-width: 3; }
+          #fig-agnostic-hero .edge.e-db { stroke: var(--violet); stroke-width: 2.5; }
+          #fig-agnostic-hero .edge.e-ctrl { stroke: var(--cyan); stroke-width: 1.8; stroke-dasharray: 4 3; }
+          #fig-agnostic-hero .blocked { stroke: var(--stop); stroke-width: 2.2; stroke-dasharray: 6 4; fill: none; }
+          #fig-agnostic-hero .xbg { fill: var(--panel); stroke: var(--stop); stroke-width: 1.6; }
+          #fig-agnostic-hero .xm { stroke: var(--stop); stroke-width: 2.6; stroke-linecap: round; }
+          #fig-agnostic-hero .t-bad { fill: var(--stop); font-weight: 700; font-size: 12px; }
+          #fig-agnostic-hero .t-tls { fill: var(--good); font: 600 11px/1 var(--mono); }
+          #fig-agnostic-hero .bd { fill: var(--cyan); }
+          #fig-agnostic-hero .bd-g { fill: var(--good); }
+          #fig-agnostic-hero .bd-v { fill: var(--violet); }
+          #fig-agnostic-hero .bd-t { fill: #ffffff; font-family: var(--mono); font-size: 10.5px; font-weight: 700; text-anchor: middle; }
+          #fig-agnostic-hero .wire-pill { fill: var(--panel); stroke: var(--line); stroke-width: 1; }
+          #fig-agnostic-hero .wire-txt { font-family: var(--mono); font-size: 10px; font-weight: 600; fill: var(--ink); text-anchor: middle; }
+        </style>
+        <svg viewBox="0 0 1320 920" role="img" aria-label="Platform-Agnostic Zero-Trust Agent-to-Database Reference Architecture">
+          <defs>
+            <marker id="ag-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--ink)"/></marker>
+            <marker id="ag-aht" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--good)"/></marker>
+            <marker id="ag-ahv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--violet)"/></marker>
+            <marker id="ag-ahc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--cyan)"/></marker>
+          </defs>
+
+          <!-- ==================== TOP ZONES ==================== -->
+          <!-- Zone 1: External Callers -->
+          <rect x="18" y="18" width="204" height="414" rx="10" class="zone"/>
+          <text x="32" y="42" class="zl">1 · EXTERNAL CALLERS</text>
+
+          <!-- Zone 2: Agent Execution & Proxy DMZ -->
+          <rect x="238" y="18" width="688" height="414" rx="10" class="zone"/>
+          <text x="254" y="42" class="zl">2 · AGENT EXECUTION &amp; ENFORCEMENT ZONE (ENVOY DMZ + RUNTIME)</text>
+
+          <!-- Zone 3: Shared Security, Model & Control Services -->
+          <rect x="942" y="18" width="360" height="414" rx="10" class="zone"/>
+          <text x="958" y="42" class="zl">3 · MODEL, REGISTRY, STS &amp; TELEMETRY</text>
+
+          <!-- ==================== MIDDLE ZONES: DATA PERIMETER & PRIVATE NETWORK ==================== -->
+          <rect x="18" y="468" width="1284" height="302" rx="12" class="perim"/>
+          <text x="1286" y="492" class="t-perim" text-anchor="end">4 · CRYPTOGRAPHIC DATA EXFILTRATION PERIMETER (IDENTITY + NETWORK + DEVICE CONTEXT BOUNDARY)</text>
+
+          <rect x="36" y="504" width="900" height="248" rx="10" class="vpcz"/>
+          <text x="54" y="528" class="zl-v">PRIVATE APPLICATION &amp; TOOL NETWORK (RFC 1918 ONLY · ZERO INTERNET ROUTE · NO PUBLIC IP / NAT)</text>
+
+          <rect x="952" y="504" width="332" height="248" rx="10" class="prod"/>
+          <text x="970" y="528" class="zl-v">ISOLATED DATA TIER SUBNET</text>
+
+          <!-- ==================== BOTTOM ZONE: GOVERNANCE CONTROL PLANE ==================== -->
+          <rect x="18" y="790" width="1284" height="112" rx="10" class="band"/>
+          <text x="34" y="814" class="zl">5 · CROSS-CUTTING GOVERNANCE CONTROL PLANE (POLICY, EVAL GATE &amp; CONTAINMENT)</text>
+
+          <!-- ==================== ZONE 1 BOXES (EXTERNAL CALLERS) ==================== -->
+          <g>
+            <rect x="32" y="64" width="176" height="92" rx="6" class="b"/>
+            <text x="44" y="88" class="t-b">A1 · Client Apps &amp; UI</text>
+            <text x="44" y="108" class="t-s">Browser · Mobile · CLI</text>
+            <text x="44" y="126" class="t-m">OAuth 2.1 (PKCE) JWT</text>
+            <text x="44" y="143" class="t-s">+ W3C traceparent</text>
+          </g>
+          <g>
+            <rect x="32" y="176" width="176" height="90" rx="6" class="b"/>
+            <text x="44" y="200" class="t-b">A2 · Identity Provider</text>
+            <text x="44" y="220" class="t-s">OIDC / SAML Authority</text>
+            <text x="44" y="238" class="t-m">Issues User Claims (sub)</text>
+            <text x="44" y="254" class="t-s">Publishes JWKS keys</text>
+          </g>
+          <g>
+            <rect x="32" y="286" width="176" height="106" rx="6" class="b"/>
+            <text x="44" y="310" class="t-b">A3 · Event &amp; Cron Bus</text>
+            <text x="44" y="330" class="t-s">Webhooks · Queue · Cron</text>
+            <text x="44" y="348" class="t-m">HMAC-SHA256 / OIDC</text>
+            <text x="44" y="366" class="t-s">Replay nonce + 300s TTL</text>
+            <text x="44" y="382" class="t-s">Signed mandate payload</text>
+          </g>
+
+          <!-- ==================== ZONE 2 BOXES (ENVOY INGRESS + AGENT RUNTIME + ENVOY EGRESS) ==================== -->
+          <!-- B1: Ingress Envoy Reverse Proxy -->
+          <g class="k-gate">
+            <rect x="254" y="56" width="174" height="358" rx="8" class="b"/>
+            <text x="341" y="80" class="t-b t-c">B1 · Envoy Ingress</text>
+            <text x="341" y="97" class="t-s t-c">Reverse Proxy (L7 PEP)</text>
+            <text x="341" y="376" class="t-m t-c">TLS 1.3 Termination</text>
+            <text x="341" y="394" class="t-s t-c">Single entry point to runtime</text>
+          </g>
+          <g class="k-gbox">
+            <rect x="266" y="110" width="150" height="72" rx="6" class="b"/>
+            <text x="341" y="132" class="t-b t-c">ext_authz Filter</text>
+            <text x="341" y="150" class="t-s t-c">JWKS JWT verify · RBAC</text>
+            <text x="341" y="166" class="t-s t-c">Webhook HMAC &amp; nonce</text>
+          </g>
+          <g class="k-ma">
+            <rect x="266" y="194" width="150" height="82" rx="6" class="b"/>
+            <text x="341" y="216" class="t-b t-c">ext_proc Guardrail</text>
+            <text x="341" y="234" class="t-s t-c">Inline Prompt &amp; Reply</text>
+            <text x="341" y="250" class="t-s t-c">NFKC norm · Jailbreak</text>
+            <text x="341" y="266" class="t-m t-c">DLP PII Tokenizer</text>
+          </g>
+          <g class="k-gbox">
+            <rect x="266" y="288" width="150" height="68" rx="6" class="b"/>
+            <text x="341" y="310" class="t-b t-c">Rate &amp; Budget Filter</text>
+            <text x="341" y="328" class="t-s t-c">Per-tenant token bucket</text>
+            <text x="341" y="344" class="t-s t-c">Cost &amp; recursion circuit</text>
+          </g>
+
+          <!-- B2: Agent Runtime Container -->
+          <g class="k-core">
+            <rect x="448" y="56" width="268" height="358" rx="8" class="b"/>
+            <text x="464" y="82" class="t-d">B2 · Agent Runtime</text>
+            <text x="464" y="101" class="t-s">Stateless Container · Any Framework</text>
+            <text x="464" y="378" class="t-bad">Zero DB credentials or long-lived keys</text>
+            <text x="464" y="396" class="t-s">All outbound sockets forced via B3 Envoy</text>
+          </g>
+          <g class="k-inner">
+            <rect x="462" y="114" width="240" height="86" rx="6" class="b"/>
+            <text x="476" y="136" class="t-b">Deterministic Workflow Graph</text>
+            <text x="476" y="154" class="t-s">Code nodes + 1 single-turn LLM node</text>
+            <text x="476" y="171" class="t-s">CaMeL capability check · Schema gate</text>
+            <text x="476" y="188" class="t-m">HITL approval pause on mutations</text>
+          </g>
+          <g class="k-agentin">
+            <rect x="462" y="210" width="240" height="68" rx="6" class="b"/>
+            <text x="476" y="232" class="t-b">Workload Identity (SPIFFE)</text>
+            <text x="476" y="250" class="t-m">spiffe://corp/ns/ai/sa/agent-01</text>
+            <text x="476" y="266" class="t-s">Short-lived X.509 SVID + DPoP key</text>
+          </g>
+          <g class="k-inner">
+            <rect x="462" y="288" width="116" height="68" rx="6" class="b"/>
+            <text x="474" y="310" class="t-b">Memory Store</text>
+            <text x="474" y="328" class="t-s">Partitioned by</text>
+            <text x="474" y="344" class="t-m">tenant + user</text>
+          </g>
+          <g class="k-inner">
+            <rect x="586" y="288" width="116" height="68" rx="6" class="b"/>
+            <text x="598" y="310" class="t-b">Code Sandbox</text>
+            <text x="598" y="328" class="t-s">gVisor / MicroVM</text>
+            <text x="598" y="344" class="t-m">No net / Ephem</text>
+          </g>
+
+          <!-- B3: Egress Envoy Forward Proxy -->
+          <g class="k-gate">
+            <rect x="736" y="56" width="174" height="358" rx="8" class="b"/>
+            <text x="823" y="80" class="t-b t-c">B3 · Envoy Egress</text>
+            <text x="823" y="97" class="t-s t-c">Forward Proxy (Default-Deny)</text>
+            <text x="823" y="376" class="t-b t-c" style="fill:var(--stop)">Unregistered = Blocked</text>
+            <text x="823" y="394" class="t-s t-c">No raw internet / DNS egress</text>
+          </g>
+          <g class="k-gbox">
+            <rect x="748" y="110" width="150" height="72" rx="6" class="b"/>
+            <text x="823" y="132" class="t-b t-c">Workload Verifier</text>
+            <text x="823" y="150" class="t-m t-c">mTLS (X.509 SVID)</text>
+            <text x="823" y="166" class="t-s t-c">+ RFC 9449 DPoP proof</text>
+          </g>
+          <g class="k-gbox">
+            <rect x="748" y="194" width="150" height="72" rx="6" class="b"/>
+            <text x="823" y="216" class="t-b t-c">ext_authz Policy</text>
+            <text x="823" y="234" class="t-s t-c">Dual-Scope Intersection</text>
+            <text x="823" y="250" class="t-m t-c">Agent Scope ∩ User Scope</text>
+          </g>
+          <g class="k-ma">
+            <rect x="748" y="278" width="150" height="78" rx="6" class="b"/>
+            <text x="823" y="300" class="t-b t-c">ext_proc Guardrail</text>
+            <text x="823" y="318" class="t-s t-c">MCP &amp; A2A Payload Scan</text>
+            <text x="823" y="334" class="t-s t-c">Indirect injection block</text>
+            <text x="823" y="349" class="t-m t-c">Fail-closed on timeout</text>
+          </g>
+
+          <!-- ==================== ZONE 3 BOXES (SHARED SERVICES) ==================== -->
+          <g>
+            <rect x="958" y="60" width="328" height="78" rx="6" class="b"/>
+            <text x="974" y="84" class="t-b">C1 · LLM Inference Service</text>
+            <text x="974" y="103" class="t-s">Hosted Model API · Reached only via Envoy B3</text>
+            <text x="974" y="122" class="t-m">HTTPS / gRPC (TLS 1.3) · Baseline safety filter</text>
+          </g>
+          <g>
+            <rect x="958" y="150" width="328" height="78" rx="6" class="b"/>
+            <text x="974" y="174" class="t-b">C2 · Capability &amp; Tool Registry</text>
+            <text x="974" y="193" class="t-s">Signed allowlist of MCP servers, A2A cards &amp; schemas</text>
+            <text x="974" y="212" class="t-m">gRPC ext_authz lookup · Hash-pinned tool specs</text>
+          </g>
+          <g>
+            <rect x="958" y="240" width="328" height="82" rx="6" class="b"/>
+            <text x="974" y="264" class="t-b">C3 · OAuth 2.1 STS &amp; KMS Signer</text>
+            <text x="974" y="283" class="t-s">Trades User Token T1 → Narrowed Tool Token T2</text>
+            <text x="974" y="301" class="t-m">RFC 8693 Token Exchange + Asymmetric KMS JWT</text>
+            <text x="974" y="316" class="t-s">Attaches act:{sub: spiffe_id} delegation claim</text>
+          </g>
+          <g>
+            <rect x="958" y="334" width="328" height="80" rx="6" class="b"/>
+            <text x="974" y="358" class="t-b">C4 · OpenTelemetry &amp; Audit Sink</text>
+            <text x="974" y="377" class="t-s">Immutable WORM Audit Log + Distributed Trace</text>
+            <text x="974" y="396" class="t-m">OTLP / gRPC · Logs (trace_id, agent_id, user_sub)</text>
+          </g>
+
+          <!-- ==================== ZONE 4 BOXES (PRIVATE DATA NETWORK & DATABASE) ==================== -->
+          <g class="k-nic">
+            <rect x="54" y="556" width="256" height="156" rx="8" class="b"/>
+            <text x="70" y="584" class="t-b">D1 · L4 Private Network Bridge</text>
+            <text x="70" y="604" class="t-s">Virtual NIC / PrivateLink Attachment</text>
+            <text x="70" y="624" class="t-m">10.10.9.2/28 · Unidirectional TCP</text>
+            <text x="70" y="644" class="t-s">Bridges Envoy B3 into Private VPC</text>
+            <text x="70" y="662" class="t-s">without transitive VPC peering</text>
+            <text x="70" y="682" class="t-p">Drops unsolicited return-path syn</text>
+          </g>
+
+          <g>
+            <rect x="348" y="556" width="262" height="156" rx="8" class="b"/>
+            <text x="364" y="584" class="t-b">D2 · Private Endpoint &amp; DNS</text>
+            <text x="364" y="604" class="t-s">Internal Virtual IP (VIP) + Split DNS</text>
+            <text x="364" y="624" class="t-m">mcp.internal · db.internal</text>
+            <text x="364" y="644" class="t-s">Routes strictly inside private fabric</text>
+            <text x="364" y="662" class="t-s">Enforces Data Perimeter ingress rule</text>
+            <text x="364" y="682" class="t-p">L4 TCP + TLS 1.3 SNI inspection</text>
+          </g>
+
+          <g class="k-svc">
+            <rect x="648" y="556" width="272" height="156" rx="8" class="b"/>
+            <text x="664" y="584" class="t-b">D3 · Parameterized MCP Server</text>
+            <text x="664" y="604" class="t-s">Deterministic Query Gateway (Read/Write Split)</text>
+            <text x="664" y="624" class="t-m">North: MCP Streamable HTTP (JSON-RPC)</text>
+            <text x="664" y="644" class="t-m">South: Prepared SQL ($1 = verified sub)</text>
+            <text x="664" y="664" class="t-s">No raw execute_sql · Pre-compiled AST</text>
+            <text x="664" y="682" class="t-p">Verifies Envoy mTLS + OBO Token T2</text>
+          </g>
+
+          <g class="k-svc">
+            <rect x="968" y="556" width="300" height="156" rx="8" class="b"/>
+            <text x="984" y="584" class="t-d">D4 · Database Engine</text>
+            <text x="984" y="604" class="t-s">Analytical Warehouse OR Pooled OLTP</text>
+            <text x="984" y="624" class="t-m">TLS 1.3 + Short-Lived IAM / Cert Auth</text>
+            <text x="984" y="644" class="t-s">• Row-Level Security (RLS policy filter)</text>
+            <text x="984" y="662" class="t-s">• Column-Level Security (CLS / masking)</text>
+            <text x="984" y="680" class="t-s">• SECURITY DEFINER Stored Procs (writes)</text>
+            <text x="984" y="698" class="t-p">k-anonymity threshold on aggregations</text>
+          </g>
+
+          <!-- ==================== ZONE 5 BOXES (GOVERNANCE CONTROL PLANE) ==================== -->
+          <g>
+            <rect x="34" y="828" width="298" height="60" rx="6" class="b"/>
+            <text x="48" y="850" class="t-b">E1 · Identity Policy &amp; Access Ceiling</text>
+            <text x="48" y="868" class="t-s">RBAC/ABAC Allow + Explicit Deny + PAB Ceiling</text>
+          </g>
+          <g>
+            <rect x="348" y="828" width="298" height="60" rx="6" class="b"/>
+            <text x="362" y="850" class="t-b">E2 · Declarative Infra Guardrails</text>
+            <text x="362" y="868" class="t-s">Policy-as-Code (OPA/Org Policy): no public IPs/keys</text>
+          </g>
+          <g>
+            <rect x="662" y="828" width="298" height="60" rx="6" class="b"/>
+            <text x="676" y="850" class="t-b">E3 · Adversarial Eval &amp; Red-Team Gate</text>
+            <text x="676" y="868" class="t-s">CI/CD regression suite (injection, BOLA, schema)</text>
+          </g>
+          <g>
+            <rect x="976" y="828" width="308" height="60" rx="6" class="b"/>
+            <text x="990" y="850" class="t-b">E4 · Emergency Kill Switch</text>
+            <text x="990" y="868" class="t-s">Envoy deny rule + STS token revoke + log freeze</text>
+          </g>
+
+          <!-- ==================== EDGES & PROTOCOL LABELS ==================== -->
+          <!-- Hop 1: Client -> Envoy Ingress -->
+          <path d="M208 110 L252 110" class="edge" marker-end="url(#ag-ah)"/>
+          <circle cx="230" cy="96" r="10" class="bd"/><text x="230" y="100" class="bd-t">1</text>
+
+          <!-- Hop 1b: IdP -> Envoy Ingress (JWKS) -->
+          <path d="M208 220 L252 150" class="edge e-ctrl" marker-end="url(#ag-ahc)"/>
+
+          <!-- Hop 2: Event Bus -> Envoy Ingress -->
+          <path d="M208 336 L252 336" class="edge" marker-end="url(#ag-ah)"/>
+          <circle cx="230" cy="322" r="10" class="bd"/><text x="230" y="326" class="bd-t">2</text>
+
+          <!-- Hop 3: Envoy Ingress -> Agent Runtime -->
+          <path d="M428 220 L446 220" class="edge e-id" marker-end="url(#ag-aht)"/>
+          <circle cx="437" cy="202" r="10" class="bd-g"/><text x="437" y="206" class="bd-t">3</text>
+
+          <!-- Hop 4: Agent Runtime -> Envoy Egress -->
+          <path d="M716 244 L734 244" class="edge e-id" marker-end="url(#ag-aht)"/>
+          <circle cx="725" cy="226" r="10" class="bd-g"/><text x="725" y="230" class="bd-t">4</text>
+
+          <!-- Hop 5a..5d: Envoy Egress -> Zone 3 Services -->
+          <path d="M910 210 L934 210 L934 99 L956 99" class="edge" marker-end="url(#ag-ah)"/>
+          <path d="M910 210 L934 210 L934 189 L956 189" class="edge" marker-end="url(#ag-ah)"/>
+          <path d="M910 210 L934 210 L934 281 L956 281" class="edge" marker-end="url(#ag-ah)"/>
+          <path d="M910 210 L934 210 L934 374 L956 374" class="edge" marker-end="url(#ag-ah)"/>
+          <circle cx="934" cy="144" r="10" class="bd"/><text x="934" y="148" class="bd-t">5</text>
+
+          <!-- Hop 6: Envoy Egress -> L4 Private Bridge (D1) -->
+          <path d="M823 414 L823 448 L182 448 L182 554" class="edge" marker-end="url(#ag-ah)"/>
+          <circle cx="823" cy="444" r="10" class="bd"/><text x="823" y="448" class="bd-t">6</text>
+          <rect x="370" y="436" width="390" height="22" rx="5" class="wire-pill"/>
+          <text x="565" y="451" class="wire-txt">Hop 6 · mTLS (SPIFFE SVID) + OBO Token T2 over L4 Private Tunnel</text>
+
+          <!-- Hop 7: D1 Bridge -> D2 Private Endpoint -->
+          <path d="M310 634 L346 634" class="edge" marker-end="url(#ag-ah)"/>
+          <circle cx="328" cy="616" r="10" class="bd"/><text x="328" y="620" class="bd-t">7</text>
+
+          <!-- Hop 8: D2 Private Endpoint -> D3 Parameterized MCP Server -->
+          <path d="M610 634 L646 634" class="edge" marker-end="url(#ag-ah)"/>
+          <circle cx="628" cy="616" r="10" class="bd"/><text x="628" y="620" class="bd-t">8</text>
+          <rect x="530" y="720" width="256" height="22" rx="5" class="wire-pill"/>
+          <text x="658" y="735" class="wire-txt">Hop 8 · MCP Streamable HTTP (JSON-RPC 2.0)</text>
+
+          <!-- Hop 9: D3 Parameterized MCP Server -> D4 Database Engine -->
+          <path d="M920 634 L966 634" class="edge e-db" marker-end="url(#ag-ahv)"/>
+          <circle cx="943" cy="616" r="10" class="bd-v"/><text x="943" y="620" class="bd-t">9</text>
+          <rect x="816" y="720" width="290" height="22" rx="5" class="wire-pill"/>
+          <text x="961" y="735" class="wire-txt">Hop 9 · TLS 1.3 DB Wire ($1 Bound + RLS/CLS)</text>
+
+          <!-- Blocked Direct Path from Agent Runtime B2 to Database -->
+          <line x1="530" y1="414" x2="530" y2="432" class="blocked"/>
+          <circle cx="530" cy="432" r="9" class="xbg"/>
+          <line x1="526" y1="428" x2="534" y2="436" class="xm"/>
+          <line x1="534" y1="428" x2="526" y2="436" class="xm"/>
+          <text x="514" y="436" class="t-bad" text-anchor="end">Direct Agent → DB socket blocked</text>
+        </svg>
+        <div class="fig-caption">
+          <span>Figure 0A — The Platform-Agnostic Zero-Trust Reference Architecture. Every component is defined by its architectural role, wire protocol, and cryptographic contract rather than a cloud vendor product name.</span>
+          <div class="legend-items">
+            <span><i class="swatch-dot" style="background:var(--cyan-soft);border-color:var(--cyan)"></i> Envoy L7 Proxies (`PEP`)</span>
+            <span><i class="swatch-dot" style="background:var(--stop-soft);border-color:var(--stop)"></i> Inline `ext_proc` Safety Guardrail</span>
+            <span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good)"></i> Agent Runtime &amp; SPIFFE Identity</span>
+            <span><i class="swatch-dot" style="background:var(--violet-soft);border-color:var(--violet)"></i> Private Network, MCP &amp; Database</span>
+            <span><i class="swatch-dot" style="background:var(--warn-soft);border-color:var(--warn)"></i> Cryptographic Data Perimeter</span>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="post-prose">
+        <h3>2. Representing "Model Armor" Vendor-Agnostically: Inline Envoy <code>ext_proc</code> gRPC Pipeline</h3>
+        <p>
+          In a vendor-agnostic architecture, prompt and tool-output screening is not a magic cloud checkbox—it is an <strong>out-of-process gRPC External Processor (<code>envoy.filters.http.ext_proc</code>)</strong> wired into both the Ingress Envoy Proxy (<code>B1</code>, screening user prompts and final replies) and the Egress Envoy Proxy (<code>B3</code>, screening outbound MCP tool arguments and inbound database rows before they enter the LLM context window).
+        </p>
+      </div>
+
+      
+      <div class="diagram-frame" id="fig-agnostic-guardrail">
+        <svg viewBox="0 0 1160 280" role="img" aria-label="Vendor-Agnostic Representation of Model Armor as an Envoy ext_proc Inline Content Guardrail">
+          <defs>
+            <marker id="ep-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--ink)"/></marker>
+            <marker id="ep-stop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--stop)"/></marker>
+          </defs>
+          <rect x="16" y="16" width="1128" height="248" rx="10" class="zone-box"/>
+          <text x="32" y="40" class="t-zone">HOW TO REPRESENT "MODEL ARMOR" VENDOR-AGNOSTICALLY · ENVOY INLINE gRPC EXTERNAL PROCESSOR (ext_proc)</text>
+
+          <!-- Envoy Proxy Box -->
+          <rect x="32" y="64" width="190" height="176" rx="8" class="node-cyan"/>
+          <text x="48" y="92" class="t-title">Envoy Proxy (B1 / B3)</text>
+          <text x="48" y="114" class="t-sub">Intercepts HTTP/2 frame</text>
+          <text x="48" y="134" class="t-mono">envoy.filters.http.ext_proc</text>
+          <text x="48" y="156" class="t-sub">Holds request/response</text>
+          <text x="48" y="174" class="t-sub">buffer in memory until</text>
+          <text x="48" y="192" class="t-sub">gRPC verdict returns</text>
+          <text x="48" y="218" class="t-mono" style="fill:var(--stop)">failure_mode_allow: false</text>
+
+          <!-- Bi-directional gRPC stream -->
+          <path d="M222 115 L288 115" class="edge-line" marker-end="url(#ep-ah)"/>
+          <path d="M288 185 L222 185" class="edge-line" marker-end="url(#ep-ah)"/>
+          <text x="255" y="105" class="t-mono" text-anchor="middle">gRPC</text>
+          <text x="255" y="204" class="t-mono" text-anchor="middle">Verdict</text>
+
+          <!-- Inline Guardrail Service -->
+          <rect x="290" y="56" width="836" height="190" rx="10" class="node-bad"/>
+          <text x="310" y="82" class="t-title">Inline Content &amp; Prompt Safety Guardrail Service (gRPC ProcessingRequest / ProcessingResponse)</text>
+
+          <!-- Stage 1 -->
+          <rect x="310" y="98" width="188" height="130" rx="6" class="node-card"/>
+          <text x="322" y="120" class="t-mono" style="fill:var(--cyan)">STAGE 1 · CANONICALIZE</text>
+          <text x="322" y="140" class="t-sub">• UTF-8 NFKC normalize</text>
+          <text x="322" y="158" class="t-sub">• Strip Unicode tag chars</text>
+          <text x="322" y="176" class="t-sub">  (U+E0000..U+E007F)</text>
+          <text x="322" y="194" class="t-sub">• Decode Base64 / Hex</text>
+          <text x="322" y="212" class="t-sub">  evasion wrappers</text>
+
+          <path d="M498 162 L516 162" class="edge-line" marker-end="url(#ep-ah)"/>
+
+          <!-- Stage 2 -->
+          <rect x="518" y="98" width="194" height="130" rx="6" class="node-card"/>
+          <text x="530" y="120" class="t-mono" style="fill:var(--stop)">STAGE 2 · CLASSIFY</text>
+          <text x="530" y="140" class="t-sub">• Direct prompt injection</text>
+          <text x="530" y="158" class="t-sub">• Indirect injection in</text>
+          <text x="530" y="176" class="t-sub">  MCP DB tool results</text>
+          <text x="530" y="194" class="t-sub">• Malicious URL / Markdown</text>
+          <text x="530" y="212" class="t-sub">  image exfil detector</text>
+
+          <path d="M712 162 L730 162" class="edge-line" marker-end="url(#ep-ah)"/>
+
+          <!-- Stage 3 -->
+          <rect x="732" y="98" width="194" height="130" rx="6" class="node-card"/>
+          <text x="744" y="120" class="t-mono" style="fill:var(--violet)">STAGE 3 · DLP TOKENIZE</text>
+          <text x="744" y="140" class="t-sub">• Regex + ML PII detector</text>
+          <text x="744" y="158" class="t-sub">• Replaces SSN / CC /</text>
+          <text x="744" y="176" class="t-sub">  Email with format-</text>
+          <text x="744" y="194" class="t-sub">  preserving surrogate</text>
+          <text x="744" y="212" class="t-mono">  [PII_TOKEN_8f9a]</text>
+
+          <path d="M926 162 L944 162" class="edge-line" marker-end="url(#ep-ah)"/>
+
+          <!-- Stage 4 -->
+          <rect x="946" y="98" width="164" height="130" rx="6" class="node-card"/>
+          <text x="958" y="120" class="t-mono" style="fill:var(--good)">STAGE 4 · ACTION</text>
+          <text x="958" y="142" class="t-sub">• Clean: mutate body</text>
+          <text x="958" y="160" class="t-sub">  with tokenized text</text>
+          <text x="958" y="182" class="t-sub">• Threat OR Error:</text>
+          <text x="958" y="200" class="t-mono" style="fill:var(--stop)">  ImmediateResponse</text>
+          <text x="958" y="216" class="t-mono" style="fill:var(--stop)">  HTTP 403 (Fail-Closed)</text>
+        </svg>
+        <div class="fig-caption">
+          <span>Figure 0A-2 — Vendor-Agnostic Representation of "Model Armor": an Envoy External Processor (`ext_proc`) gRPC service that canonicalizes, classifies, and tokenizes payloads inline with `failure_mode_allow: false`.</span>
+        </div>
+      </div>
+
+
+      <div class="post-prose">
+        <h3>3. Wire-by-Wire Connection &amp; Communication Protocol Contract (Hops 1–10)</h3>
+        <p>
+          Every arrow in <strong>Figure 0A</strong> represents a strict network and cryptographic contract between two boxes. If a connection lacks any of the transport, framing, or identity properties listed below, an attacker can bypass the control plane.
+        </p>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Hop</th>
+              <th>Source → Destination</th>
+              <th>Transport &amp; Wire Protocol</th>
+              <th>Identity &amp; Credential on the Wire</th>
+              <th>What the Receiver Must Verify</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="b-pill llm">Hop 1</span></td>
+              <td><strong><code>A1</code> Client App</strong> → <strong><code>B1</code> Envoy Ingress</strong></td>
+              <td><code>HTTPS (TLS 1.3)</code> · <code>HTTP/2</code> or <code>gRPC-Web</code> · Carries <code>traceparent</code> header</td>
+              <td>End-user <strong>OAuth 2.1 Bearer / OIDC ID Token</strong> (<code>T1</code>) obtained via <code>Authorization Code + PKCE</code> from <code>A2</code></td>
+              <td>Verify TLS 1.3; call <code>ext_authz</code> to validate JWT signature against <code>A2</code> JWKS, check <code>iss</code>, <code>aud</code>, <code>exp</code>, and apply per-tenant token bucket rate limits.</td>
+            </tr>
+            <tr>
+              <td><span class="b-pill llm">Hop 1b</span></td>
+              <td><strong><code>B1</code> Envoy Ingress</strong> → <strong><code>A2</code> Identity Provider</strong></td>
+              <td><code>HTTPS (TLS 1.3)</code> · <code>GET /.well-known/jwks.json</code> (cached with short TTL)</td>
+              <td>Public OIDC Discovery / mTLS client authentication for introspection</td>
+              <td>Verify IdP TLS certificate chain and pin expected issuer URI (<code>iss</code>).</td>
+            </tr>
+            <tr>
+              <td><span class="b-pill llm">Hop 2</span></td>
+              <td><strong><code>A3</code> Event &amp; Cron Bus</strong> → <strong><code>B1</code> Envoy Ingress</strong></td>
+              <td><code>HTTPS Push (TLS 1.3)</code> · <code>HTTP/2 POST</code> JSON event envelope</td>
+              <td><strong>Detached HMAC-SHA256 Signature</strong> (<code>X-Signature-256</code> + <code>X-Timestamp</code> + <code>X-Nonce</code>) or short-lived Scheduler OIDC JWT</td>
+              <td>Recompute HMAC over raw body; reject if <code>|now - timestamp| &gt; 300s</code> or if <code>nonce</code> exists in Redis replay cache; validate JSON schema.</td>
+            </tr>
+            <tr>
+              <td><span class="b-pill g">Hop 3</span></td>
+              <td><strong><code>B1</code> Envoy Ingress</strong> → <strong><code>B2</code> Agent Runtime</strong></td>
+              <td><strong>Pod Localhost Loopback / UDS</strong> (sidecar) OR <strong><code>mTLS</code> over <code>HTTP/2</code></strong> (gateway)</td>
+              <td>Ingress Envoy <strong>SPIFFE X.509 SVID</strong> + Envoy-signed internal header containing verified <code>user_sub</code> &amp; <code>tenant_id</code></td>
+              <td>Agent Runtime rejects any connection not coming from <code>B1</code> Envoy's SPIFFE identity; strips untrusted external headers; receives canonicalized, DLP-tokenized prompt.</td>
+            </tr>
+            <tr>
+              <td><span class="b-pill g">Hop 4</span></td>
+              <td><strong><code>B2</code> Agent Runtime</strong> → <strong><code>B3</code> Envoy Egress</strong></td>
+              <td><strong><code>mTLS 1.3</code> over TCP</strong> (or Unix Domain Socket with peer credential check) · <code>HTTP/2</code></td>
+              <td><strong>Agent SPIFFE X.509 SVID</strong> (<code>spiffe://corp/ns/ai/sa/agent-01</code>) + <strong>RFC 9449 <code>DPoP</code> Proof JWT</strong> + User Token <code>T1</code></td>
+              <td><code>B3</code> Envoy terminates mTLS, extracts SAN URI (<code>spiffe://...</code>), and verifies the <code>DPoP</code> header signature matches the public key bound (`cnf.jkt`) to the token.</td>
+            </tr>
+            <tr>
+              <td><span class="b-pill api">Hop 5a</span></td>
+              <td><strong><code>B1 / B3</code> Envoy</strong> ↔ <strong><code>ext_proc</code> Guardrail</strong></td>
+              <td><strong>Bi-directional <code>gRPC</code> Stream over <code>mTLS</code></strong> (<code>envoy.service.ext_proc.v3.ExternalProcessor</code>)</td>
+              <td>Mutual SPIFFE X.509 SVIDs between Envoy and Guardrail service</td>
+              <td>Envoy sets <code>failure_mode_allow: false</code>; waits for explicit <code>ProcessingResponse</code> (`CONTINUE` with tokenized body or `ImmediateResponse 403`).</td>
+            </tr>
+            <tr>
+              <td><span class="b-pill api">Hop 5b</span></td>
+              <td><strong><code>B3</code> Envoy Egress</strong> → <strong><code>C2</code> Capability Registry</strong></td>
+              <td><strong><code>gRPC</code> over <code>mTLS</code></strong> (<code>envoy.service.auth.v3.Authorization.Check</code>)</td>
+              <td>Tuple: <code>(agent_spiffe_id, user_sub, target_mcp_uri, tool_name, http_method)</code></td>
+              <td>Evaluates <strong>Dual-Scope Intersection</strong> (<code>Agent Allowed Tools ∩ User RBAC Scopes</code>) against signed Registry manifest; returns `OK` or `PERMISSION_DENIED`.</td>
+            </tr>
+            <tr>
+              <td><span class="b-pill api">Hop 5c</span></td>
+              <td><strong><code>B3</code> Envoy Egress</strong> → <strong><code>C3</code> OAuth 2.1 STS / KMS</strong></td>
+              <td><strong><code>HTTPS (TLS 1.3)</code> POST <code>/oauth2/token</code></strong> (<code>RFC 8693</code> Token Exchange)</td>
+              <td><code>subject_token = T1</code> (User JWT), <code>actor_token = Agent SPIFFE JWT-SVID</code>, <code>audience = mcp://db-read</code>, <code>scope = orders:read</code></td>
+              <td>STS verifies both tokens and issues a short-lived (5-min), audience-restricted <strong>OBO Token <code>T2</code></strong> containing <code>sub: user_123</code> and <code>act: {sub: spiffe://.../agent-01}</code>.</td>
+            </tr>
+            <tr>
+              <td><span class="b-pill api">Hop 5d</span></td>
+              <td><strong><code>B3</code> Envoy Egress</strong> → <strong><code>C1</code> LLM Inference API</strong></td>
+              <td><strong><code>HTTPS (TLS 1.3)</code> / <code>gRPC</code></strong> · Streaming or Unary inference call</td>
+              <td>Platform-injected short-lived model-invoker token (attached by <code>B3</code> Envoy, never held by <code>B2</code>)</td>
+              <td>Model receives only DLP-tokenized prompt + approved tool declarations; model output is streamed back through <code>B3</code> <code>ext_proc</code> before reaching <code>B2</code>.</td>
+            </tr>
+            <tr>
+              <td><span class="b-pill asi">Hop 6</span></td>
+              <td><strong><code>B3</code> Envoy Egress</strong> → <strong><code>D1</code> L4 Private Bridge</strong></td>
+              <td><strong><code>TCP</code> over L4 Private Tunnel Interface</strong> (`10.10.9.2/28`) · Carries outer <code>mTLS 1.3</code> session</td>
+              <td>Source IP pinned to dedicated Private Bridge CIDR (`10.10.9.0/28`); carries <code>B3</code> Envoy SPIFFE X.509 cert</td>
+              <td>Unidirectional initiation: <code>B3 → D1</code> allowed; unsolicited connections from Data VPC back into Agent DMZ are dropped at L4.</td>
+            </tr>
+            <tr>
+              <td><span class="b-pill asi">Hop 7</span></td>
+              <td><strong><code>D1</code> L4 Private Bridge</strong> → <strong><code>D2</code> Private Endpoint &amp; DNS</strong></td>
+              <td><strong>Private L4 Routing (RFC 1918)</strong> + Split-Horizon DNS resolution (<code>mcp.internal → 10.10.2.20</code>)</td>
+              <td>Network provenance metadata (VPC ID + Bridge Attachment ID) + Caller Identity</td>
+              <td><strong>Zone 4 Data Perimeter</strong> verifies that both the caller identity (`agent/toolbox`) and source network (`D1`) satisfy the Perimeter Ingress Policy.</td>
+            </tr>
+            <tr>
+              <td><span class="b-pill asi">Hop 8</span></td>
+              <td><strong><code>D2</code> Private Endpoint</strong> → <strong><code>D3</code> Parameterized MCP Server</strong></td>
+              <td><strong><code>MCP Streamable HTTP</code> (<code>HTTP/2 POST</code> + <code>JSON-RPC 2.0</code>) over <code>mTLS 1.3</code></strong></td>
+              <td>1) Transport: <code>B3</code> Envoy client X.509 cert<br>2) Header: Downscoped OBO Token <code>T2</code> (or KMS-signed Context JWT for async jobs)</td>
+              <td><code>D3</code> verifies client mTLS cert belongs to <code>B3</code> Envoy, validates <code>T2</code> signature and <code>aud == mcp://db-read</code>, extracts <code>verified_sub = T2.sub</code>, and validates tool args against JSON Schema.</td>
+            </tr>
+            <tr>
+              <td><span class="b-pill asi">Hop 9</span></td>
+              <td><strong><code>D3</code> Parameterized MCP Server</strong> → <strong><code>D4</code> Database Engine</strong></td>
+              <td><strong>Mode A (Analytical HTTP):</strong> <code>HTTPS / gRPC Storage API</code><br><strong>Mode B (OLTP Pooled TCP):</strong> <code>TLS 1.3</code> + <code>mTLS</code> over DB Wire Protocol (e.g., <code>pgwire :5432</code>)</td>
+              <td><strong>Mode A:</strong> Per-query OAuth 2.1 Bearer Token <code>T2</code><br><strong>Mode B:</strong> Short-lived IAM DB Auth token for <code>toolbox-sa</code> + server-bound parameter <code>$1 = verified_sub</code> (or <code>SET LOCAL app.current_user_id</code>)</td>
+              <td>Database executes pre-compiled prepared statement (never model-written SQL), evaluates <strong>Row-Level Security (RLS)</strong> and <strong>Column-Level Security (CLS)</strong> for <code>verified_sub</code>, and enforces <code>SECURITY DEFINER</code> stored procedures for writes.</td>
+            </tr>
+            <tr>
+              <td><span class="b-pill llm">Hop 10</span></td>
+              <td><strong><code>B1, B2, B3, D3, D4</code></strong> → <strong><code>C4</code> OpenTelemetry &amp; Audit Sink</strong></td>
+              <td><strong><code>OTLP / gRPC</code> over <code>TLS 1.3</code></strong> + Control-Plane Immutable Log Stream</td>
+              <td>Service workload identity with write-only (`appendOnly`) permission to WORM log bucket</td>
+              <td>Correlates every hop under a single <code>W3C traceparent</code> (`trace_id`) and records both <code>actor_id (spiffe)</code> and <code>subject_id (user_sub)</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="post-prose">
+        <h3>4. Box-by-Box Specification: What Each Agnostic Component Must Be</h3>
+        <p>
+          Below is the complete engineering specification for every box in <strong>Figure 0A</strong>: its core responsibility, mandatory security invariants, and why substituting a weaker pattern fails.
+        </p>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Box ID &amp; Agnostic Name</th>
+              <th>What It Must Be (Architectural Role)</th>
+              <th>Mandatory Technical Requirements &amp; Invariants</th>
+              <th>Threats Closed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong><code>A1 · A2 · A3</code><br>External Callers, IdP &amp; Event Bus</strong></td>
+              <td>Untrusted entry plane originating human interactive requests and asynchronous system triggers.</td>
+              <td>
+                • <code>A1</code> uses <code>OAuth 2.1 Authorization Code + PKCE</code>.<br>
+                • <code>A2</code> signs short-lived JWTs and exposes a public <code>JWKS</code> endpoint.<br>
+                • <code>A3</code> signs every webhook/cron payload with <code>HMAC-SHA256</code> (or OIDC JWT) including a timestamp and unique replay nonce.
+              </td>
+              <td><span class="b-pill t">T1 Spoofed Caller</span><br><span class="b-pill asi">ASI07</span></td>
+            </tr>
+            <tr>
+              <td><strong><code>B1</code><br>Envoy Ingress Reverse Proxy (<code>PEP</code>)</strong></td>
+              <td>Dedicated L7 reverse proxy terminating external TLS and enforcing authentication, prompt safety, and rate limits <em>before</em> the agent process wakes up.</td>
+              <td>
+                • <strong><code>ext_authz</code> filter:</strong> Verifies JWT against <code>A2</code> JWKS or checks <code>A3</code> HMAC + Redis replay cache.<br>
+                • <strong><code>ext_proc</code> filter:</strong> Calls inline content guardrail on user prompt and final agent reply.<br>
+                • <strong>Rate-limit filter:</strong> Enforces per-user and per-tenant token/request budgets.
+              </td>
+              <td><span class="b-pill t">T1</span> <span class="b-pill t">T4</span> <span class="b-pill t">T6</span><br><span class="b-pill llm">LLM01</span> <span class="b-pill llm">LLM10</span></td>
+            </tr>
+            <tr>
+              <td><strong><code>B2</code><br>Agent Runtime Container</strong></td>
+              <td>Stateless orchestration container running your agent framework (ADK, LangGraph, custom state machine) with four internal compartments.</td>
+              <td>
+                • <strong>Workflow Graph:</strong> Deterministic code nodes wrap a single-turn LLM node; enforces Plan-Then-Execute, CaMeL capability tags, and Human-in-the-Loop (<code>HITL</code>) pause on writes.<br>
+                • <strong>Workload Identity:</strong> Holds a cryptographic <code>SPIFFE X.509 SVID</code> rotated via Workload API.<br>
+                • <strong>Memory Store:</strong> Keyed strictly by <code>(tenant_id, user_sub)</code>.<br>
+                • <strong>Code Sandbox:</strong> Runs generated code in an unprivileged gVisor / Firecracker microVM with zero network interfaces.<br>
+                • <strong>Zero-Secret Rule:</strong> Holds <em>no</em> database credentials or static API keys.
+              </td>
+              <td><span class="b-pill t">T5 Destructive Write</span><br><span class="b-pill asi">ASI01</span> <span class="b-pill asi">ASI02</span> <span class="b-pill asi">ASI05</span> <span class="b-pill asi">ASI06</span></td>
+            </tr>
+            <tr>
+              <td><strong><code>B3</code><br>Envoy Egress Forward Proxy (<code>Default-Deny PEP</code>)</strong></td>
+              <td>Outbound L7 forward proxy (sidecar or shared egress gateway) that intercepts 100% of traffic leaving <code>B2</code>.</td>
+              <td>
+                • <strong>Default-Deny Routing:</strong> Any destination host/URI not in <code>C2</code> Registry is rejected with <code>403</code>.<br>
+                • <strong>Caller Proof:</strong> Requires <code>mTLS</code> (Agent SPIFFE cert) + <code>RFC 9449 DPoP</code> proof.<br>
+                • <strong>Dual-Scope Check (<code>ext_authz</code>):</strong> Verifies <code>Agent Scope ∩ User Scope</code>.<br>
+                • <strong>Inline Payload Scan (<code>ext_proc</code>):</strong> Scans outbound MCP arguments and inbound DB rows with <code>failure_mode_allow: false</code>.
+              </td>
+              <td><span class="b-pill t">T2</span> <span class="b-pill t">T4</span> <span class="b-pill t">T7</span><br><span class="b-pill asi">ASI03</span> <span class="b-pill asi">ASI04</span> <span class="b-pill llm">LLM02</span></td>
+            </tr>
+            <tr>
+              <td><strong><code>C1 · C2 · C3 · C4</code><br>LLM, Registry, STS &amp; Audit Sink</strong></td>
+              <td>Shared control and model services consulted by Envoy Egress (<code>B3</code>).</td>
+              <td>
+                • <strong><code>C1</code> LLM API:</strong> Reached only via <code>B3</code>; receives DLP-tokenized context.<br>
+                • <strong><code>C2</code> Capability Registry:</strong> Cryptographically signed catalog of approved MCP servers and JSON schemas.<br>
+                • <strong><code>C3</code> OAuth 2.1 STS &amp; KMS:</strong> Performs <code>RFC 8693</code> On-Behalf-Of (OBO) exchange (<code>T1 → T2</code>) and signs Context JWTs with asymmetric KMS keys (<code>ALLOWED_KIDS</code>).<br>
+                • <strong><code>C4</code> Telemetry &amp; Audit Sink:</strong> Append-only 400-day WORM log recording <code>(trace_id, spiffe_id, user_sub, tool_name, row_count)</code>.
+              </td>
+              <td><span class="b-pill t">T1</span> <span class="b-pill t">T3</span> <span class="b-pill t">T8</span><br><span class="b-pill asi">ASI03</span> <span class="b-pill asi">ASI09</span></td>
+            </tr>
+            <tr>
+              <td><strong><code>D1 · D2</code><br>L4 Private Bridge &amp; Private Endpoint / DNS</strong></td>
+              <td>Private L4 network transport connecting the Egress Envoy Proxy into the isolated Data VPC without public IPs or transitive VPC peering.</td>
+              <td>
+                • <strong><code>D1</code> L4 Bridge:</strong> Dedicated point-to-point virtual NIC (`10.10.9.2/28`) that allows only outbound connections initiated by <code>B3</code>.<br>
+                • <strong><code>D2</code> Private Endpoint &amp; Split DNS:</strong> Resolves internal tool and DB hostnames to private RFC 1918 VIPs with zero route to the public internet.
+              </td>
+              <td><span class="b-pill t">T7 Network Exfil</span><br><span class="b-pill llm">LLM02</span></td>
+            </tr>
+            <tr>
+              <td><strong><code>D3</code><br>Parameterized MCP Tool Server</strong></td>
+              <td>Deterministic database gateway speaking MCP (`JSON-RPC 2.0`) on the north side and parameterized SQL on the south side.</td>
+              <td>
+                • <strong>No Raw <code>execute_sql</code>:</strong> Exposes only named, pre-compiled SQL templates (`tools.yaml`).<br>
+                • <strong>Out-of-Band Identity Binding:</strong> Extracts <code>verified_sub</code> from the validated OBO Token <code>T2</code> header (never from LLM arguments) and binds it to SQL parameter <code>$1</code>.<br>
+                • <strong>Read/Write Split:</strong> Runs separate read-only and write-scoped service instances.
+              </td>
+              <td><span class="b-pill t">T2 Arbitrary SQL</span><br><span class="b-pill t">T3 Cross-Tenant Read</span><br><span class="b-pill api">A03:2021 SQLi</span></td>
+            </tr>
+            <tr>
+              <td><strong><code>D4</code><br>Database Engine (OLTP / Warehouse)</strong></td>
+              <td>Final authoritative data store enforcing row, column, and mutation invariants inside the database kernel.</td>
+              <td>
+                • <strong>Row-Level Security (RLS):</strong> Per-request OAuth <code>SESSION_USER()</code> filter (stateless HTTP warehouse) or <code>SET LOCAL</code> + <code>FORCE ROW LEVEL SECURITY</code> / Parameterized Secure Views (stateful pooled TCP OLTP).<br>
+                • <strong>Column-Level Security (CLS):</strong> Policy tags / column <code>GRANT</code>s + <code>security_invoker = true</code> views.<br>
+                • <strong>Bounded Writes:</strong> Mutations only via atomic <code>SECURITY DEFINER</code> stored procedures.<br>
+                • <strong>Aggregation Floor:</strong> <code>HAVING COUNT(DISTINCT owner_id) &gt;= 5</code> (`k`-anonymity).
+              </td>
+              <td><span class="b-pill t">T3 BOLA / IDOR</span><br><span class="b-pill t">T5 Destructive Write</span><br><span class="b-pill api">API1:2023 BOLA</span></td>
+            </tr>
+            <tr>
+              <td><strong><code>Zone 4 &amp; E1–E4</code><br>Data Perimeter &amp; Control Plane</strong></td>
+              <td>Outer cryptographic data boundary and continuous governance controls across all environments.</td>
+              <td>
+                • <strong>Zone 4 Data Perimeter:</strong> Rejects any data request unless <em>both</em> caller identity and source network (`D1`/`D2`) belong to the perimeter (stops stolen tokens used from outside).<br>
+                • <strong><code>E1–E4</code> Control Plane:</strong> Principal Access Boundary (`PAB`), declarative Org Policies (`OPA`), CI/CD adversarial eval gate, and 3-step emergency Kill Switch.
+              </td>
+              <td><span class="b-pill t">T7</span> <span class="b-pill t">T8</span><br><span class="b-pill asi">ASI08</span> <span class="b-pill asi">ASI10</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="post-prose">
+        <h3>5. Cross-Platform Implementation Mapping (Agnostic → Open-Source / K8s → Google Cloud → AWS → Azure)</h3>
+        <p>
+          Once you lock in the agnostic architecture in <strong>Figure 0A</strong>, mapping it to any target platform is a mechanical 1-to-1 substitution:
+        </p>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Agnostic Component (Figure 0A)</th>
+              <th>Open-Source / Self-Hosted K8s</th>
+              <th>Google Cloud Implementation (Figure 0B)</th>
+              <th>AWS Equivalent</th>
+              <th>Azure Equivalent</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong><code>B1</code> Envoy Ingress Proxy (<code>PEP</code>)</strong></td>
+              <td><strong>Envoy Proxy</strong> / Istio Ingress Gateway + OPA <code>ext_authz</code> + Redis rate limit</td>
+              <td><strong>Agent Gateway (<code>CLIENT_TO_AGENT</code>)</strong> + Cloud Armor + Identity-Aware Proxy (IAP)</td>
+              <td>Envoy on ECS/EKS + AWS WAF + API Gateway / ALB OIDC Authorizer</td>
+              <td>Envoy on AKS / Azure Application Gateway + Front Door WAF + Entra EasyAuth</td>
+            </tr>
+            <tr>
+              <td><strong><code>B1/B3</code> Inline <code>ext_proc</code> Safety Guardrail</strong></td>
+              <td><strong>Envoy <code>ext_proc</code> gRPC filter</strong> → Llama Guard / NeMo Guardrails + Microsoft Presidio DLP</td>
+              <td><strong>Model Armor</strong> (inline Service Extension / Floor Settings) + <strong>Cloud SDP (DLP)</strong></td>
+              <td>Envoy <code>ext_proc</code> → Amazon Bedrock Guardrails ApplyGuardrail API + Macie/Comprehend PII</td>
+              <td>Envoy <code>ext_proc</code> → Azure AI Content Safety + Prompt Shields + Purview DLP</td>
+            </tr>
+            <tr>
+              <td><strong><code>B2</code> Agent Runtime &amp; Workload ID</strong></td>
+              <td>Container on K8s + <strong>SPIFFE / SPIRE</strong> (`X.509-SVID`) + LangGraph/ADK + gVisor (`runsc`)</td>
+              <td><strong>ADK 2.x on Vertex AI Agent Engine</strong> (or Cloud Run) + <strong>Agent Identity (SPIFFE)</strong> + Code Execution Sandbox</td>
+              <td>Bedrock AgentCore / EKS Pod + SPIRE / IAM Roles for Service Accounts (IRSA) + Firecracker</td>
+              <td>Azure Container Apps / AKS + Workload Identity Federation + Dynamic Sessions Sandbox</td>
+            </tr>
+            <tr>
+              <td><strong><code>B3</code> Envoy Egress Proxy (<code>Default-Deny</code>)</strong></td>
+              <td><strong>Envoy Sidecar / Egress Gateway</strong> (`mTLS` + `DPoP` + OPA `ext_authz` + NetworkPolicy)</td>
+              <td><strong>Agent Gateway (<code>AGENT_TO_MCP</code> / <code>AGENT_TO_AGENT</code>)</strong> or <strong>Cloud Run Envoy Sidecar</strong> + IAP</td>
+              <td>Envoy Egress Sidecar + AWS VPC Lattice / App Mesh + Verified Permissions (Cedar)</td>
+              <td>Envoy Egress Sidecar + Azure API Management (Self-Hosted Gateway) + NSG Default-Deny</td>
+            </tr>
+            <tr>
+              <td><strong><code>C2</code> Capability &amp; Tool Registry</strong></td>
+              <td>Signed GitOps YAML Catalog / Backstage + OPA bundle server</td>
+              <td><strong>Google Cloud Agent Registry</strong> (approved agents, MCP servers &amp; schemas)</td>
+              <td>AWS Service Catalog / Private API Registry + Systems Manager Parameter Store</td>
+              <td>Azure API Center (MCP &amp; Agent Inventory)</td>
+            </tr>
+            <tr>
+              <td><strong><code>C3</code> OAuth 2.1 STS &amp; KMS Signer</strong></td>
+              <td><strong>Keycloak / Ory Hydra</strong> (`RFC 8693` STS) + HashiCorp Vault Transit KMS</td>
+              <td><strong>Agent Engine Auth Manager</strong> + <strong>Cloud IAM STS</strong> + <strong>Cloud KMS</strong> (`AsymmetricSign`)</td>
+              <td>AWS STS / Cognito + AWS KMS (`Sign` API with ECC_NIST_P256)</td>
+              <td>Microsoft Entra ID On-Behalf-Of (OBO) flow + Azure Key Vault HSM</td>
+            </tr>
+            <tr>
+              <td><strong><code>D1 · D2</code> L4 Private Bridge &amp; Endpoint</strong></td>
+              <td>WireGuard / Cilium ClusterMesh L4 Point-to-Point Tunnel + CoreDNS Split-Horizon</td>
+              <td><strong>Private Service Connect (PSC) Network Attachment (`10.10.9.2`)</strong> + <strong>PSC Endpoint</strong> + Private Cloud DNS</td>
+              <td>AWS PrivateLink Interface Endpoint + VPC Endpoint Service (NLB) + Route 53 Private Hosted Zone</td>
+              <td>Azure Private Link Service + Private Endpoint + Azure Private DNS Zone</td>
+            </tr>
+            <tr>
+              <td><strong><code>Zone 4</code> Cryptographic Data Perimeter</strong></td>
+              <td>SPIFFE Federation + Cilium L7/L4 Identity-Aware Network Policy + mTLS mesh boundary</td>
+              <td><strong>VPC Service Controls (VPC-SC)</strong> Perimeter (`bigquery.googleapis.com`, `sqladmin.googleapis.com`, `run.googleapis.com`)</td>
+              <td>AWS Data Perimeter (SCPs + VPC Endpoint Policies `aws:PrincipalOrgID` + `aws:SourceVpce`)</td>
+              <td>Azure Network Security Perimeter (NSP) + Conditional Access for Workload Identities</td>
+            </tr>
+            <tr>
+              <td><strong><code>D3</code> Parameterized MCP Tool Server</strong></td>
+              <td><strong>MCP Toolbox for Databases</strong> (OSS binary) or Custom FastMCP Server with pre-compiled SQL</td>
+              <td><strong>MCP Toolbox for Databases on Cloud Run</strong> (`--ingress=internal`, `tools.yaml`, `authServices`)</td>
+              <td>MCP Toolbox on AWS Fargate (Private Subnet) with RDS Proxy IAM Auth</td>
+              <td>MCP Toolbox on Azure Container Apps (Internal VNet) with Managed Identity</td>
+            </tr>
+            <tr>
+              <td><strong><code>D4</code> Database Engine (`RLS` / `CLS`)</strong></td>
+              <td><strong>PostgreSQL 16+</strong> (`FORCE ROW LEVEL SECURITY`, `SET LOCAL`, `security_invoker` views, `SECURITY DEFINER` procs)</td>
+              <td><strong>BigQuery</strong> (Stateless HTTP + Policy Tags + RLS) &amp; <strong>Cloud SQL / AlloyDB</strong> (Stateful TCP + Parameterized Secure Views / PG RLS)</td>
+              <td>Amazon Redshift RLS/CLS &amp; Amazon Aurora PostgreSQL (`FORCE RLS` + `SECURITY DEFINER`)</td>
+              <td>Microsoft Fabric / Synapse RLS/DDM &amp; Azure Database for PostgreSQL (`FORCE RLS`)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </section>
+</main>
+<script>
+  const btn = document.getElementById('theme-toggle');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      btn.textContent = next === 'dark' ? '◐ Switch to Light Mode' : '◑ Switch to Dark Mode';
+    });
+  }
+</script>
+</body>
+</html>

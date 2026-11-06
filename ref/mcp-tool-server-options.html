@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reference — MCP Tool Server Options on Google Cloud</title>
+<style>
+  :root,
+  html[data-theme="light"] {
+    --bg: #f6f8fb;
+    --bg-grid: rgba(15, 23, 42, 0.035);
+    --panel: #ffffff;
+    --panel-2: #f8fafc;
+    --panel-3: #f1f5f9;
+    --ink: #0f172a;
+    --muted: #475569;
+    --dim: #64748b;
+    --line: #cbd5e1;
+    --line-2: #e2e8f0;
+    --cyan: #0369a1;
+    --cyan-soft: rgba(3, 105, 161, 0.09);
+    --amber: #b45309;
+    --amber-soft: rgba(180, 83, 9, 0.10);
+    --good: #15803d;
+    --good-soft: rgba(21, 128, 61, 0.09);
+    --warn: #c2410c;
+    --warn-soft: rgba(194, 65, 12, 0.10);
+    --stop: #b91c1c;
+    --stop-soft: rgba(185, 28, 28, 0.08);
+    --violet: #6d28d9;
+    --violet-soft: rgba(109, 40, 217, 0.09);
+    --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #09131c;
+    --bg-grid: rgba(148, 198, 235, 0.055);
+    --panel: #0e1c2a;
+    --panel-2: #132536;
+    --panel-3: #0b1723;
+    --ink: #ecf3fb;
+    --muted: #b5c9de;
+    --dim: #7f9ab5;
+    --line: #21405c;
+    --line-2: #183149;
+    --cyan: #5fd4ff;
+    --cyan-soft: rgba(95, 212, 255, 0.13);
+    --amber: #ffbe55;
+    --amber-soft: rgba(255, 190, 85, 0.14);
+    --good: #52e29a;
+    --good-soft: rgba(82, 226, 154, 0.13);
+    --warn: #ff9a52;
+    --warn-soft: rgba(255, 154, 82, 0.14);
+    --stop: #ff6b7c;
+    --stop-soft: rgba(255, 107, 124, 0.14);
+    --violet: #b695ff;
+    --violet-soft: rgba(182, 149, 255, 0.14);
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(to right, var(--bg-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--bg-grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 28px;
+    background: color-mix(in srgb, var(--panel) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cyan);
+  }
+  .brand-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 0 3px var(--cyan-soft);
+  }
+  .navlinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .navlinks a, .theme-btn {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--line-2);
+    background: var(--panel-2);
+    color: var(--muted);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .navlinks a:hover, .theme-btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  .app {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 72px;
+  }
+
+  .sheet {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .sheet-h {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--line-2);
+    background: var(--panel-2);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .sec-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--cyan);
+    background: var(--cyan-soft);
+    padding: 3px 9px;
+    border-radius: 5px;
+    border: 1px solid color-mix(in srgb, var(--cyan) 30%, transparent);
+    display: inline-block;
+    margin-bottom: 6px;
+  }
+  .sheet-h h1, .sheet-h h2 {
+    margin: 0;
+    font-size: 23px;
+    letter-spacing: -0.015em;
+  }
+  .sheet-h p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 14.5px;
+  }
+  .sheet-b {
+    padding: 28px;
+  }
+
+  .post-prose {
+    max-width: 880px;
+    font-size: 17px;
+    line-height: 1.78;
+    color: var(--ink);
+  }
+  .post-prose p {
+    margin: 0 0 18px;
+  }
+  .post-prose h3 {
+    margin: 26px 0 10px;
+    font-size: 20px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .scenario-callout {
+    margin: 20px 0;
+    padding: 16px 20px;
+    border-left: 4px solid var(--cyan);
+    background: var(--cyan-soft);
+    border-radius: 0 10px 10px 0;
+    font-size: 16px;
+  }
+  .scenario-callout strong {
+    color: var(--cyan);
+  }
+
+  .diagram-frame {
+    background: var(--panel-2);
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+    margin: 20px 0 4px;
+    overflow-x: auto;
+  }
+  .diagram-frame svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .fig-caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line-2);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend-items {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .swatch-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    border: 1.5px solid;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+
+  .zone-box { fill: var(--panel); stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  .node-card { fill: var(--panel); stroke: var(--line); stroke-width: 1.75; }
+  .node-cyan { fill: var(--cyan-soft); stroke: var(--cyan); stroke-width: 1.8; }
+  .node-amber { fill: var(--amber-soft); stroke: var(--amber); stroke-width: 1.8; }
+  .node-good { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.8; }
+  .node-warn { fill: var(--warn-soft); stroke: var(--warn); stroke-width: 1.6; }
+  .node-bad { fill: var(--stop-soft); stroke: var(--stop); stroke-width: 1.8; }
+  .node-violet { fill: var(--violet-soft); stroke: var(--violet); stroke-width: 1.8; }
+
+  .t-zone { font-family: var(--mono); font-size: 11px; font-weight: 700; fill: var(--muted); letter-spacing: 0.08em; }
+  .t-title { font-family: var(--sans); font-size: 15px; font-weight: 700; fill: var(--ink); }
+  .t-sub { font-family: var(--sans); font-size: 12px; fill: var(--muted); }
+  .t-mono { font-family: var(--mono); font-size: 11.5px; font-weight: 600; fill: var(--ink); }
+
+  .edge-line { stroke: var(--ink); stroke-width: 2; fill: none; }
+  .edge-cyan { stroke: var(--cyan); stroke-width: 2.2; fill: none; }
+  .edge-amber { stroke: var(--amber); stroke-width: 2.2; fill: none; }
+  .edge-bad { stroke: var(--stop); stroke-width: 2.2; stroke-dasharray: 6 4; fill: none; }
+
+  .node-callout { fill: var(--panel); stroke: var(--stop); stroke-width: 1.4; stroke-dasharray: 5 3; }
+  .t-callout { font-family: var(--mono); font-size: 11px; fill: var(--ink); }
+  .t-callout-h { font-family: var(--mono); font-size: 11px; font-weight: 700; fill: var(--stop); letter-spacing: 0.04em; }
+  .t-badge { font-family: var(--mono); font-size: 10.5px; font-weight: 700; fill: #fff; text-anchor: middle; }
+  .badge-dot { fill: var(--stop); stroke: var(--panel); stroke-width: 1.5; }
+  .badge-dot.add { fill: var(--good); }
+  .tbl-wrap { overflow-x: auto; margin: 18px 0 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line-2); }
+  th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); background: var(--panel-2); }
+  td code, .post-prose code { font-family: var(--mono); font-size: 0.9em; background: var(--panel-3); padding: 1px 5px; border-radius: 4px; }
+  .b-pill { display: inline-block; font-family: var(--mono); font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin: 1px 2px 1px 0; white-space: nowrap; border: 1px solid; }
+  .b-pill.asi { color: var(--violet); background: var(--violet-soft); border-color: color-mix(in srgb, var(--violet) 35%, transparent); }
+  .b-pill.llm { color: var(--cyan); background: var(--cyan-soft); border-color: color-mix(in srgb, var(--cyan) 35%, transparent); }
+  .b-pill.api { color: var(--amber); background: var(--amber-soft); border-color: color-mix(in srgb, var(--amber) 35%, transparent); }
+  .b-pill.t { color: var(--stop); background: var(--stop-soft); border-color: color-mix(in srgb, var(--stop) 35%, transparent); }
+  .b-pill.g { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 35%, transparent); }
+  .opt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 18px 0; }
+  @media (max-width: 900px) { .opt-grid { grid-template-columns: 1fr; } }
+  .opt-card { border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); padding: 16px 18px; font-size: 14.5px; }
+  .opt-card h4 { margin: 0 0 6px; font-size: 16px; }
+  .opt-card .opt-tag { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--cyan); }
+  .opt-card ul { margin: 8px 0 0 18px; padding: 0; }
+  .opt-card li { margin-bottom: 5px; }
+  .code-card { background: #0f172a; color: #f1f5f9; border-radius: 10px; padding: 14px 16px; margin: 12px 0 18px; overflow-x: auto; }
+  .code-card .code-title { font-family: var(--mono); font-size: 11px; color: #94a3b8; margin-bottom: 8px; letter-spacing: 0.06em; }
+  .code-card pre { margin: 0; font-family: var(--mono); font-size: 12.5px; line-height: 1.55; white-space: pre; }
+
+  @media print {
+    table { font-size: 11px; }
+    th, td { padding: 6px 7px; }
+    .b-pill { font-size: 9px; padding: 1px 4px; }
+    .tbl-wrap { break-inside: auto; }
+    .topbar { display: none !important; }
+    .app { max-width: 100%; padding: 0; }
+    .sheet { break-inside: auto; box-shadow: none; margin-bottom: 18px; }
+    .diagram-frame, .opt-card, .code-card { break-inside: avoid; }
+    tr { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<nav class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span>Agentic Governance · Reference · MCP Tool Server Options</span></div>
+  <div class="navlinks">
+    <a href="../ep01_securing_agent_to_database.html">← Back to Episode 01</a>
+    <button class="theme-btn" id="theme-toggle" type="button">◑ Switch to Dark Mode</button>
+  </div>
+</nav>
+<main class="app">
+  <!-- ==================== PART 04: THE TOOL SERVER LAYER ==================== -->
+  <section class="sheet" id="part-04">
+    <div class="sheet-h">
+      <div>
+        <span class="sec-badge">Reference · Tool Server Options</span>
+        <h2>MCP Tool Server Options on Google Cloud: Custom, MCP Toolbox, Google-Managed</h2>
+        <p>The agent should never hold a database client. The first box we add replaces <code>execute_sql(query)</code> with a small set of named operations served over the Model Context Protocol (MCP).</p>
+      </div>
+    </div>
+    <div class="sheet-b">
+      <div class="post-prose">
+        <p>
+          MCP is a protocol: it standardizes how a model discovers tools, what their input schemas are, and how calls and results are exchanged. It says nothing about what a tool is allowed to do. A tool named <code>run_sql(query: str)</code> is a valid MCP tool and exactly as dangerous as the function it replaces. The security value comes from <em>which</em> tools the server exposes, <em>how</em> it binds the caller's identity, and <em>what</em> credential it uses to reach the database. On Google Cloud there are three ways to run this layer, and they differ on all three points.
+        </p>
+      </div>
+
+      <div class="diagram-frame" id="fig-3-toolserver">
+        <svg viewBox="0 0 1120 470" role="img" aria-label="Figure R1: The tool server inserted between the agent and the database, with three implementation options">
+          <defs>
+            <marker id="arr-cyan4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--cyan)"/></marker>
+            <marker id="arr-good4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--good)"/></marker>
+            <marker id="arr-amber4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--amber)"/></marker>
+          </defs>
+
+          <rect class="zone-box" x="16" y="16" width="1088" height="438" rx="12"/>
+          <text class="t-zone" x="36" y="44">THE INITIAL DIAGRAM WITH ONE COMPONENT ADDED: A TOOL SERVER THAT OWNS THE SQL</text>
+
+          <!-- Box 1: User -->
+          <rect class="node-cyan" x="30" y="80" width="200" height="140" rx="10"/>
+          <text class="t-title" x="48" y="110" style="fill:var(--cyan)">1. Customer (User)</text>
+          <text class="t-sub" x="48" y="130">Web / Mobile Chat Interface</text>
+          <line x1="46" y1="142" x2="214" y2="142" stroke="var(--line)" stroke-width="1"/>
+          <text class="t-mono" x="48" y="164">Signed-in session</text>
+          <text class="t-sub" x="48" y="182">Identity comes from the</text>
+          <text class="t-sub" x="48" y="197">login, not the prompt</text>
+
+          <!-- Box 2: Agent -->
+          <rect class="node-card" x="275" y="80" width="250" height="140" rx="10"/>
+          <text class="t-title" x="293" y="110">2. AI Agent</text>
+          <text class="t-sub" x="293" y="130">LLM + MCP Client</text>
+          <line x1="291" y1="142" x2="509" y2="142" stroke="var(--line)" stroke-width="1"/>
+          <text class="t-mono" x="293" y="164">No SQL. No DB credential.</text>
+          <text class="t-sub" x="293" y="182">Calls get_order(order_id)</text>
+          <text class="t-sub" x="293" y="197">Forwards caller token out-of-band</text>
+
+          <!-- Box 2b: Tool Server (NEW) -->
+          <rect class="node-good" x="570" y="68" width="280" height="164" rx="10"/>
+          <circle class="badge-dot add" cx="586" cy="84" r="11"/><text class="t-badge" x="586" y="88">+</text>
+          <text class="t-title" x="604" y="90" style="fill:var(--good)">2b. Tool Server (MCP)</text>
+          <text class="t-sub" x="588" y="110">Owns the SQL and the DB connection</text>
+          <line x1="586" y1="122" x2="834" y2="122" stroke="var(--line)" stroke-width="1"/>
+          <text class="t-mono" x="588" y="144">• Verifies the caller's token</text>
+          <text class="t-mono" x="588" y="162">• Exposes fixed, named tools only</text>
+          <text class="t-mono" x="588" y="180">• Binds identity to a parameter</text>
+          <text class="t-mono" x="588" y="198">• Connects with its own identity</text>
+          <text class="t-mono" x="588" y="216">• Applies LIMIT and timeouts</text>
+
+          <!-- Box 3: DB -->
+          <rect class="node-amber" x="895" y="80" width="195" height="140" rx="10"/>
+          <text class="t-title" x="913" y="110" style="fill:var(--amber)">3. Customer Database</text>
+          <text class="t-sub" x="913" y="130">Internal SQL / Warehouse</text>
+          <line x1="911" y1="142" x2="1074" y2="142" stroke="var(--line)" stroke-width="1"/>
+          <text class="t-mono" x="913" y="164">Private IP only</text>
+          <text class="t-sub" x="913" y="182">Sees the tool server's</text>
+          <text class="t-sub" x="913" y="197">identity + bound user</text>
+
+          <!-- Arrows -->
+          <path class="edge-cyan" d="M230 150 H271" marker-end="url(#arr-cyan4)"/>
+          <text class="t-mono" x="232" y="142" style="fill:var(--cyan)">①</text>
+          <path class="edge-line" d="M525 150 H566" marker-end="url(#arr-good4)" style="stroke:var(--good)"/>
+          <text class="t-mono" x="528" y="142" style="fill:var(--good)">②</text>
+          <path class="edge-amber" d="M850 150 H891" marker-end="url(#arr-amber4)"/>
+          <text class="t-mono" x="856" y="142" style="fill:var(--amber)">③</text>
+
+          <!-- Hop labels + threats closed callouts -->
+          <text class="t-sub" x="30" y="246">① user prompt   ② named tool call, caller token out-of-band   ③ fixed SQL, server identity</text>
+          <text class="t-mono" x="30" y="270" style="fill:var(--good)">Closes: T1 (no model-written SQL) · T4 (identity bound server-side) · T13 (LIMIT, timeouts)</text>
+          <text class="t-mono" x="30" y="288" style="fill:var(--stop)">Opens: T5 (a second hop now carries a token) · Still open: T3 (RLS/CLS must live in the database)</text>
+
+          <!-- Three option chips -->
+          <text class="t-zone" x="36" y="310">THREE WAYS TO RUN BOX 2b ON GOOGLE CLOUD</text>
+
+          <rect class="node-card" x="30" y="322" width="340" height="112" rx="8"/>
+          <text class="t-mono" x="44" y="344" style="fill:var(--cyan)">A · Custom MCP Server</text>
+          <text class="t-sub" x="44" y="362">You write the server (e.g. FastMCP on Cloud Run).</text>
+          <text class="t-sub" x="44" y="378">You implement token checks, parameter binding,</text>
+          <text class="t-sub" x="44" y="394">pooling, identity context, limits, and logging.</text>
+          <text class="t-sub" x="44" y="414" style="fill:var(--warn)">Most flexible. Every control is your code.</text>
+
+          <rect class="node-card" x="390" y="322" width="340" height="112" rx="8"/>
+          <text class="t-mono" x="404" y="344" style="fill:var(--good)">B · MCP Toolbox for Databases</text>
+          <text class="t-sub" x="404" y="362">Google's open-source server; you deploy it.</text>
+          <text class="t-sub" x="404" y="378">Tools are declared in tools.yaml as fixed SQL</text>
+          <text class="t-sub" x="404" y="394">with typed params; authServices binds JWT claims.</text>
+          <text class="t-sub" x="404" y="414" style="fill:var(--good)">Declarative controls. No SQL written by the model.</text>
+
+          <rect class="node-card" x="750" y="322" width="340" height="112" rx="8"/>
+          <text class="t-mono" x="764" y="344" style="fill:var(--violet)">C · Google-Managed MCP Endpoint</text>
+          <text class="t-sub" x="764" y="362">bigquery / alloydb / spanner / sqladmin</text>
+          <text class="t-sub" x="764" y="378">.googleapis.com/mcp — nothing to deploy.</text>
+          <text class="t-sub" x="764" y="394">IAM decides who may call which tools.</text>
+          <text class="t-sub" x="764" y="414" style="fill:var(--warn)">Generic tools. Guardrails move to IAM + RLS/CLS.</text>
+        </svg>
+        <div class="fig-caption">
+          <span>Figure R1 — The tool server inserted between the agent and the database, and the three ways to run it on Google Cloud.</span>
+          <div class="legend-items">
+            <span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good)"></i> Added Component</span>
+            <span><i class="swatch-dot" style="background:var(--good);border-color:var(--good)"></i> + Newly Added</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-prose" style="margin-top:22px;">
+        <h3>Option A · A Custom MCP Server</h3>
+        <p>
+          You write the server yourself—for example with <code>FastMCP</code> in Python, deployed on Cloud Run. This is the right choice when the tools are not simple SQL statements: multi-step business logic, calls to several systems, or a database that no off-the-shelf server supports. The cost is that every guardrail is your code. To close the threats from Part 03 the server must, at minimum: verify the caller's token on every request and reject calls without one; expose only named tools whose SQL is fixed in code with bound parameters; take the user's identity from the verified token and never from a tool argument; connect to the database with the server's own IAM identity rather than a password; set the per-request identity context on the connection (for Row-Level Security) inside the same transaction as the query; enforce <code>LIMIT</code> and statement timeouts; and emit a trace ID with every call. None of this is difficult, but all of it is easy to omit, and an omission is invisible in a functional test.
+        </p>
+
+        <h3>Option B · MCP Toolbox for Databases</h3>
+        <p>
+          <a href="https://github.com/googleapis/mcp-toolbox" target="_blank" rel="noopener">MCP Toolbox for Databases</a> is an open-source MCP server from Google that you deploy yourself (Cloud Run or GKE) and configure declaratively. Instead of writing a server, you write a <code>tools.yaml</code> with three sections: <code>sources</code> (how to reach each database, using IAM authentication and a private IP), <code>tools</code> (each tool is one fixed SQL statement with typed parameters), and <code>authServices</code> (which identity provider to verify tokens against, and which token claim to bind to which parameter). The decisive feature is parameter binding from the token: a parameter declared under <code>authServices</code> is filled by the server from the verified JWT and is <em>not</em> exposed in the tool schema the model sees. The model therefore cannot choose whose data a query returns.
+        </p>
+        <div class="code-card">
+          <div class="code-title">tools.yaml — the controls that matter, shown together</div>
+<pre>sources:
+  orders-db:
+    kind: cloud-sql-postgres
+    project: app-prod
+    region: us-central1
+    instance: orders-primary
+    database: orders
+    ipType: private            # no public IP path
+    user: toolbox-sa@app-prod.iam   # IAM DB auth, no password
+
+authServices:
+  app_jwt:
+    kind: google
+    clientId: 1234567890-abc.apps.googleusercontent.com   # audience the token must carry
+
+tools:
+  get_order:
+    kind: postgres-sql
+    source: orders-db
+    description: Return the status of one order that belongs to the signed-in customer.
+    parameters:
+      - name: owner_email
+        type: string
+        authServices:            # filled from the verified token, hidden from the model
+          - name: app_jwt
+            field: email
+      - name: order_id
+        type: string
+    statement: |
+      SELECT order_id, status, shipped_at
+      FROM app.orders_v            -- a view without PII columns
+      WHERE owner_email = $1 AND order_id = $2
+      LIMIT 1;
+
+toolsets:
+  customer_support: [get_order]   # the agent is given this set, nothing else</pre>
+        </div>
+        <p>
+          With this configuration the agent sees one tool, <code>get_order(order_id)</code>. Its SQL cannot be changed from the prompt (closes <code>T1</code>), the owner is bound server-side from the token (closes <code>T4</code>), the view hides PII columns (part of <code>T2</code>), and the <code>LIMIT</code> bounds the result size (<code>T13</code>). What Toolbox does not do by itself is make the database enforce the filter: the <code>WHERE owner_email = $1</code> is still a clause in a statement, not an engine policy. If a second tool is added later without that clause, the protection is gone. That is why Part 06 moves the filter into the database with Row-Level Security, keyed to the same bound identity.
+        </p>
+
+        <h3>Option C · Google-Managed MCP Endpoints</h3>
+        <p>
+          BigQuery, AlloyDB, Spanner, Cloud SQL, and Firestore each expose a Google-hosted MCP endpoint (for example <code>bigquery.googleapis.com/mcp</code>). There is nothing to deploy; access is controlled with IAM, and the database's own permissions apply to whatever identity makes the call. The trade-off is that the tools are generic, prebuilt primitives—for Cloud SQL, <code>execute_sql</code> and <code>execute_sql_readonly</code> (plus schema listing and user management)—so the server does not constrain what SQL the model writes. IAM and the database role restrict which tables are reachable; <code>execute_sql_readonly</code> blocks mutations; but a prompt-injected model can still compose any <code>SELECT</code> and read every row of every permitted table. Google's own guidance for the managed server is to use least-privilege database users and prefer the read-only tool (<a href="https://docs.cloud.google.com/sql/docs/sqlserver/secure-agent-interactions-mcp" target="_blank" rel="noopener">Secure agent interactions with the Cloud SQL MCP server</a>); that reduces blast radius but does not change who writes the query. The guardrails therefore move entirely to the identity and the database: the call must be made with a credential scoped to the end user (an on-behalf-of token) or to a narrowly-permitted agent identity; IAM must restrict which tools that identity may invoke; and Row-Level and Column-Level Security in the database must do the filtering that a fixed statement would otherwise do. This option is well suited to analytical, read-only use over BigQuery where RLS and policy tags are already in place, and poorly suited to transactional writes.
+        </p>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>A · Custom MCP server</th>
+              <th>B · MCP Toolbox for Databases</th>
+              <th>C · Google-managed MCP endpoint</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Who writes the SQL</b></td>
+              <td>You, in server code</td>
+              <td>You, in <code>tools.yaml</code> (fixed statements)</td>
+              <td>The model (generic execute-query tool)</td>
+            </tr>
+            <tr>
+              <td><b>How the user's identity reaches the DB</b></td>
+              <td>Your code: verify token → bind parameter or <code>set_config</code> in the transaction</td>
+              <td><code>authServices</code> binds a JWT claim to a hidden parameter</td>
+              <td>The caller's credential itself (OBO token or agent identity); IAM + DB permissions</td>
+            </tr>
+            <tr>
+              <td><b>Credential used to connect</b></td>
+              <td>Server's IAM identity (must be configured; passwords are the default trap)</td>
+              <td>Server's IAM identity via <code>sources</code></td>
+              <td>The caller's Google credential</td>
+            </tr>
+            <tr>
+              <td><b>Configuration you must own</b></td>
+              <td>Token verification, schemas, binding, pooling, limits, timeouts, logging, deployment</td>
+              <td><code>sources</code> (IAM, private IP), <code>authServices</code>, <code>tools</code> with <code>LIMIT</code>, <code>toolsets</code>, deployment identity</td>
+              <td>IAM roles per tool, per-user credentials, RLS/CLS in the database, VPC-SC support check</td>
+            </tr>
+            <tr>
+              <td><b>Threats closed by the layer itself</b></td>
+              <td><span class="b-pill t">T1</span> <span class="b-pill t">T4</span> <span class="b-pill t">T13</span> — only if implemented</td>
+              <td><span class="b-pill t">T1</span> <span class="b-pill t">T4</span> <span class="b-pill t">T13</span> by configuration</td>
+              <td>None directly; relies on <span class="b-pill t">T3</span> controls in the DB</td>
+            </tr>
+            <tr>
+              <td><b>Threats that remain</b></td>
+              <td><span class="b-pill t">T2</span> <span class="b-pill t">T3</span> <span class="b-pill t">T5</span> <span class="b-pill t">T6</span> <span class="b-pill t">T7</span> <span class="b-pill t">T8</span></td>
+              <td><span class="b-pill t">T2</span> <span class="b-pill t">T3</span> <span class="b-pill t">T5</span> <span class="b-pill t">T6</span> <span class="b-pill t">T7</span> <span class="b-pill t">T8</span></td>
+              <td><span class="b-pill t">T1</span> <span class="b-pill t">T2</span> <span class="b-pill t">T3</span> <span class="b-pill t">T5</span> <span class="b-pill t">T6</span> <span class="b-pill t">T7</span> <span class="b-pill t">T8</span> <span class="b-pill t">T13</span></td>
+            </tr>
+            <tr>
+              <td><b>Best fit</b></td>
+              <td>Complex tools, non-SQL systems, bespoke logic</td>
+              <td>Transactional and analytical SQL with a bounded set of operations</td>
+              <td>Read-only analytics where IAM and RLS/CLS already govern access</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="post-prose">
+        <h3>Choosing the Approach</h3>
+        <p>
+          The database role is the ceiling: whatever it may read, a generic query tool lets the model reach on every call. The tool definition therefore has to be the floor. Exposing a generic <code>execute_sql</code> tool to an autonomous agent without a trusted human in the loop grants that agent read access to every row the database role permits—in a multi-tenant application, that is every tenant.
+        </p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Situation</th><th>Approach</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Autonomous agent, no trusted human in the loop, multi-tenant data</td><td><b>Never</b> a generic <code>execute_sql</code> tool. Narrow, parameterized tools in MCP Toolbox <code>tools.yaml</code> (Option B), each returning a defined subset; or a custom server (A) with the same discipline.</td><td>The tool, not the prompt, is the only place the model cannot rewrite.</td></tr>
+            <tr><td>Human analyst in the loop, read-only, Row- and Column-Level Security already enforced by the warehouse</td><td>A generic query tool through the Google-managed MCP endpoint (Option C) is acceptable.</td><td>IAM and the database do the filtering; the human reviews before anything is acted on.</td></tr>
+            <tr><td>Bespoke logic or non-SQL systems</td><td>Custom server (A), still with narrow tools.</td><td>A custom server that exposes <code>run_sql</code> is Option C without IAM.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="post-prose">
+        <p>
+          Whichever option is chosen, adding the tool server creates a new hop, and with it a new threat: <code>T5</code>. The agent now has to present some credential to the tool server. Forwarding the user's frontend token unchanged is the obvious shortcut and is explicitly forbidden by the MCP authorization specification, because a compromised tool server could replay it against every API the token was valid for. The correct pattern—exchanging the token for a short-lived one scoped to the tool server—belongs to the identity layer and is covered in the next episode of the series.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+</main>
+<script>
+document.getElementById("theme-toggle").addEventListener("click", function() {
+  const root = document.documentElement;
+  const current = root.getAttribute("data-theme") || "light";
+  const next = current === "light" ? "dark" : "light";
+  root.setAttribute("data-theme", next);
+  this.textContent = next === "light" ? "◑ Switch to Dark Mode" : "◐ Switch to Light Mode";
+});
+</script>
+</body>
+</html>

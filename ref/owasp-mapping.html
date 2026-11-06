@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reference — OWASP Top 10 Mapping</title>
+<style>
+  :root,
+  html[data-theme="light"] {
+    --bg: #f6f8fb;
+    --bg-grid: rgba(15, 23, 42, 0.035);
+    --panel: #ffffff;
+    --panel-2: #f8fafc;
+    --panel-3: #f1f5f9;
+    --ink: #0f172a;
+    --muted: #475569;
+    --dim: #64748b;
+    --line: #cbd5e1;
+    --line-2: #e2e8f0;
+    --cyan: #0369a1;
+    --cyan-soft: rgba(3, 105, 161, 0.09);
+    --amber: #b45309;
+    --amber-soft: rgba(180, 83, 9, 0.10);
+    --good: #15803d;
+    --good-soft: rgba(21, 128, 61, 0.09);
+    --warn: #c2410c;
+    --warn-soft: rgba(194, 65, 12, 0.10);
+    --stop: #b91c1c;
+    --stop-soft: rgba(185, 28, 28, 0.08);
+    --violet: #6d28d9;
+    --violet-soft: rgba(109, 40, 217, 0.09);
+    --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #09131c;
+    --bg-grid: rgba(148, 198, 235, 0.055);
+    --panel: #0e1c2a;
+    --panel-2: #132536;
+    --panel-3: #0b1723;
+    --ink: #ecf3fb;
+    --muted: #b5c9de;
+    --dim: #7f9ab5;
+    --line: #21405c;
+    --line-2: #183149;
+    --cyan: #5fd4ff;
+    --cyan-soft: rgba(95, 212, 255, 0.13);
+    --amber: #ffbe55;
+    --amber-soft: rgba(255, 190, 85, 0.14);
+    --good: #52e29a;
+    --good-soft: rgba(82, 226, 154, 0.13);
+    --warn: #ff9a52;
+    --warn-soft: rgba(255, 154, 82, 0.14);
+    --stop: #ff6b7c;
+    --stop-soft: rgba(255, 107, 124, 0.14);
+    --violet: #b695ff;
+    --violet-soft: rgba(182, 149, 255, 0.14);
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(to right, var(--bg-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--bg-grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 28px;
+    background: color-mix(in srgb, var(--panel) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cyan);
+  }
+  .brand-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 0 3px var(--cyan-soft);
+  }
+  .navlinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .navlinks a, .theme-btn {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--line-2);
+    background: var(--panel-2);
+    color: var(--muted);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .navlinks a:hover, .theme-btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  .app {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 72px;
+  }
+
+  .sheet {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .sheet-h {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--line-2);
+    background: var(--panel-2);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .sec-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--cyan);
+    background: var(--cyan-soft);
+    padding: 3px 9px;
+    border-radius: 5px;
+    border: 1px solid color-mix(in srgb, var(--cyan) 30%, transparent);
+    display: inline-block;
+    margin-bottom: 6px;
+  }
+  .sheet-h h1, .sheet-h h2 {
+    margin: 0;
+    font-size: 23px;
+    letter-spacing: -0.015em;
+  }
+  .sheet-h p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 14.5px;
+  }
+  .sheet-b {
+    padding: 28px;
+  }
+
+  .post-prose {
+    max-width: 880px;
+    font-size: 17px;
+    line-height: 1.78;
+    color: var(--ink);
+  }
+  .post-prose p {
+    margin: 0 0 18px;
+  }
+  .post-prose h3 {
+    margin: 26px 0 10px;
+    font-size: 20px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .scenario-callout {
+    margin: 20px 0;
+    padding: 16px 20px;
+    border-left: 4px solid var(--cyan);
+    background: var(--cyan-soft);
+    border-radius: 0 10px 10px 0;
+    font-size: 16px;
+  }
+  .scenario-callout strong {
+    color: var(--cyan);
+  }
+
+  .diagram-frame {
+    background: var(--panel-2);
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+    margin: 20px 0 4px;
+    overflow-x: auto;
+  }
+  .diagram-frame svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .fig-caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line-2);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend-items {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .swatch-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    border: 1.5px solid;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+
+  .zone-box { fill: var(--panel); stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  .node-card { fill: var(--panel); stroke: var(--line); stroke-width: 1.75; }
+  .node-cyan { fill: var(--cyan-soft); stroke: var(--cyan); stroke-width: 1.8; }
+  .node-amber { fill: var(--amber-soft); stroke: var(--amber); stroke-width: 1.8; }
+  .node-good { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.8; }
+  .node-warn { fill: var(--warn-soft); stroke: var(--warn); stroke-width: 1.6; }
+  .node-bad { fill: var(--stop-soft); stroke: var(--stop); stroke-width: 1.8; }
+  .node-violet { fill: var(--violet-soft); stroke: var(--violet); stroke-width: 1.8; }
+
+  .t-zone { font-family: var(--mono); font-size: 11px; font-weight: 700; fill: var(--muted); letter-spacing: 0.08em; }
+  .t-title { font-family: var(--sans); font-size: 15px; font-weight: 700; fill: var(--ink); }
+  .t-sub { font-family: var(--sans); font-size: 12px; fill: var(--muted); }
+  .t-mono { font-family: var(--mono); font-size: 11.5px; font-weight: 600; fill: var(--ink); }
+
+  .edge-line { stroke: var(--ink); stroke-width: 2; fill: none; }
+  .edge-cyan { stroke: var(--cyan); stroke-width: 2.2; fill: none; }
+  .edge-amber { stroke: var(--amber); stroke-width: 2.2; fill: none; }
+  .edge-bad { stroke: var(--stop); stroke-width: 2.2; stroke-dasharray: 6 4; fill: none; }
+
+  .node-callout { fill: var(--panel); stroke: var(--stop); stroke-width: 1.4; stroke-dasharray: 5 3; }
+  .t-callout { font-family: var(--mono); font-size: 11px; fill: var(--ink); }
+  .t-callout-h { font-family: var(--mono); font-size: 11px; font-weight: 700; fill: var(--stop); letter-spacing: 0.04em; }
+  .t-badge { font-family: var(--mono); font-size: 10.5px; font-weight: 700; fill: #fff; text-anchor: middle; }
+  .badge-dot { fill: var(--stop); stroke: var(--panel); stroke-width: 1.5; }
+  .badge-dot.add { fill: var(--good); }
+  .tbl-wrap { overflow-x: auto; margin: 18px 0 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line-2); }
+  th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); background: var(--panel-2); }
+  td code, .post-prose code { font-family: var(--mono); font-size: 0.9em; background: var(--panel-3); padding: 1px 5px; border-radius: 4px; }
+  .b-pill { display: inline-block; font-family: var(--mono); font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin: 1px 2px 1px 0; white-space: nowrap; border: 1px solid; }
+  .b-pill.asi { color: var(--violet); background: var(--violet-soft); border-color: color-mix(in srgb, var(--violet) 35%, transparent); }
+  .b-pill.llm { color: var(--cyan); background: var(--cyan-soft); border-color: color-mix(in srgb, var(--cyan) 35%, transparent); }
+  .b-pill.api { color: var(--amber); background: var(--amber-soft); border-color: color-mix(in srgb, var(--amber) 35%, transparent); }
+  .b-pill.t { color: var(--stop); background: var(--stop-soft); border-color: color-mix(in srgb, var(--stop) 35%, transparent); }
+  .b-pill.g { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 35%, transparent); }
+  .opt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 18px 0; }
+  @media (max-width: 900px) { .opt-grid { grid-template-columns: 1fr; } }
+  .opt-card { border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); padding: 16px 18px; font-size: 14.5px; }
+  .opt-card h4 { margin: 0 0 6px; font-size: 16px; }
+  .opt-card .opt-tag { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--cyan); }
+  .opt-card ul { margin: 8px 0 0 18px; padding: 0; }
+  .opt-card li { margin-bottom: 5px; }
+  .code-card { background: #0f172a; color: #f1f5f9; border-radius: 10px; padding: 14px 16px; margin: 12px 0 18px; overflow-x: auto; }
+  .code-card .code-title { font-family: var(--mono); font-size: 11px; color: #94a3b8; margin-bottom: 8px; letter-spacing: 0.06em; }
+  .code-card pre { margin: 0; font-family: var(--mono); font-size: 12.5px; line-height: 1.55; white-space: pre; }
+
+  @media print {
+    table { font-size: 11px; }
+    th, td { padding: 6px 7px; }
+    .b-pill { font-size: 9px; padding: 1px 4px; }
+    .tbl-wrap { break-inside: auto; }
+    .topbar { display: none !important; }
+    .app { max-width: 100%; padding: 0; }
+    .sheet { break-inside: auto; box-shadow: none; margin-bottom: 18px; }
+    .diagram-frame, .opt-card, .code-card { break-inside: avoid; }
+    tr { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<nav class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span>Agentic Governance · Reference · OWASP Mapping</span></div>
+  <div class="navlinks">
+    <a href="../ep01_securing_agent_to_database.html">← Back to Episode 01</a>
+    <button class="theme-btn" id="theme-toggle" type="button">◑ Switch to Dark Mode</button>
+  </div>
+</nav>
+<main class="app">
+  <!-- ==================== PART 03: THREATS & OWASP ==================== -->
+  <section class="sheet" id="part-03">
+    <div class="sheet-h">
+      <div>
+        <span class="sec-badge">Reference · OWASP Mapping</span>
+        <h2>Threats T1–T8 Mapped to the OWASP Top 10 (Agentic 2026 · LLM 2025 · Classical)</h2>
+        <p>Each threat in Figure 2 is a well-documented attack class. Mapping them to the OWASP lists lets the rest of the series refer to <code>T1</code>…<code>T8</code> and cite the standard identifiers rather than re-describing each attack.</p>
+      </div>
+    </div>
+    <div class="sheet-b">
+      <div class="post-prose">
+        <p>
+          Two OWASP lists are relevant. The <strong>OWASP Top 10 for LLM Applications (2025)</strong> describes failure modes of any application that embeds a language model: prompt injection, sensitive information disclosure, improper output handling, and so on. The <strong>OWASP Top 10 for Agentic Applications (2026)</strong> extends this to systems in which the model is given tools, memory, and autonomy; its entries describe what happens when a fooled model can <em>act</em>. Because our agent reads and writes a database, several of the threats are also classical web and API weaknesses in new clothing—broken object-level authorization and SQL injection in particular—so the classical identifiers are listed as well.
+        </p>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Threat</th>
+              <th>What the attacker does</th>
+              <th>OWASP Agentic 2026</th>
+              <th>OWASP LLM 2025</th>
+              <th>Classical</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Q2</code></td>
+              <td><span class="b-pill t">T1</span> Prompt injection → model-written SQL</td>
+              <td>Types instructions that override the system prompt; the model composes and runs arbitrary SQL through <code>execute_sql</code>.</td>
+              <td><span class="b-pill asi">ASI01</span> Goal Hijack <span class="b-pill asi">ASI02</span> Tool Misuse <span class="b-pill asi">ASI05</span> Code Execution</td>
+              <td><span class="b-pill llm">LLM01</span> Prompt Injection <span class="b-pill llm">LLM05</span> Improper Output Handling</td>
+              <td><span class="b-pill api">A03:2021</span> Injection</td>
+            </tr>
+            <tr>
+              <td><code>Q4</code></td>
+              <td><span class="b-pill t">T2</span> Poisoned rows &amp; raw PII into the model</td>
+              <td>Writes instructions into a free-text column the agent will later read; or over-broad queries return SSNs and card numbers into the model's context and logs.</td>
+              <td><span class="b-pill asi">ASI01</span> Goal Hijack <span class="b-pill asi">ASI06</span> Memory &amp; Context Poisoning</td>
+              <td><span class="b-pill llm">LLM01</span> Prompt Injection <span class="b-pill llm">LLM02</span> Sensitive Info Disclosure <span class="b-pill llm">LLM04</span> Data Poisoning</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><code>Q1</code> <code>Q3</code></td>
+              <td><span class="b-pill t">T3</span> Shared admin account (confused deputy)</td>
+              <td>Does nothing special: the agent already connects as one privileged account, so any mistake or injection exposes every tenant's rows and columns.</td>
+              <td><span class="b-pill asi">ASI03</span> Identity &amp; Privilege Abuse</td>
+              <td><span class="b-pill llm">LLM02</span> Sensitive Info Disclosure <span class="b-pill llm">LLM06</span> Excessive Agency</td>
+              <td><span class="b-pill api">API1:2023</span> BOLA / IDOR</td>
+            </tr>
+            <tr>
+              <td><code>Q1</code></td>
+              <td><span class="b-pill t">T4</span> Identity spoofed in tool arguments</td>
+              <td>Convinces the model to pass <code>user_id="bob@example.com"</code> to a tool whose schema lets the model choose the caller.</td>
+              <td><span class="b-pill asi">ASI02</span> Tool Misuse <span class="b-pill asi">ASI03</span> Identity &amp; Privilege Abuse</td>
+              <td><span class="b-pill llm">LLM06</span> Excessive Agency</td>
+              <td><span class="b-pill api">API1:2023</span> BOLA / IDOR</td>
+            </tr>
+            <tr>
+              <td><code>Q1</code> <em>(appears in Part 04)</em></td>
+              <td><span class="b-pill t">T5</span> Token passthrough across hops</td>
+              <td>Once a tool server exists, the agent forwards the user's broad frontend token to it; a compromised server replays that token against every other API it was valid for.</td>
+              <td><span class="b-pill asi">ASI03</span> Identity &amp; Privilege Abuse <span class="b-pill asi">ASI07</span> Insecure Inter-Agent Communication</td>
+              <td>—</td>
+              <td>OAuth 2.1 / MCP Authorization Spec</td>
+            </tr>
+            <tr>
+              <td><code>Q7</code></td>
+              <td><span class="b-pill t">T6</span> Network exposure &amp; exfiltration</td>
+              <td>Reaches the database from outside (public IP, flat VPC), or makes the agent send retrieved rows to an external endpoint, including via a rendered Markdown image link.</td>
+              <td><span class="b-pill asi">ASI05</span> Code Execution <span class="b-pill asi">ASI10</span> Rogue Agents</td>
+              <td><span class="b-pill llm">LLM02</span> Sensitive Info Disclosure</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><code>Q5</code></td>
+              <td><span class="b-pill t">T7</span> Unapproved / duplicated writes</td>
+              <td>Triggers a refund or cancellation with no human confirmation; a timeout retry runs the same mutation twice.</td>
+              <td><span class="b-pill asi">ASI02</span> Tool Misuse <span class="b-pill asi">ASI08</span> Cascading Failures</td>
+              <td><span class="b-pill llm">LLM06</span> Excessive Agency</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><code>Q7</code></td>
+              <td><span class="b-pill t">T8</span> Repudiation — no end-to-end trace</td>
+              <td>After an incident, the database log shows only the shared account; nothing links the query to a user, a session, or a prompt.</td>
+              <td><span class="b-pill asi">ASI09</span> Human-Agent Trust Exploitation</td>
+              <td>—</td>
+              <td>Logging &amp; Monitoring Failures</td>
+            </tr>
+            <tr>
+              <td><code>Q6</code></td>
+              <td><span class="b-pill t">T13</span> Bulk extraction &amp; cost flooding <span class="t-sub">(extended catalog)</span></td>
+              <td>Pages through every row "1,000 at a time", or triggers warehouse-wide scans on each turn.</td>
+              <td><span class="b-pill asi">ASI02</span> Tool Misuse</td>
+              <td><span class="b-pill llm">LLM02</span> Sensitive Info Disclosure <span class="b-pill llm">LLM10</span> Unbounded Consumption</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="post-prose">
+        <p>
+          Two observations follow from the table. First, several threats share an OWASP category (<code>ASI03</code> appears four times) because the root cause—one privileged identity standing in for every user—shows up at more than one point in the architecture. Second, no threat is closed by instructing the model. Every row needs a control that sits <em>outside</em> the model: in the identity layer, in the tool server, in the database engine, or in the network. The next parts add those controls one component at a time.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+</main>
+<script>
+document.getElementById("theme-toggle").addEventListener("click", function() {
+  const root = document.documentElement;
+  const current = root.getAttribute("data-theme") || "light";
+  const next = current === "light" ? "dark" : "light";
+  root.setAttribute("data-theme", next);
+  this.textContent = next === "light" ? "◑ Switch to Dark Mode" : "◐ Switch to Light Mode";
+});
+</script>
+</body>
+</html>

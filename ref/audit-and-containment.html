@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>End-to-End Audit Attribution (W3C Trace, BigQuery Sink) & Kill Switch Runbook — Agentic Governance Reference</title>
+<style>
+  :root,
+  html[data-theme="light"] {
+    --bg: #f6f8fb;
+    --bg-grid: rgba(15, 23, 42, 0.035);
+    --panel: #ffffff;
+    --panel-2: #f8fafc;
+    --panel-3: #f1f5f9;
+    --ink: #0f172a;
+    --muted: #475569;
+    --dim: #64748b;
+    --line: #cbd5e1;
+    --line-2: #e2e8f0;
+    --cyan: #0369a1;
+    --cyan-soft: rgba(3, 105, 161, 0.09);
+    --prussian: #1d4ed8;
+    --prussian-soft: rgba(29, 78, 216, 0.09);
+    --teal: #0f766e;
+    --teal-soft: rgba(15, 118, 110, 0.09);
+    --amber: #b45309;
+    --amber-soft: rgba(180, 83, 9, 0.10);
+    --good: #15803d;
+    --good-soft: rgba(21, 128, 61, 0.09);
+    --warn: #c2410c;
+    --warn-soft: rgba(194, 65, 12, 0.10);
+    --stop: #b91c1c;
+    --stop-soft: rgba(185, 28, 28, 0.08);
+    --violet: #6d28d9;
+    --violet-soft: rgba(109, 40, 217, 0.09);
+    --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #09131c;
+    --bg-grid: rgba(148, 198, 235, 0.055);
+    --panel: #0e1c2a;
+    --panel-2: #132536;
+    --panel-3: #0b1723;
+    --ink: #ecf3fb;
+    --muted: #b5c9de;
+    --dim: #7f9ab5;
+    --line: #21405c;
+    --line-2: #183149;
+    --cyan: #5fd4ff;
+    --cyan-soft: rgba(95, 212, 255, 0.13);
+    --prussian: #60a5fa;
+    --prussian-soft: rgba(96, 165, 250, 0.14);
+    --teal: #2dd4bf;
+    --teal-soft: rgba(45, 212, 191, 0.14);
+    --amber: #ffbe55;
+    --amber-soft: rgba(255, 190, 85, 0.14);
+    --good: #52e29a;
+    --good-soft: rgba(82, 226, 154, 0.13);
+    --warn: #ff9a52;
+    --warn-soft: rgba(255, 154, 82, 0.14);
+    --stop: #ff6b7c;
+    --stop-soft: rgba(255, 107, 124, 0.14);
+    --violet: #b695ff;
+    --violet-soft: rgba(182, 149, 255, 0.14);
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(to right, var(--bg-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--bg-grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 28px;
+    background: color-mix(in srgb, var(--panel) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cyan);
+  }
+  .brand-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 0 3px var(--cyan-soft);
+  }
+  .navlinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .navlinks a, .theme-btn {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--line-2);
+    background: var(--panel-2);
+    color: var(--muted);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .navlinks a:hover, .theme-btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  .app {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 72px;
+  }
+
+  .sheet {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .sheet-h {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--line-2);
+    background: var(--panel-2);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .sec-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--cyan);
+    background: var(--cyan-soft);
+    padding: 3px 9px;
+    border-radius: 5px;
+    border: 1px solid color-mix(in srgb, var(--cyan) 30%, transparent);
+    display: inline-block;
+    margin-bottom: 6px;
+  }
+  .sheet-h h1, .sheet-h h2 {
+    margin: 0;
+    font-size: 23px;
+    letter-spacing: -0.015em;
+  }
+  .sheet-h p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 14.5px;
+  }
+  .sheet-b {
+    padding: 28px;
+  }
+
+  .post-prose {
+    max-width: 920px;
+    font-size: 16.5px;
+    line-height: 1.75;
+    color: var(--ink);
+  }
+  .post-prose p { margin: 0 0 16px; }
+  .post-prose h3 {
+    margin: 26px 0 10px;
+    font-size: 19.5px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .post-prose ul, .post-prose ol {
+    margin: 8px 0 18px 22px;
+    padding: 0;
+  }
+  .post-prose li { margin-bottom: 8px; }
+
+  .diagram-frame {
+    background: var(--panel-2);
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+    margin: 20px 0 4px;
+    overflow-x: auto;
+  }
+  .diagram-frame svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .fig-caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line-2);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .zone-box { fill: var(--panel); stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  .zone-vpc { fill: var(--panel); stroke: var(--violet); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  .node-card { fill: var(--panel); stroke: var(--line); stroke-width: 1.75; }
+  .node-blue { fill: var(--prussian-soft); stroke: var(--prussian); stroke-width: 1.8; }
+  .node-teal { fill: var(--teal-soft); stroke: var(--teal); stroke-width: 1.8; }
+  .node-good { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.8; }
+  .node-warn { fill: var(--warn-soft); stroke: var(--warn); stroke-width: 1.6; }
+  .node-bad { fill: var(--stop-soft); stroke: var(--stop); stroke-width: 1.8; }
+  .node-violet { fill: var(--violet-soft); stroke: var(--violet); stroke-width: 1.8; }
+
+  .t-zone { font-family: var(--mono); font-size: 11px; font-weight: 700; fill: var(--muted); letter-spacing: 0.08em; }
+  .t-title { font-family: var(--sans); font-size: 14.5px; font-weight: 700; fill: var(--ink); }
+  .t-sub { font-family: var(--sans); font-size: 12px; fill: var(--muted); }
+  .t-mono { font-family: var(--mono); font-size: 11.2px; font-weight: 600; fill: var(--ink); }
+
+  .edge-line { stroke: var(--ink); stroke-width: 2; fill: none; }
+  .edge-teal { stroke: var(--teal); stroke-width: 2.2; fill: none; }
+  .edge-violet { stroke: var(--violet); stroke-width: 2.2; fill: none; }
+
+  .tbl-wrap { overflow-x: auto; margin: 18px 0 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line-2); }
+  th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); background: var(--panel-2); }
+  td code, .post-prose code { font-family: var(--mono); font-size: 0.9em; background: var(--panel-3); padding: 1px 5px; border-radius: 4px; }
+
+  .mode-3-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 18px 0;
+  }
+  @media (max-width: 960px) { .mode-3-grid { grid-template-columns: 1fr; } }
+  .mode-card {
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--cyan);
+    border-radius: 10px;
+    background: var(--panel-2);
+    padding: 16px 18px;
+    font-size: 14px;
+  }
+  .mode-card.m-teal { border-top-color: var(--teal); }
+  .mode-card.m-violet { border-top-color: var(--violet); }
+  .mode-card .leg-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--cyan);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .mode-card.m-teal .leg-tag { color: var(--teal); }
+  .mode-card.m-violet .leg-tag { color: var(--violet); }
+  .mode-card h4 { margin: 0 0 8px; font-size: 16px; }
+  .mode-card ol { margin: 8px 0 0 18px; padding: 0; }
+  .mode-card li { margin-bottom: 6px; }
+
+  .duo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 960px) { .duo-grid { grid-template-columns: 1fr; } }
+
+  .code-card {
+    background: #0f172a;
+    color: #f1f5f9;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 8px 0;
+    overflow-x: auto;
+  }
+  .code-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    letter-spacing: 0.04em;
+  }
+  .code-pre {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.52;
+    white-space: pre;
+    color: #f1f5f9;
+  }
+
+  @media print {
+    .topbar { display: none; }
+    .app { max-width: 100%; padding: 0; }
+    .sheet { break-inside: avoid; box-shadow: none; margin-bottom: 16px; }
+    table { font-size: 11px; }
+    .code-pre { font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+<nav class="topbar">
+  <div class="brand">
+    <span class="brand-dot"></span>
+    <span>Agentic Governance · Deep-Dive Reference</span>
+  </div>
+  <div class="navlinks">
+    <a href="../ep01_securing_agent_to_database.html">← Back to Episode 01</a>
+    <a href="mcp-tool-server-options.html">MCP Options</a>
+    <a href="rls-cls.html">RLS &amp; CLS</a>
+    <a href="mtls-and-tokens.html">mTLS &amp; OBO</a>
+    <a href="envoy-proxy.html">Envoy Proxy</a>
+    <a href="model-armor.html">Model Armor</a>
+    <a href="psc-and-vpc-sc.html">PSC &amp; VPC-SC</a>
+    <a href="audit-and-containment.html">Audit &amp; Kill Switch</a>
+    <a href="owasp-mapping.html">OWASP Matrix</a>
+    <button class="theme-btn" id="theme-toggle" type="button">◑ Switch to Dark Mode</button>
+  </div>
+</nav>
+<main class="app">
+  <section class="sheet">
+    <div class="sheet-h">
+      <div>
+        <span class="sec-badge">Reference · Chapter 13</span>
+        <h1>End-to-End Audit Attribution (W3C Trace, BigQuery Sink) & Kill Switch Runbook</h1>
+        <p>Linking every SQL query to the human caller and agent turn, enforcing Principal Access Boundaries (PAB), and executing the 3-step emergency kill switch.</p>
+      </div>
+    </div>
+    <div class="sheet-b">
+      
+      <div class="post-prose">
+        <h3>1. Closing the Audit Blind Spot (<code>T8</code>)</h3>
+        <p>By default, Cloud SQL, AlloyDB, and Spanner disable <code>DATA_READ</code> and <code>DATA_WRITE</code> audit logs, and logs in <code>_Default</code> expire after 30 days. Our control plane enables Data Access logs across all data stores, routes them to a 400-day partitioned BigQuery sink, propagates W3C <code>traceparent</code> from the client edge into SQL comments/job labels, and streams full agent trajectories via ADK's <code>BigQueryAgentAnalyticsPlugin</code>.</p>
+        <h3>2. The 3-Step Emergency Kill Switch Runbook</h3>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Step</th><th>Action</th><th>Command / Control Plane Target</th><th>Forensic Impact</th></tr></thead>
+          <tbody>
+            <tr><td><b>Step 1: Block Agent Principal</b></td><td>Apply an immediate IAM Deny policy &amp; Principal Access Boundary (PAB) ceiling on the agent's SPIFFE identity, and revoke <code>roles/iap.egressor</code> at the Egress Gateway.</td><td><code>gcloud iam deny-policies create</code> / <code>IAM PAB</code></td><td>Halts all tool and database calls within seconds while keeping the container intact.</td></tr>
+            <tr><td><b>Step 2: Revoke Delegated Tokens</b></td><td>Revoke active OAuth refresh tokens and OBO grants in <code>Auth Manager</code> and rotate the <code>ALLOWED_KIDS</code> KMS context signing key version if needed.</td><td><code>Auth Manager</code> / <code>Cloud KMS</code></td><td>Invalidates any in-flight tokens immediately across all MCP servers.</td></tr>
+            <tr><td><b>Step 3: Preserve Evidence</b></td><td>Snapshot Cloud Run / Agent Runtime revisions, export <code>Memory Bank</code> sessions, and query the 400-day BigQuery audit sink by <code>trace_id</code> and <code>spiffe_id</code>.</td><td><code>BigQuery Audit Sink</code> + <code>Security Command Center</code></td><td>Preserves complete chain of custody for incident response.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    
+    </div>
+  </section>
+</main>
+<script>
+document.getElementById("theme-toggle").addEventListener("click", function() {
+  const root = document.documentElement;
+  const current = root.getAttribute("data-theme") || "light";
+  const next = current === "light" ? "dark" : "light";
+  root.setAttribute("data-theme", next);
+  this.textContent = next === "light" ? "◑ Switch to Dark Mode" : "◐ Switch to Light Mode";
+});
+</script>
+</body>
+</html>
