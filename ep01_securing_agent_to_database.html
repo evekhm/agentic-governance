@@ -1597,7 +1597,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <p>Wraps a single-turn model inside a deterministic workflow state machine and isolates untrusted database free-text parsing inside a tool-less Quarantine LLM.</p>
           <div class="t-fix-row"><b>Boundary &amp; Mitigation (<a href="#part-12">Workflow, HITL &amp; Quarantine LLM</a>):</b> Enforce a tool-less Quarantine LLM with typed <code>output_schema</code>, severed history (<code>include_contents="none"</code>), and sandboxed code execution (Boundary) inside a single-turn workflow graph (Mitigation).</div>
           <div class="t-fix-row oss"><b>Open-Source:</b> <code>LangGraph</code> state machine · <code>Pydantic</code> typed schemas · <code>gVisor</code> / <code>Firecracker</code> sandbox</div>
-          <div class="t-fix-row gcp"><b>Google Cloud:</b> <code>ADK 2.x Workflow</code> · <code>LlmAgent(output_schema=..., include_contents="none")</code> · <code>Agent Engine Code Execution</code></div>
+          <div class="t-fix-row gcp"><b>Google Cloud:</b> <code>ADK 2.x Workflow</code> · <code>LlmAgent(output_schema=..., include_contents="none")</code> · <code>Agent Runtime Code Execution</code></div>
         </div>
 
         <div class="t-card-full l-card-full" id="l4-card">
@@ -1606,7 +1606,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <p>Eliminates generic <code>execute_sql(query: str)</code> tools and caller-identity arguments from the LLM schema, exposing only fixed, pre-compiled parameterized SQL templates on a dedicated MCP server.</p>
           <div class="t-fix-row"><b>Boundary &amp; Mitigation (<a href="#part-03">Parameterized Tool Boundary</a>):</b> Pre-compile parameterized <code>$1, $2</code> SQL templates with <code>LIMIT 50</code> caps and strip <code>user_id</code> from the schema (Boundary), backed by a version-pinned tool catalog (Mitigation).</div>
           <div class="t-fix-row oss"><b>Open-Source:</b> <code>MCP Toolbox for Databases</code> (OSS) · <code>FastMCP</code> · Signed Git tool catalog</div>
-          <div class="t-fix-row gcp"><b>Google Cloud:</b> <code>MCP Toolbox</code> on <code>Cloud Run</code> (declarative <code>tools.yaml</code>) · <code>Vertex AI Agent Registry</code></div>
+          <div class="t-fix-row gcp"><b>Google Cloud:</b> <code>MCP Toolbox</code> on <code>Cloud Run</code> (declarative <code>tools.yaml</code>) · <code>Agent Registry</code></div>
         </div>
 
         <div class="t-card-full l-card-full" id="l5-card">
@@ -1615,7 +1615,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <p>Executes every query under the intersection of the agent's cryptographic workload identity and the verified human caller's narrowed delegation token—stored out-of-band and bound directly to SQL parameter <code>$1</code>.</p>
           <div class="t-fix-row"><b>Boundary &amp; Mitigation (<a href="#part-04">Workload Identity</a> &amp; <a href="#part-06">OBO Token Exchange</a>):</b> Per-agent SPIFFE mTLS ID + out-of-band <code>SessionService</code> + <code>RFC 8693</code> OBO exchange (<code>Token_in → Token_obo</code> bound to <code>$1</code>) (Boundary), with 5-minute token TTLs (Mitigation).</div>
           <div class="t-fix-row oss"><b>Open-Source:</b> <code>SPIFFE / SPIRE</code> mTLS · <code>Redis</code> OOB session store · <code>Keycloak STS</code> / <code>Envoy tokenx</code></div>
-          <div class="t-fix-row gcp"><b>Google Cloud:</b> <code>Agent Engine Identity</code> (SPIFFE) · <code>VertexAiSessionService</code> · <code>Auth Manager</code> OBO · <code>MCP Toolbox authServices</code></div>
+          <div class="t-fix-row gcp"><b>Google Cloud:</b> <code>Agent Identity</code> (SPIFFE) · <code>VertexAiSessionService</code> · <code>Auth Manager</code> OBO · <code>MCP Toolbox authServices</code></div>
         </div>
 
         <div class="t-card-full l-card-full" id="l6-card">
@@ -1673,7 +1673,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
       <div id="fig-agnostic-hero"></div>
       <div class="post-prose">
         <p>
-          <a href="#fig-2b-defense-layers">Figure 3</a> defined the security controls in vendor-neutral terms; <a href="#fig-hero">Figure 4</a> instantiates that architecture on Google Cloud (for open-source and cross-cloud equivalents across every hop, see <a href="ref/agnostic-architecture.html">The Platform-Agnostic Architecture Reference</a>). At the ingress and egress boundaries, Google Cloud supports two deployment patterns: a self-managed proxy tier built on Cloud Load Balancing and Cloud Run Envoy sidecars, or the managed Vertex AI Agent Gateway. The table below summarizes how each architectural zone maps to Google Cloud services before Figure 4 presents the complete topology.
+          <a href="#fig-2b-defense-layers">Figure 3</a> defined the security controls in vendor-neutral terms; <a href="#fig-hero">Figure 4</a> instantiates that architecture on Google Cloud (for open-source and cross-cloud equivalents across every hop, see <a href="ref/agnostic-architecture.html">The Platform-Agnostic Architecture Reference</a>). At the ingress and egress boundaries, Google Cloud supports two deployment patterns: a self-managed proxy tier built on Cloud Load Balancing and Cloud Run Envoy sidecars, or the managed Agent Gateway. The table below summarizes how each architectural zone maps to Google Cloud services before Figure 4 presents the complete topology.
         </p>
       </div>
 
@@ -1702,12 +1702,12 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
               <tr>
                 <td><b>2. AI Agent Runtime</b></td>
                 <td>Bounded reasoning, workload identity, and out-of-band session state</td>
-                <td><code>ADK 2.x</code> on <code>Vertex AI Agent Engine</code> or <code>Cloud Run</code>, keyless <code>Agent Engine Identity</code> (SPIFFE), <code>VertexAiSessionService</code>, and <code>Agent Engine Code Execution</code> (gVisor sandbox).</td>
+                <td><code>ADK 2.x</code> on <code>Agent Runtime</code> or <code>Cloud Run</code>, keyless <code>Agent Identity</code> (SPIFFE), <code>VertexAiSessionService</code>, and <code>Agent Runtime Code Execution</code> (gVisor sandbox).</td>
               </tr>
               <tr>
                 <td><b>Egress Gate &amp; Managed Services</b></td>
                 <td>Outbound allowlisting, OBO token exchange, and row screening</td>
-                <td><code>Cloud Run</code> Envoy + <code>tokenx</code> sidecar (or managed <code>Egress Agent Gateway</code>), <code>Vertex AI Agent Registry</code>, <code>Auth Manager / IAM STS</code> (<code>RFC 8693</code> OBO), and inline <code>Model Armor</code> + <code>Cloud SDP</code>.</td>
+                <td><code>Cloud Run</code> Envoy + <code>tokenx</code> sidecar (or managed <code>Egress Agent Gateway</code>), <code>Agent Registry</code>, <code>Auth Manager / IAM STS</code> (<code>RFC 8693</code> OBO), and inline <code>Model Armor</code> + <code>Cloud SDP</code>.</td>
               </tr>
               <tr>
                 <td><b>Private Network &amp; 3. Database Tier</b></td>
@@ -1876,7 +1876,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <g class="k-core">
             <rect x="398" y="60" width="250" height="320" rx="8" class="b"/>
             <text x="414" y="88" class="t-d" style="fill:var(--violet)">2. AI Agent · ADK 2.x</text>
-            <text x="414" y="108" class="t-s">Vertex AI Agent Engine / Cloud Run</text>
+            <text x="414" y="108" class="t-s">Agent Runtime / Cloud Run</text>
             <text x="414" y="352" class="t-s">Zero standing DB credentials.</text>
             <text x="414" y="370" class="t-s">All calls leave via Egress Gate.</text>
           </g>
@@ -1944,7 +1944,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
             <rect x="866" y="148" width="298" height="66" rx="6" class="b"/>
             <circle cx="1120" cy="168" r="10" class="l-dot"/><text x="1120" y="172" class="bd-t">L4</text>
             <circle cx="1146" cy="168" r="10" class="l-dot"/><text x="1146" y="172" class="bd-t">L6</text>
-            <text x="882" y="176" class="t-b">Vertex AI Agent Registry</text>
+            <text x="882" y="176" class="t-b">Agent Registry</text>
             <text x="882" y="198" class="t-s">Curated agents, MCP servers &amp; pinned schemas</text>
           </g>
           <g>
@@ -2075,7 +2075,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
                 <td><a href="#part-04"><b>Workload Identity</b></a></td>
                 <td><a class="b-pill g" href="#l5-card">L5</a></td>
                 <td><code>Agent Identity · SPIFFE</code></td>
-                <td>Keyless X.509/JWT workload identity (<code>principal://…/AGENT_ID</code> on Vertex AI Agent Engine or Cloud Run) and dual-scope authorization (<code>Agent Scope ∩ User Scope</code>).</td>
+                <td>Keyless X.509/JWT workload identity (<code>principal://…/AGENT_ID</code> on Agent Runtime or Cloud Run) and dual-scope authorization (<code>Agent Scope ∩ User Scope</code>).</td>
                 <td><a class="b-pill t" href="#t3-card">T3</a></td>
               </tr>
               <tr>
@@ -2102,7 +2102,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
               <tr>
                 <td><a href="#part-08"><b>Egress Proxy</b></a></td>
                 <td><a class="b-pill g" href="#l4-card">L4</a> <a class="b-pill g" href="#l6-card">L6</a></td>
-                <td><code>Egress Gate</code> · <code>May it call this</code> · <code>Vertex AI Agent Registry</code> · <code>Gemini on Vertex AI</code></td>
+                <td><code>Egress Gate</code> · <code>May it call this</code> · <code>Agent Registry</code> · <code>Gemini on Vertex AI</code></td>
                 <td>Default-deny outbound enforcement via Managed Egress Agent Gateway or a Cloud Run <code>agent + envoy + tokenx</code> pod, with every destination checked against the registry.</td>
                 <td><a class="b-pill t" href="#t6-card">T6</a></td>
               </tr>
@@ -2280,7 +2280,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <g class="p-done">
             <rect x="398" y="60" width="250" height="320" rx="8" class="pb"/>
             <text x="414" y="88" class="pt-d" style="fill:var(--violet)">2. AI Agent · ADK 2.x</text>
-            <text x="414" y="108" class="pt-s">Agent Engine / Cloud Run</text>
+            <text x="414" y="108" class="pt-s">Agent Runtime / Cloud Run</text>
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
@@ -2302,7 +2302,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-wait"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
           <g class="p-wait"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
@@ -2561,7 +2561,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <g class="p-done">
             <rect x="398" y="60" width="250" height="320" rx="8" class="pb"/>
             <text x="414" y="88" class="pt-d" style="fill:var(--violet)">2. AI Agent · ADK 2.x</text>
-            <text x="414" y="108" class="pt-s">Agent Engine / Cloud Run</text>
+            <text x="414" y="108" class="pt-s">Agent Runtime / Cloud Run</text>
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
@@ -2583,7 +2583,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-wait"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
           <g class="p-wait"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
@@ -2669,7 +2669,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           A <strong>workload identity</strong> is an identity the platform issues to a running process rather than a secret the process carries. The standard for naming such identities is <strong>SPIFFE</strong>: each workload gets an ID of the form <code>spiffe://trust-domain/path</code> and a short-lived certificate that proves it. The certificate is issued at start-up by the runtime, rotates automatically, and is not stored as an exportable key file, so there is no long-lived secret to copy. Other services verify it the same way a browser verifies a web server—by checking the certificate chain—which is the basis for the mutual TLS covered in <a href="#part-06">Cryptographic Transport &amp; Token Exchange</a>.
         </p>
         <p>
-          On Google Cloud this is <strong>Agent Identity</strong>: each agent deployed on Vertex AI Agent Engine receives its own SPIFFE principal, and IAM policies are written against that principal. The tool server can therefore say "only <code>spiffe://…/orders-agent</code> may invoke me", the database can say "only the tool server's identity may connect", and the agent never holds a password. Two different agents on the same project are two different principals; one cannot borrow the other's permissions.
+          On Google Cloud this is <strong>Agent Identity</strong>: each agent deployed on Agent Runtime (formerly Vertex AI Agent Engine) receives its own SPIFFE principal, and IAM policies are written against that principal. The tool server can therefore say "only <code>spiffe://…/orders-agent</code> may invoke me", the database can say "only the tool server's identity may connect", and the agent never holds a password. Two different agents on the same project are two different principals; one cannot borrow the other's permissions.
         </p>
       </div>
 
@@ -2867,7 +2867,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <g class="p-done">
             <rect x="398" y="60" width="250" height="320" rx="8" class="pb"/>
             <text x="414" y="88" class="pt-d" style="fill:var(--violet)">2. AI Agent · ADK 2.x</text>
-            <text x="414" y="108" class="pt-s">Agent Engine / Cloud Run</text>
+            <text x="414" y="108" class="pt-s">Agent Runtime / Cloud Run</text>
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
@@ -2889,7 +2889,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-wait"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
           <g class="p-wait"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
@@ -3133,7 +3133,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <g class="p-done">
             <rect x="398" y="60" width="250" height="320" rx="8" class="pb"/>
             <text x="414" y="88" class="pt-d" style="fill:var(--violet)">2. AI Agent · ADK 2.x</text>
-            <text x="414" y="108" class="pt-s">Agent Engine / Cloud Run</text>
+            <text x="414" y="108" class="pt-s">Agent Runtime / Cloud Run</text>
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
@@ -3155,7 +3155,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-wait"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
           <g class="p-new"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
@@ -3519,7 +3519,7 @@ orders_mcp_toolset = McpToolset(
           <g class="p-done">
             <rect x="398" y="60" width="250" height="320" rx="8" class="pb"/>
             <text x="414" y="88" class="pt-d" style="fill:var(--violet)">2. AI Agent · ADK 2.x</text>
-            <text x="414" y="108" class="pt-s">Agent Engine / Cloud Run</text>
+            <text x="414" y="108" class="pt-s">Agent Runtime / Cloud Run</text>
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
@@ -3541,7 +3541,7 @@ orders_mcp_toolset = McpToolset(
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-wait"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
           <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
@@ -3636,7 +3636,7 @@ orders_mcp_toolset = McpToolset(
           <li><strong>Webhook and scheduled callers (<code>HMAC-SHA256</code> / OIDC push):</strong> When the caller is an asynchronous webhook or scheduled job rather than a human browser, the ingress edge verifies the partner's <code>X-Hub-Signature-256</code> HMAC-SHA256 signature (or OIDC push token) and binds the verified <code>user_id</code>/<code>tenant_id</code> into trusted attributes before invoking the agent.</li>
         </ul>
         <p>
-          On Google Cloud, this box is the <strong>Vertex AI Agent Gateway in Ingress mode (<code>CLIENT_TO_AGENT</code>)</strong> (or, for self-managed Cloud Run agents, a <strong>Google Cloud Application Load Balancer + Cloud Armor + Identity-Aware Proxy (IAP) + Service Extensions</strong>, which runs on Google's managed Envoy stack). By locking the agent runtime to accept traffic <em>only</em> from the Ingress gateway, no caller can skip the edge.
+          On Google Cloud, this box is the <strong>Agent Gateway in Ingress mode (<code>CLIENT_TO_AGENT</code>)</strong> (or, for self-managed Cloud Run agents, a <strong>Google Cloud Application Load Balancer + Cloud Armor + Identity-Aware Proxy (IAP) + Service Extensions</strong>, which runs on Google's managed Envoy stack). By locking the agent runtime to accept traffic <em>only</em> from the Ingress gateway, no caller can skip the edge.
         </p>
       </div>
 
@@ -3652,7 +3652,7 @@ orders_mcp_toolset = McpToolset(
       <div>
         <span class="sec-badge">Architecture Stage · Egress Forward Proxy &amp; Registry</span>
         <h2>Put a Forward Proxy Behind the Agent</h2>
-        <p>Adding four boxes to Figure 4: <code>Egress Gate (default deny)</code>, <code>May it call this (IAP · Allowlist)</code>, <code>Vertex AI Agent Registry</code>, and <code>Gemini on Vertex AI</code>—plus blocking the direct agent-to-database path.</p>
+        <p>Adding four boxes to Figure 4: <code>Egress Gate (default deny)</code>, <code>May it call this (IAP · Allowlist)</code>, <code>Agent Registry</code>, and <code>Gemini on Vertex AI</code>—plus blocking the direct agent-to-database path.</p>
       </div>
     </div>
     <div class="sheet-b">
@@ -3661,7 +3661,7 @@ orders_mcp_toolset = McpToolset(
         <div class="cm-concept"><span class="cm-k">Concept · <a href="#fig-2b-defense-layers">Figure 3</a></span>Forward Proxy (out) · Destination AuthZ · Tool &amp; Agent Registry · LLM Inference API</div>
         <div class="cm-oss"><span class="cm-k">Open-source implementation</span>Envoy Proxy (sidecar / egress gateway) · Envoy ext_authz + OPA · Git catalogue + OPA bundle · Backstage · vLLM · Ollama · any hosted model</div>
         <div class="cm-gcp"><span class="cm-k">Google Cloud guardrail</span>Agent Gateway (AGENT_TO_MCP) · Envoy sidecar · IAP access rules (CEL) · Agent Registry · Gemini on Vertex AI</div>
-        <div class="cm-fig"><span class="cm-k">Box in <a href="#fig-hero">Figure 4</a></span><code>Egress Gate</code> · <code>May it call this</code> · <code>Vertex AI Agent Registry</code> · <code>Gemini on Vertex AI</code></div>
+        <div class="cm-fig"><span class="cm-k">Box in <a href="#fig-hero">Figure 4</a></span><code>Egress Gate</code> · <code>May it call this</code> · <code>Agent Registry</code> · <code>Gemini on Vertex AI</code></div>
       </div>
 <!-- /CONCEPT_STRIP_CH8 -->
 
@@ -3672,7 +3672,7 @@ orders_mcp_toolset = McpToolset(
       <div class="beat">Where we are</div>
       <div class="post-prose">
         <p>
-          Even with an <a href="#part-07">Ingress Reverse Proxy</a> in front of the agent, what happens after a prompt injection enters the agent's context window (<code>T2</code>) or a third-party Python package is compromised (<code>LLM03</code>)? If the agent container can open arbitrary outbound connections, it can POST database rows to <code>https://attacker.example/collect</code> (<code>T6</code>), call an unapproved shadow MCP server (<code>ASI10</code>), or fall victim to an MCP tool-description rug-pull (<code>ASI04</code>). We now add the <strong>Egress Gate</strong>, <strong>Vertex AI Agent Registry</strong>, and <strong>Gemini on Vertex AI</strong> to Figure 4, and sever any direct route from the agent to the database.
+          Even with an <a href="#part-07">Ingress Reverse Proxy</a> in front of the agent, what happens after a prompt injection enters the agent's context window (<code>T2</code>) or a third-party Python package is compromised (<code>LLM03</code>)? If the agent container can open arbitrary outbound connections, it can POST database rows to <code>https://attacker.example/collect</code> (<code>T6</code>), call an unapproved shadow MCP server (<code>ASI10</code>), or fall victim to an MCP tool-description rug-pull (<code>ASI04</code>). We now add the <strong>Egress Gate</strong>, <strong>Agent Registry</strong>, and <strong>Gemini on Vertex AI</strong> to Figure 4, and sever any direct route from the agent to the database.
         </p>
       </div>
 
@@ -3746,7 +3746,7 @@ orders_mcp_toolset = McpToolset(
           <g class="p-done">
             <rect x="398" y="60" width="250" height="320" rx="8" class="pb"/>
             <text x="414" y="88" class="pt-d" style="fill:var(--violet)">2. AI Agent · ADK 2.x</text>
-            <text x="414" y="108" class="pt-s">Agent Engine / Cloud Run</text>
+            <text x="414" y="108" class="pt-s">Agent Runtime / Cloud Run</text>
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
@@ -3768,7 +3768,7 @@ orders_mcp_toolset = McpToolset(
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-new"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-new"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-new"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
           <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
@@ -3830,7 +3830,7 @@ orders_mcp_toolset = McpToolset(
           <text x="472" y="402" style="fill:var(--good);font:600 10px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
-          <span>Figure 15 — Progressive Build of Figure 4 (Step 6 of 11): Egress Gate (default deny, May it call this), Vertex AI Agent Registry, Gemini on Vertex AI, and blocked direct DB route added.</span>
+          <span>Figure 15 — Progressive Build of Figure 4 (Step 6 of 11): Egress Gate (default deny, May it call this), Agent Registry, Gemini on Vertex AI, and blocked direct DB route added.</span>
           <div class="legend-items">
             <span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good);border-width:2.5px"></i> <b>Added in This Stage</b></span>
             <span><i class="swatch-dot" style="background:var(--panel);border-color:var(--good)"></i> Added in Earlier Stages</span>
@@ -3963,8 +3963,8 @@ orders_mcp_toolset = McpToolset(
         <div class="info-card">
           <h4>When to Use Pattern A vs. Pattern B</h4>
           <ul>
-            <li><b>Pattern A, managed <code>Egress Agent Gateway</code>:</b> Used when your agent runs on <b>Vertex AI Agent Engine</b> or <b>Gemini Enterprise</b>. Google manages the Envoy proxy plane. You register approved MCP servers in <code>Agent Registry</code> and write declarative IAP CEL access rules (such as <code>request.auth.claims.mcp.toolName in ['get_order', 'list_orders']</code> and <code>mcp.tool.isReadOnly == true</code>).</li>
-            <li><b>Pattern B, Cloud Run sidecars (<code>agent</code> + <code>envoy</code> + <code>tokenx</code>):</b> Used when your agent runs directly on <b>Cloud Run or GKE</b>. Agent Gateway treats Vertex AI Agent Engine and Gemini Enterprise as egress sources and Cloud Run as an egress destination, so a Cloud Run agent needs its own proxy. Running Envoy and <code>tokenx</code> as sidecar containers gives three properties: the Python agent container holds <b>no OAuth <code>client_secret</code></b>; the agent <b>never sees <code>Token_obo</code></b>; and any host not listed in <code>envoy.yaml</code> gets <code>403 Forbidden</code>.</li>
+            <li><b>Pattern A, managed <code>Egress Agent Gateway</code>:</b> Used when your agent runs on <b>Agent Runtime</b> or <b>Gemini Enterprise</b>. Google manages the Envoy proxy plane. You register approved MCP servers in <code>Agent Registry</code> and write declarative IAP CEL access rules (such as <code>request.auth.claims.mcp.toolName in ['get_order', 'list_orders']</code> and <code>mcp.tool.isReadOnly == true</code>).</li>
+            <li><b>Pattern B, Cloud Run sidecars (<code>agent</code> + <code>envoy</code> + <code>tokenx</code>):</b> Used when your agent runs directly on <b>Cloud Run or GKE</b>. Agent Gateway treats Agent Runtime and Gemini Enterprise as egress sources and Cloud Run as an egress destination, so a Cloud Run agent needs its own proxy. Running Envoy and <code>tokenx</code> as sidecar containers gives three properties: the Python agent container holds <b>no OAuth <code>client_secret</code></b>; the agent <b>never sees <code>Token_obo</code></b>; and any host not listed in <code>envoy.yaml</code> gets <code>403 Forbidden</code>.</li>
           </ul>
         </div>
         <div class="code-card" style="margin:0;">
@@ -4120,7 +4120,7 @@ orders_mcp_toolset = McpToolset(
           <g class="p-done">
             <rect x="398" y="60" width="250" height="320" rx="8" class="pb"/>
             <text x="414" y="88" class="pt-d" style="fill:var(--violet)">2. AI Agent · ADK 2.x</text>
-            <text x="414" y="108" class="pt-s">Agent Engine / Cloud Run</text>
+            <text x="414" y="108" class="pt-s">Agent Runtime / Cloud Run</text>
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
@@ -4142,7 +4142,7 @@ orders_mcp_toolset = McpToolset(
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-done"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
           <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
@@ -4427,7 +4427,7 @@ B64_RUN_RE = re.compile(<span class="hl-s">r</span><span class="hl-s">"</span><s
           <g class="p-done">
             <rect x="398" y="60" width="250" height="320" rx="8" class="pb"/>
             <text x="414" y="88" class="pt-d" style="fill:var(--violet)">2. AI Agent · ADK 2.x</text>
-            <text x="414" y="108" class="pt-s">Agent Engine / Cloud Run</text>
+            <text x="414" y="108" class="pt-s">Agent Runtime / Cloud Run</text>
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
@@ -4449,7 +4449,7 @@ B64_RUN_RE = re.compile(<span class="hl-s">r</span><span class="hl-s">"</span><s
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-done"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
           <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
@@ -4778,7 +4778,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
           <g class="p-done">
             <rect x="398" y="60" width="250" height="320" rx="8" class="pb"/>
             <text x="414" y="88" class="pt-d" style="fill:var(--violet)">2. AI Agent · ADK 2.x</text>
-            <text x="414" y="108" class="pt-s">Agent Engine / Cloud Run</text>
+            <text x="414" y="108" class="pt-s">Agent Runtime / Cloud Run</text>
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
@@ -4800,7 +4800,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-done"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
           <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
@@ -4887,7 +4887,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
         <ul>
           <li><strong>Stolen credentials used from outside:</strong> Even if an attacker possesses a valid <code>roles/Owner</code> or <code>toolbox-sa</code> token, any API request to Cloud Run, BigQuery, Spanner, Cloud SQL, or Secret Manager that does not originate from an authorized VPC or Access Level inside the perimeter is rejected with <code>403 VPC_SERVICE_CONTROLS</code>.</li>
           <li><strong>Cross-project exfiltration:</strong> Resources inside the perimeter cannot be copied, exported, or read into any project outside the perimeter.</li>
-          <li><strong>Ingress policy when the agent runs in a separate project:</strong> When your agent runs on <code>Vertex AI Agent Engine</code> in an agent project (<code>AGENT_PROJECT_NUMBER</code>) that is separate from your Data Project perimeter, you must configure a narrow <strong>VPC-SC Ingress Policy</strong> allowing only your agent's SPIFFE identity (or service account) to invoke <code>run.googleapis.com</code> inside the Data Project—and inside the VPC you must always point your PSC API endpoint to <code>--target-google-apis-bundle=vpc-sc</code> (never <code>all-apis</code>).</li>
+          <li><strong>Ingress policy when the agent runs in a separate project:</strong> When your agent runs on <code>Agent Runtime</code> in an agent project (<code>AGENT_PROJECT_NUMBER</code>) that is separate from your Data Project perimeter, you must configure a narrow <strong>VPC-SC Ingress Policy</strong> allowing only your agent's SPIFFE identity (or service account) to invoke <code>run.googleapis.com</code> inside the Data Project—and inside the VPC you must always point your PSC API endpoint to <code>--target-google-apis-bundle=vpc-sc</code> (never <code>all-apis</code>).</li>
         </ul>
       </div>
 
@@ -4927,7 +4927,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
       <div class="concept-map">
         <div class="cm-concept"><span class="cm-k">Concept · <a href="#fig-2b-defense-layers">Figure 3</a></span>Deterministic Workflow + Quarantine LLM + HITL · Out-of-Band Session Store · Code Sandbox</div>
         <div class="cm-oss"><span class="cm-k">Open-source implementation</span>LangGraph · Pydantic output_schema · Redis / Postgres session store · gVisor · Firecracker</div>
-        <div class="cm-gcp"><span class="cm-k">Google Cloud guardrail</span>ADK 2.x Workflow + Quarantine LlmAgent + RequestInput · VertexAiSessionService · Agent Engine Code Execution</div>
+        <div class="cm-gcp"><span class="cm-k">Google Cloud guardrail</span>ADK 2.x Workflow + Quarantine LlmAgent + RequestInput · VertexAiSessionService · Agent Runtime Code Execution</div>
         <div class="cm-fig"><span class="cm-k">Box in <a href="#fig-hero">Figure 4</a></span><code>Workflow &amp; Quarantine</code> · <code>Code Sandbox</code></div>
       </div>
 <!-- /CONCEPT_STRIP_CH12 -->
@@ -5013,7 +5013,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
           <g class="p-done">
             <rect x="398" y="60" width="250" height="320" rx="8" class="pb"/>
             <text x="414" y="88" class="pt-d" style="fill:var(--violet)">2. AI Agent · ADK 2.x</text>
-            <text x="414" y="108" class="pt-s">Agent Engine / Cloud Run</text>
+            <text x="414" y="108" class="pt-s">Agent Runtime / Cloud Run</text>
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
@@ -5035,7 +5035,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-done"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
           <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
@@ -5130,7 +5130,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
             </ul>
           </li>
           <li><strong>2. <code>OOB Session (VertexAiSessionService)</code>, partitioned by tenant:</strong> The session store introduced in <a href="#oob-session-state">the token-exchange stage</a> already keeps caller tokens and session state outside the LLM context window (<code>L5</code>). This stage adds one rule: every session and memory record is keyed by the verified <code>(tenant_id, user_id)</code> established at the Ingress Gate, so a payload stored in one tenant's session cannot be retrieved into another's (<code>ASI06</code>).</li>
-          <li><strong>3. <code>Code Sandbox (gVisor runtime)</code>:</strong> Any code execution happens in an isolated, ephemeral gVisor sandbox container (<code>Agent Engine Code Execution</code>) with zero network egress and zero access to the agent's SPIFFE identity or tokens (<code>ASI05</code>).</li>
+          <li><strong>3. <code>Code Sandbox (gVisor runtime)</code>:</strong> Any code execution happens in an isolated, ephemeral gVisor sandbox container (<code>Agent Runtime Code Execution</code>) with zero network egress and zero access to the agent's SPIFFE identity or tokens (<code>ASI05</code>).</li>
         </ul>
       </div>
 
@@ -5406,7 +5406,7 @@ privileged_order_responder = LlmAgent(
           <g class="p-done">
             <rect x="398" y="60" width="250" height="320" rx="8" class="pb"/>
             <text x="414" y="88" class="pt-d" style="fill:var(--violet)">2. AI Agent · ADK 2.x</text>
-            <text x="414" y="108" class="pt-s">Agent Engine / Cloud Run</text>
+            <text x="414" y="108" class="pt-s">Agent Runtime / Cloud Run</text>
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
@@ -5428,7 +5428,7 @@ privileged_order_responder = LlmAgent(
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-done"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
           <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
           <g class="p-new"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
@@ -5523,7 +5523,7 @@ privileged_order_responder = LlmAgent(
           <li><strong>2. <code>IAM Allow, Deny &amp; PAB (least privilege + identity ceiling)</code>:</strong> Combine narrow IAM allow grants with <strong>IAM Deny policies</strong> and a <strong>Principal Access Boundary (PAB)</strong> bound to the agent's SPIFFE identity so the agent principal cannot use permissions on resources outside its designated Data Project, even if someone accidentally grants it a broad role elsewhere.</li>
           <li><strong>3. <code>Org Policy Constraints (restrictPublicIp · no SA keys)</code>:</strong> Enforce organization-wide constraints across every agent and data project: <code>constraints/sql.restrictPublicIp</code> (zero public DB IPs), <code>constraints/iam.disableServiceAccountKeyCreation</code> (zero static JSON keys), <code>constraints/run.allowedIngress</code> (internal/LB ingress only), and Vertex AI Model Armor floor settings.</li>
           <li><strong>4. <code>ADK Eval &amp; Red Team CI (injection &amp; BOLA tests gate deploy)</code>:</strong> Run automated CI/CD evaluation suites (<code>adk eval</code>) before every rollout, testing the agent against adversarial direct/indirect prompt injections (<code>T1</code>/<code>T2</code>), cross-tenant BOLA tool-argument spoofing (<code>T4</code>), and tool-trajectory compliance.</li>
-          <li><strong>5. <code>3-Step Kill Switch (deny PAB · revoke OBO · keep logs)</code>:</strong> A pre-scripted runbook that stops an agent in seconds and keeps the evidence. Step one attaches an IAM Deny / PAB block to the agent's SPIFFE principal and revokes <code>roles/iap.egressor</code> at the Egress gateway. Step two revokes active OAuth refresh and OBO tokens in Auth Manager. Step three leaves the Cloud Run / Vertex AI Agent Engine revision, memory state, and audit log sinks untouched for investigation.</li>
+          <li><strong>5. <code>3-Step Kill Switch (deny PAB · revoke OBO · keep logs)</code>:</strong> A pre-scripted runbook that stops an agent in seconds and keeps the evidence. Step one attaches an IAM Deny / PAB block to the agent's SPIFFE principal and revokes <code>roles/iap.egressor</code> at the Egress gateway. Step two revokes active OAuth refresh and OBO tokens in Auth Manager. Step three leaves the Cloud Run / Agent Runtime revision, memory state, and audit log sinks untouched for investigation.</li>
         </ul>
       </div>
 
@@ -5795,7 +5795,7 @@ Authorization: Bearer &lt;Token_obo_or_KMS_Context_JWT&gt;
             </div>
             <div class="p-col guarded-col">
               <span class="p-col-title">Governed Architecture (Egress Gateway / Envoy + tokenx Sidecar)</span>
-              <div class="p-code">• Vertex AI Agent Engine: Egress gateway verifies SPIFFE mTLS + DPoP, checks Agent Registry ∩ IAP CEL rules, exchanges Token_in → Token_obo via Auth Manager, and screens /mcp payloads with Model Armor + normalize().
+              <div class="p-code">• Agent Runtime: Egress gateway verifies SPIFFE mTLS + DPoP, checks Agent Registry ∩ IAP CEL rules, exchanges Token_in → Token_obo via Auth Manager, and screens /mcp payloads with Model Armor + normalize().
 • Cloud Run: Local Envoy + tokenx sidecar swaps Token_in → Token_obo out-of-process and blocks unknown hosts (403).</div>
               <div>Default-deny outbound routing. Effective authority is strictly <code>Agent Scope ∩ User Scope</code>.</div>
             </div>
@@ -5985,7 +5985,7 @@ Authorization: Bearer &lt;Token_obo_or_KMS_Context_JWT&gt;
             <tbody>
               <tr>
                 <td><a href="https://docs.cloud.google.com/architecture/multi-agent-private-networking-patterns" target="_blank" rel="noopener"><b>Multi-agent private networking patterns</b></a></td>
-                <td>Flagship networking blueprint connecting Vertex AI Agent Engine, Gemini Enterprise, Cloud Run, and GKE agents to private MCP servers and databases via PSC and VPC-SC.</td>
+                <td>Flagship networking blueprint connecting Agent Runtime, Gemini Enterprise, Cloud Run, and GKE agents to private MCP servers and databases via PSC and VPC-SC.</td>
                 <td><a href="#part-07">Ingress Proxy</a> · <a href="#part-08">Egress Proxy</a> · <a href="#part-10">Private Network</a> · <a href="#part-11">VPC-SC Perimeter</a></td>
               </tr>
               <tr>
@@ -6010,7 +6010,7 @@ Authorization: Bearer &lt;Token_obo_or_KMS_Context_JWT&gt;
               </tr>
               <tr>
                 <td><a href="https://codelabs.developers.google.com/agw-vpcsc-codelab" target="_blank" rel="noopener"><b>Codelab: Agent Gateway with VPC Service Controls</b></a></td>
-                <td>Hands-on deployment of a Vertex AI Agent Engine instance behind Ingress/Egress Agent Gateways reaching a private MCP server via a PSC Network Attachment inside VPC-SC.</td>
+                <td>Hands-on deployment of a Agent Runtime instance behind Ingress/Egress Agent Gateways reaching a private MCP server via a PSC Network Attachment inside VPC-SC.</td>
                 <td><a href="#part-07">Ingress Proxy</a> · <a href="#part-08">Egress Proxy</a> · <a href="#part-10">Private Network</a> · <a href="#part-11">VPC-SC Perimeter</a></td>
               </tr>
               <tr>
