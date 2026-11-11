@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Platform-Agnostic Zero-Trust Agent-to-Database Reference Architecture — Episode 01 Reference</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Platform-Agnostic Architecture — Agentic Governance · Episode 01 Reference</title>
 <style>
   :root,
   html[data-theme="light"] {
@@ -182,7 +181,7 @@
   }
 
   .post-prose {
-    max-width: 880px;
+    max-width: 100%;
     font-size: 17px;
     line-height: 1.78;
     color: var(--ink);
@@ -472,822 +471,653 @@
     .diagram-frame, .opt-card, .code-card { break-inside: avoid; }
     tr { break-inside: avoid; }
   }
+
+
+
+
+  /* ===== Figure 0A · platform-agnostic decomposition ===== */
+  #fig-agnostic-hero text { font-family: var(--sans); font-size: 13px; fill: var(--ink); }
+  #fig-agnostic-hero .t-b { font-weight: 700; font-size: 14.5px; }
+  #fig-agnostic-hero .t-d { font-size: 17px; font-weight: 700; }
+  #fig-agnostic-hero .t-s { font-size: 12px; fill: var(--muted); }
+  #fig-agnostic-hero .t-p { font-family: var(--mono); font-size: 10.5px; fill: var(--good); font-weight: 600; }
+  #fig-agnostic-hero .t-c { text-anchor: middle; }
+  #fig-agnostic-hero .t-wire { font-family: var(--mono); font-size: 10.5px; fill: var(--muted); font-weight: 600; }
+  #fig-agnostic-hero .zone { fill: var(--panel-3); stroke: var(--line-2); stroke-width: 1.2; }
+  #fig-agnostic-hero .zl { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .09em; fill: var(--muted); }
+  #fig-agnostic-hero .zl-v { font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: .06em; fill: var(--violet); }
+  #fig-agnostic-hero .t-perim { font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: .05em; fill: var(--warn); }
+  #fig-agnostic-hero .vpcz { fill: var(--violet-soft); stroke: var(--violet); stroke-width: 1.6; }
+  #fig-agnostic-hero .prod { fill: var(--panel); stroke: var(--violet); stroke-width: 1.4; stroke-dasharray: 5 3; }
+  #fig-agnostic-hero .perim { fill: none; stroke: var(--warn); stroke-width: 2.2; stroke-dasharray: 10 6; }
+  #fig-agnostic-hero .band { fill: var(--panel-3); stroke: var(--line); }
+  #fig-agnostic-hero rect.b { fill: var(--panel); stroke: var(--line); stroke-width: 1.4; }
+  #fig-agnostic-hero .k-gate > rect.b { fill: var(--panel); stroke: var(--cyan); stroke-width: 2; }
+  #fig-agnostic-hero .k-gbox rect.b { fill: var(--cyan-soft); stroke: var(--cyan); stroke-width: 1.3; }
+  #fig-agnostic-hero .k-core > rect.b { fill: var(--panel); stroke: var(--good); stroke-width: 2; }
+  #fig-agnostic-hero .k-agentin rect.b { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.4; }
+  #fig-agnostic-hero .k-inner rect.b { fill: var(--panel-3); stroke: var(--line); stroke-width: 1.3; }
+  #fig-agnostic-hero .k-ma rect.b { fill: var(--stop-soft); stroke: var(--stop); stroke-width: 1.4; }
+  #fig-agnostic-hero .k-svc rect.b { fill: var(--panel); stroke: var(--violet); stroke-width: 2; }
+  #fig-agnostic-hero .k-nic rect.b { fill: var(--cyan-soft); stroke: var(--cyan); stroke-width: 1.6; }
+  #fig-agnostic-hero .edge { fill: none; stroke: var(--ink); stroke-width: 2.1; }
+  #fig-agnostic-hero .edge.e-id { stroke: var(--good); stroke-width: 3; }
+  #fig-agnostic-hero .edge.e-db { stroke: var(--violet); stroke-width: 2.5; }
+  #fig-agnostic-hero .edge.e-ctrl { stroke: var(--cyan); stroke-width: 1.6; stroke-dasharray: 4 3; }
+  #fig-agnostic-hero .blocked { stroke: var(--stop); stroke-width: 2.2; stroke-dasharray: 6 4; fill: none; }
+  #fig-agnostic-hero .xbg { fill: var(--panel); stroke: var(--stop); stroke-width: 1.6; }
+  #fig-agnostic-hero .xm { stroke: var(--stop); stroke-width: 2.6; stroke-linecap: round; }
+  #fig-agnostic-hero .t-bad { fill: var(--stop); font-weight: 700; font-size: 12px; }
+  #fig-agnostic-hero .bd { fill: var(--ink); }
+  #fig-agnostic-hero .bd-t { fill: var(--panel); font-family: var(--mono); font-size: 11px; font-weight: 700; text-anchor: middle; }
+  #fig-agnostic-hero .t-oss { font-family: var(--mono); font-size: 11px; font-weight: 700; fill: var(--cyan); }
+  #fig-agnostic-hero .t-gcp { font-family: var(--mono); font-size: 11px; font-weight: 700; fill: var(--good); }
+  #fig-agnostic-hero .pl { stroke-width: 1; }
+  #fig-agnostic-hero .pl-oss { fill: var(--cyan-soft); stroke: var(--cyan); }
+  #fig-agnostic-hero .pl-gcp { fill: var(--good-soft); stroke: var(--good); }
+  #fig-agnostic-hero .plt { font-family: var(--mono); font-size: 10.5px; font-weight: 700; }
+  #fig-agnostic-hero .pl-oss-t { fill: var(--cyan); }
+  #fig-agnostic-hero .pl-gcp-t { fill: var(--good); }
+  #fig-agnostic-hero .chb { fill: var(--ink); opacity: .85; }
+  #fig-agnostic-hero .chbt { fill: var(--panel); font-family: var(--mono); font-size: 10px; font-weight: 700; text-anchor: middle; }
+
+  /* concept → implementation strip used in every chapter */
+  .concept-map { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0; margin: 0 0 18px; border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel-2); }
+  .concept-map > div { padding: 10px 14px; border-right: 1px solid var(--line-2); font-size: 13.5px; }
+  .concept-map > div:last-child { border-right: 0; }
+  .concept-map .cm-k { display: block; font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 3px; }
+  .concept-map .cm-concept .cm-k { color: var(--ink); }
+  .concept-map .cm-oss .cm-k { color: var(--cyan); }
+  .concept-map .cm-gcp .cm-k { color: var(--good); }
+  .concept-map .cm-fig .cm-k { color: var(--violet); }
+  .concept-map a { color: inherit; }
+  @media (max-width: 960px) { .concept-map { grid-template-columns: 1fr 1fr; } }
+  .cm-pill { display:inline-block; font-family: var(--mono); font-size: 10.5px; font-weight: 700; padding: 1px 7px; border-radius: 4px; border: 1px solid; margin: 1px 4px 1px 0; }
+  .cm-pill.oss { color: var(--cyan); background: var(--cyan-soft); border-color: color-mix(in srgb, var(--cyan) 35%, transparent); }
+  .cm-pill.gcp { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 35%, transparent); }
+  @media print { .concept-map { break-inside: avoid; } }
+
 </style>
 </head>
 <body>
 <nav class="topbar">
-  <div class="brand">
-    <span class="brand-dot"></span>
-    <span>Agentic Governance · Reference Deep Dive · Platform-Agnostic Architecture</span>
-  </div>
+  <div class="brand"><span class="brand-dot"></span><span>Agentic Governance · Reference · Platform-Agnostic Architecture</span></div>
   <div class="navlinks">
-    <a href="../ep01_securing_agent_to_database.html">← Back to Episode 01 Post</a>
-    <a href="#fig-agnostic-hero">Agnostic Diagram</a>
-    <a href="#fig-agnostic-guardrail">Envoy ext_proc Guardrail</a>
+    <a href="../ep01_securing_agent_to_database.html">← Episode 01</a>
+    <a href="#fig-agnostic-hero">Figure 0A</a>
+    <a href="#fig-agnostic-guardrail">Guardrail</a>
+    <a href="#xcloud">Cross-cloud map</a>
     <button class="theme-btn" id="theme-toggle" type="button">◑ Switch to Dark Mode</button>
   </div>
 </nav>
 <main class="app">
   <section class="sheet">
-    <div class="sheet-h">
-      <div>
-        <span class="sec-badge">Vendor-Agnostic Reference Blueprint · Architecture, Protocols &amp; Mappings</span>
-        <h1>The Platform-Agnostic Zero-Trust Agent-to-Database Architecture</h1>
-        <p>Every component, wire protocol, Envoy filter (`ext_authz` / `ext_proc`), cryptographic token, and cross-cloud mapping explained from first principles.</p>
-      </div>
-    </div>
+    <div class="sheet-h"><div>
+      <span class="sec-badge">Reference · concepts first, products second</span>
+      <h1>The Platform-Agnostic Architecture</h1>
+      <p>Every box of the governed agent-to-database architecture named by its role, with an open-source implementation and the Google Cloud guardrail side by side, the wire contract for every hop, and the same map for AWS and Azure.</p>
+    </div></div>
     <div class="sheet-b">
       
       <div class="post-prose">
-        <h3>1. Platform-Agnostic Zero-Trust Blueprint (Before Vendor Mapping)</h3>
+        <h3>The architecture in platform-agnostic terms</h3>
         <p>
-          Products like <strong>Vertex AI Agent Engine</strong>, <strong>Google Cloud Agent Gateway</strong>, and <strong>Model Armor</strong> are cloud-specific implementations of deeper architectural primitives. In any production environment—whether you run on Google Cloud, AWS, Azure, or self-hosted Kubernetes—the security of an agent-to-database connection depends on <strong>16 vendor-agnostic building blocks</strong> across <strong>5 trust zones</strong> and <strong>10 cryptographically verified wire hops</strong>.
+          Agent Engine, Agent Gateway, Model Armor and Private Service Connect are Google Cloud products. The reasons they exist are not Google-specific. Behind every one of them is a concept that any team can build from open-source parts: a reverse proxy in front of the agent, a forward proxy behind it, a content guardrail the proxies consult, a workload identity for the agent, a token exchange that narrows the user's authority, a private network link, a parameterized tool server, and a database that enforces rows and columns itself.
         </p>
         <p>
-          In the platform-agnostic reference diagram below (<strong>Figure 0A</strong>), <strong>Envoy Proxy</strong> serves as the policy enforcement point at both Ingress (<code>B1</code>) and Egress (<code>B3</code>), and content safety ("Model Armor") is represented by its underlying architectural pattern: an inline <strong>Envoy External Processor (<code>ext_proc</code>) gRPC Guardrail + Deterministic DLP Tokenizer</strong>.
+          Figure 0A draws the architecture with those concepts only. Inside every box, a cyan line names an open-source implementation (Envoy Proxy is used for both proxies) and a green line names the Google Cloud guardrail that takes the same role in Figure 0B. The chapter badge points to where the box is introduced. Reading order is the same as the hop numbers: callers enter at hop 1, the agent exits at hop 4, and nothing reaches the database except hop 9.
         </p>
       </div>
-
       
       <div class="diagram-frame" id="fig-agnostic-hero">
-        <style>
-          #fig-agnostic-hero text { font-family: var(--sans); font-size: 13px; fill: var(--ink); }
-          #fig-agnostic-hero .t-b { font-weight: 700; font-size: 13.8px; }
-          #fig-agnostic-hero .t-d { font-size: 16.5px; font-weight: 700; }
-          #fig-agnostic-hero .t-s { font-size: 11.5px; fill: var(--muted); }
-          #fig-agnostic-hero .t-m { font-family: var(--mono); font-size: 11px; fill: var(--cyan); font-weight: 600; }
-          #fig-agnostic-hero .t-p { font-family: var(--mono); font-size: 10.5px; fill: var(--good); font-weight: 600; }
-          #fig-agnostic-hero .t-c { text-anchor: middle; }
-          #fig-agnostic-hero .zone { fill: var(--panel-3); stroke: var(--line-2); stroke-width: 1.2; }
-          #fig-agnostic-hero .zl { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .09em; fill: var(--muted); }
-          #fig-agnostic-hero .zl-v { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .09em; fill: var(--violet); }
-          #fig-agnostic-hero .t-perim { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .07em; fill: var(--warn); }
-          #fig-agnostic-hero .vpcz { fill: var(--violet-soft); stroke: var(--violet); stroke-width: 1.6; }
-          #fig-agnostic-hero .prod { fill: var(--panel); stroke: var(--violet); stroke-width: 1.4; stroke-dasharray: 5 3; }
-          #fig-agnostic-hero .perim { fill: none; stroke: var(--warn); stroke-width: 2.2; stroke-dasharray: 10 6; }
-          #fig-agnostic-hero .band { fill: var(--panel-3); stroke: var(--line); }
-          #fig-agnostic-hero rect.b { fill: var(--panel); stroke: var(--line); stroke-width: 1.4; }
-          #fig-agnostic-hero .k-gate rect.b { fill: var(--panel); stroke: var(--cyan); stroke-width: 2; }
-          #fig-agnostic-hero .k-gbox rect.b { fill: var(--cyan-soft); stroke: var(--cyan); stroke-width: 1.3; }
-          #fig-agnostic-hero .k-core rect.b { fill: var(--panel); stroke: var(--good); stroke-width: 2; }
-          #fig-agnostic-hero .k-agentin rect.b { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.4; }
-          #fig-agnostic-hero .k-inner rect.b { fill: var(--panel-3); stroke: var(--line); stroke-width: 1.3; }
-          #fig-agnostic-hero .k-ma rect.b { fill: var(--stop-soft); stroke: var(--stop); stroke-width: 1.4; }
-          #fig-agnostic-hero .k-svc rect.b { fill: var(--panel); stroke: var(--violet); stroke-width: 2; }
-          #fig-agnostic-hero .k-nic rect.b { fill: var(--cyan-soft); stroke: var(--cyan); stroke-width: 1.6; }
-          #fig-agnostic-hero .edge { fill: none; stroke: var(--ink); stroke-width: 2.1; }
-          #fig-agnostic-hero .edge.e-id { stroke: var(--good); stroke-width: 3; }
-          #fig-agnostic-hero .edge.e-db { stroke: var(--violet); stroke-width: 2.5; }
-          #fig-agnostic-hero .edge.e-ctrl { stroke: var(--cyan); stroke-width: 1.8; stroke-dasharray: 4 3; }
-          #fig-agnostic-hero .blocked { stroke: var(--stop); stroke-width: 2.2; stroke-dasharray: 6 4; fill: none; }
-          #fig-agnostic-hero .xbg { fill: var(--panel); stroke: var(--stop); stroke-width: 1.6; }
-          #fig-agnostic-hero .xm { stroke: var(--stop); stroke-width: 2.6; stroke-linecap: round; }
-          #fig-agnostic-hero .t-bad { fill: var(--stop); font-weight: 700; font-size: 12px; }
-          #fig-agnostic-hero .t-tls { fill: var(--good); font: 600 11px/1 var(--mono); }
-          #fig-agnostic-hero .bd { fill: var(--cyan); }
-          #fig-agnostic-hero .bd-g { fill: var(--good); }
-          #fig-agnostic-hero .bd-v { fill: var(--violet); }
-          #fig-agnostic-hero .bd-t { fill: #ffffff; font-family: var(--mono); font-size: 10.5px; font-weight: 700; text-anchor: middle; }
-          #fig-agnostic-hero .wire-pill { fill: var(--panel); stroke: var(--line); stroke-width: 1; }
-          #fig-agnostic-hero .wire-txt { font-family: var(--mono); font-size: 10px; font-weight: 600; fill: var(--ink); text-anchor: middle; }
-        </style>
-        <svg viewBox="0 0 1320 920" role="img" aria-label="Platform-Agnostic Zero-Trust Agent-to-Database Reference Architecture">
-          <defs>
-            <marker id="ag-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--ink)"/></marker>
-            <marker id="ag-aht" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--good)"/></marker>
-            <marker id="ag-ahv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--violet)"/></marker>
-            <marker id="ag-ahc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--cyan)"/></marker>
-          </defs>
+        <svg viewBox="0 0 1720 1090" role="img" aria-label="Platform-agnostic decomposition of the governed agent-to-database architecture">
+<defs>
+  <marker id="ag-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--ink)"/></marker>
+  <marker id="ag-aht" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--good)"/></marker>
+  <marker id="ag-ahv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--violet)"/></marker>
+</defs>
+<rect x="16" y="16" width="250" height="524" rx="10" class="zone"/><text x="30" y="40" class="zl">OUTSIDE</text>
+<rect x="282" y="16" width="990" height="524" rx="10" class="zone"/><text x="296" y="40" class="zl">AGENT PLATFORM · REVERSE PROXY IN · RUNTIME · FORWARD PROXY OUT</text>
+<rect x="1288" y="16" width="416" height="524" rx="10" class="zone"/><text x="1302" y="40" class="zl">SHARED SERVICES · MODEL · REGISTRY · TOKENS · AUDIT</text>
+<rect x="16" y="570" width="1688" height="300" rx="12" class="perim"/>
+<text x="30" y="594" class="t-perim">DATA PERIMETER · identity + network boundary around the data</text>
+<text x="1688" y="594" class="t-perim" text-anchor="end">OSS  SPIFFE federation + Cilium   ·   GCP  VPC Service Controls   ·   Ch 11</text>
+<rect x="34" y="608" width="1248" height="246" rx="10" class="vpcz"/>
+<text x="52" y="632" class="zl-v">PRIVATE APPLICATION NETWORK · RFC 1918 only · no internet route</text>
+<text x="1266" y="632" class="zl-v" text-anchor="end">OSS  K8s NetworkPolicy  ·  GCP  your VPC · no external IPs  ·  Ch 10</text>
+<rect x="1298" y="608" width="406" height="246" rx="10" class="prod"/><text x="1316" y="632" class="zl-v">DATA TIER · PRIVATE SUBNET</text>
+<rect x="16" y="896" width="1688" height="178" rx="10" class="band"/><text x="30" y="920" class="zl">ACROSS EVERYTHING · GOVERNANCE CONTROL PLANE</text>
+<g class="k" data-concept="users">
+<rect x="30" y="60" width="222" height="118" rx="7" class="b"/>
+<text x="42" y="83" class="t-b">Callers &amp; Apps</text>
+<rect x="202" y="69" width="38" height="17" rx="8" class="chb"/><text x="221" y="81" class="chbt">Ch 1</text>
+<text x="42" y="101" class="t-s">Browser · mobile · CLI · partner app</text>
+<text x="42" y="122" class="t-oss">OSS  any OAuth 2.1 client</text><text x="42" y="139" class="t-gcp">GCP  same</text>
 
-          <!-- ==================== TOP ZONES ==================== -->
-          <!-- Zone 1: External Callers -->
-          <rect x="18" y="18" width="204" height="414" rx="10" class="zone"/>
-          <text x="32" y="42" class="zl">1 · EXTERNAL CALLERS</text>
+</g>
+<g class="k" data-concept="idp">
+<rect x="30" y="206" width="222" height="118" rx="7" class="b"/>
+<text x="42" y="229" class="t-b">Identity Provider</text>
+<rect x="202" y="215" width="38" height="17" rx="8" class="chb"/><text x="221" y="227" class="chbt">Ch 6</text>
+<text x="42" y="247" class="t-s">Issues user JWT (sub, groups) · JWKS</text>
+<text x="42" y="268" class="t-oss">OSS  Keycloak · any OIDC IdP</text><text x="42" y="285" class="t-gcp">GCP  Cloud Identity · Okta/Entra</text>
 
-          <!-- Zone 2: Agent Execution & Proxy DMZ -->
-          <rect x="238" y="18" width="688" height="414" rx="10" class="zone"/>
-          <text x="254" y="42" class="zl">2 · AGENT EXECUTION &amp; ENFORCEMENT ZONE (ENVOY DMZ + RUNTIME)</text>
+</g>
+<g class="k" data-concept="events">
+<rect x="30" y="352" width="222" height="118" rx="7" class="b"/>
+<text x="42" y="375" class="t-b">Events &amp; Schedules</text>
+<rect x="202" y="361" width="38" height="17" rx="8" class="chb"/><text x="221" y="373" class="chbt">Ch 7</text>
+<text x="42" y="393" class="t-s">Webhooks · queues · cron mandates</text>
+<text x="42" y="414" class="t-oss">OSS  Kafka · cron · HMAC-signed</text><text x="42" y="431" class="t-gcp">GCP  Pub/Sub · Cloud Scheduler</text>
 
-          <!-- Zone 3: Shared Security, Model & Control Services -->
-          <rect x="942" y="18" width="360" height="414" rx="10" class="zone"/>
-          <text x="958" y="42" class="zl">3 · MODEL, REGISTRY, STS &amp; TELEMETRY</text>
+</g>
+<g class="k-gate" data-concept="ingress"><rect x="296" y="56" width="260" height="470" rx="8" class="b"/><text x="426.0" y="82" class="t-d t-c">Reverse Proxy (in)</text><text x="426.0" y="101" class="t-s t-c">L7 policy enforcement point in front of agent</text><rect x="506" y="66" width="38" height="17" rx="8" class="chb"/><text x="525" y="78" class="chbt">Ch 7</text><text x="310" y="488" class="t-oss">OSS  Envoy Proxy</text><text x="310" y="505" class="t-gcp">GCP  Agent Gateway (client→agent)</text></g>
+<g class="k-gbox" data-concept="in_authn">
+<rect x="308" y="112" width="236" height="108" rx="7" class="b"/>
+<text x="320" y="135" class="t-b">Caller Authentication</text>
+<rect x="494" y="121" width="38" height="17" rx="8" class="chb"/><text x="513" y="133" class="chbt">Ch 7</text>
+<text x="320" y="153" class="t-s">Verify JWT / HMAC · RBAC decision</text>
+<text x="320" y="174" class="t-oss">OSS  Envoy ext_authz + OPA</text><text x="320" y="191" class="t-gcp">GCP  IAM auth policy · IAP</text>
 
-          <!-- ==================== MIDDLE ZONES: DATA PERIMETER & PRIVATE NETWORK ==================== -->
-          <rect x="18" y="468" width="1284" height="302" rx="12" class="perim"/>
-          <text x="1286" y="492" class="t-perim" text-anchor="end">4 · CRYPTOGRAPHIC DATA EXFILTRATION PERIMETER (IDENTITY + NETWORK + DEVICE CONTEXT BOUNDARY)</text>
+</g>
+<g class="k-ma" data-concept="in_guard">
+<rect x="308" y="232" width="236" height="108" rx="7" class="b"/>
+<text x="320" y="255" class="t-b">Inline Content Guardrail</text>
+<rect x="494" y="241" width="38" height="17" rx="8" class="chb"/><text x="513" y="253" class="chbt">Ch 9</text>
+<text x="320" y="273" class="t-s">Screen prompt &amp; reply before the model</text>
+<text x="320" y="294" class="t-oss">OSS  Envoy ext_proc + classifier</text><text x="320" y="311" class="t-gcp">GCP  Model Armor + Cloud SDP</text>
 
-          <rect x="36" y="504" width="900" height="248" rx="10" class="vpcz"/>
-          <text x="54" y="528" class="zl-v">PRIVATE APPLICATION &amp; TOOL NETWORK (RFC 1918 ONLY · ZERO INTERNET ROUTE · NO PUBLIC IP / NAT)</text>
+</g>
+<g class="k-gbox" data-concept="in_quota">
+<rect x="308" y="352" width="236" height="108" rx="7" class="b"/>
+<text x="320" y="375" class="t-b">Rate &amp; Budget Limiter</text>
+<rect x="494" y="361" width="38" height="17" rx="8" class="chb"/><text x="513" y="373" class="chbt">Ch 7</text>
+<text x="320" y="393" class="t-s">Per-tenant token bucket · cost circuit</text>
+<text x="320" y="414" class="t-oss">OSS  Envoy ratelimit</text><text x="320" y="431" class="t-gcp">GCP  Gateway quotas · Cloud Armor</text>
 
-          <rect x="952" y="504" width="332" height="248" rx="10" class="prod"/>
-          <text x="970" y="528" class="zl-v">ISOLATED DATA TIER SUBNET</text>
+</g>
+<g class="k-core" data-concept="agent"><rect x="572" y="56" width="366" height="470" rx="8" class="b"/><text x="586" y="82" class="t-d">Agent Runtime</text><text x="586" y="101" class="t-s">Stateless container · any framework</text><rect x="888" y="66" width="38" height="17" rx="8" class="chb"/><text x="907" y="78" class="chbt">Ch 1</text><text x="586" y="470" class="t-oss">OSS  container on Kubernetes</text><text x="586" y="487" class="t-gcp">GCP  ADK 2.x on Agent Engine</text></g>
+<g class="k-inner" data-concept="workflow">
+<rect x="586" y="112" width="338" height="108" rx="7" class="b"/>
+<text x="598" y="135" class="t-b">Deterministic Workflow + HITL</text>
+<rect x="874" y="121" width="38" height="17" rx="8" class="chb"/><text x="893" y="133" class="chbt">Ch 12</text>
+<text x="598" y="153" class="t-s">Code nodes · one single-turn model node</text>
+<text x="598" y="174" class="t-oss">OSS  LangGraph · state machine</text><text x="598" y="191" class="t-gcp">GCP  ADK 2.x Workflow + RequestInput</text>
 
-          <!-- ==================== BOTTOM ZONE: GOVERNANCE CONTROL PLANE ==================== -->
-          <rect x="18" y="790" width="1284" height="112" rx="10" class="band"/>
-          <text x="34" y="814" class="zl">5 · CROSS-CUTTING GOVERNANCE CONTROL PLANE (POLICY, EVAL GATE &amp; CONTAINMENT)</text>
+</g>
+<g class="k-agentin" data-concept="wid">
+<rect x="586" y="232" width="338" height="108" rx="7" class="b"/>
+<text x="598" y="255" class="t-b">Workload Identity</text>
+<rect x="874" y="241" width="38" height="17" rx="8" class="chb"/><text x="893" y="253" class="chbt">Ch 4</text>
+<text x="598" y="273" class="t-s">Short-lived X.509 SVID · no static keys</text>
+<text x="598" y="294" class="t-oss">OSS  SPIFFE / SPIRE</text><text x="598" y="311" class="t-gcp">GCP  Agent Identity (principal://…)</text>
 
-          <!-- ==================== ZONE 1 BOXES (EXTERNAL CALLERS) ==================== -->
-          <g>
-            <rect x="32" y="64" width="176" height="92" rx="6" class="b"/>
-            <text x="44" y="88" class="t-b">A1 · Client Apps &amp; UI</text>
-            <text x="44" y="108" class="t-s">Browser · Mobile · CLI</text>
-            <text x="44" y="126" class="t-m">OAuth 2.1 (PKCE) JWT</text>
-            <text x="44" y="143" class="t-s">+ W3C traceparent</text>
-          </g>
-          <g>
-            <rect x="32" y="176" width="176" height="90" rx="6" class="b"/>
-            <text x="44" y="200" class="t-b">A2 · Identity Provider</text>
-            <text x="44" y="220" class="t-s">OIDC / SAML Authority</text>
-            <text x="44" y="238" class="t-m">Issues User Claims (sub)</text>
-            <text x="44" y="254" class="t-s">Publishes JWKS keys</text>
-          </g>
-          <g>
-            <rect x="32" y="286" width="176" height="106" rx="6" class="b"/>
-            <text x="44" y="310" class="t-b">A3 · Event &amp; Cron Bus</text>
-            <text x="44" y="330" class="t-s">Webhooks · Queue · Cron</text>
-            <text x="44" y="348" class="t-m">HMAC-SHA256 / OIDC</text>
-            <text x="44" y="366" class="t-s">Replay nonce + 300s TTL</text>
-            <text x="44" y="382" class="t-s">Signed mandate payload</text>
-          </g>
+</g>
+<g class="k-inner" data-concept="memory">
+<rect x="586" y="352" width="163" height="100" rx="7" class="b"/>
+<text x="598" y="375" class="t-b">Memory Store</text>
+<rect x="699" y="361" width="38" height="17" rx="8" class="chb"/><text x="718" y="373" class="chbt">Ch 12</text>
+<text x="598" y="396" class="t-oss">OSS  Redis · Postgres</text><text x="598" y="413" class="t-gcp">GCP  Memory Bank</text>
 
-          <!-- ==================== ZONE 2 BOXES (ENVOY INGRESS + AGENT RUNTIME + ENVOY EGRESS) ==================== -->
-          <!-- B1: Ingress Envoy Reverse Proxy -->
-          <g class="k-gate">
-            <rect x="254" y="56" width="174" height="358" rx="8" class="b"/>
-            <text x="341" y="80" class="t-b t-c">B1 · Envoy Ingress</text>
-            <text x="341" y="97" class="t-s t-c">Reverse Proxy (L7 PEP)</text>
-            <text x="341" y="376" class="t-m t-c">TLS 1.3 Termination</text>
-            <text x="341" y="394" class="t-s t-c">Single entry point to runtime</text>
-          </g>
-          <g class="k-gbox">
-            <rect x="266" y="110" width="150" height="72" rx="6" class="b"/>
-            <text x="341" y="132" class="t-b t-c">ext_authz Filter</text>
-            <text x="341" y="150" class="t-s t-c">JWKS JWT verify · RBAC</text>
-            <text x="341" y="166" class="t-s t-c">Webhook HMAC &amp; nonce</text>
-          </g>
-          <g class="k-ma">
-            <rect x="266" y="194" width="150" height="82" rx="6" class="b"/>
-            <text x="341" y="216" class="t-b t-c">ext_proc Guardrail</text>
-            <text x="341" y="234" class="t-s t-c">Inline Prompt &amp; Reply</text>
-            <text x="341" y="250" class="t-s t-c">NFKC norm · Jailbreak</text>
-            <text x="341" y="266" class="t-m t-c">DLP PII Tokenizer</text>
-          </g>
-          <g class="k-gbox">
-            <rect x="266" y="288" width="150" height="68" rx="6" class="b"/>
-            <text x="341" y="310" class="t-b t-c">Rate &amp; Budget Filter</text>
-            <text x="341" y="328" class="t-s t-c">Per-tenant token bucket</text>
-            <text x="341" y="344" class="t-s t-c">Cost &amp; recursion circuit</text>
-          </g>
+</g>
+<g class="k-inner" data-concept="sandbox">
+<rect x="761" y="352" width="163" height="100" rx="7" class="b"/>
+<text x="773" y="375" class="t-b">Code Sandbox</text>
+<rect x="874" y="361" width="38" height="17" rx="8" class="chb"/><text x="893" y="373" class="chbt">Ch 12</text>
+<text x="773" y="396" class="t-oss">OSS  gVisor · Firecracker</text><text x="773" y="413" class="t-gcp">GCP  Code Execution</text>
 
-          <!-- B2: Agent Runtime Container -->
-          <g class="k-core">
-            <rect x="448" y="56" width="268" height="358" rx="8" class="b"/>
-            <text x="464" y="82" class="t-d">B2 · Agent Runtime</text>
-            <text x="464" y="101" class="t-s">Stateless Container · Any Framework</text>
-            <text x="464" y="378" class="t-bad">Zero DB credentials or long-lived keys</text>
-            <text x="464" y="396" class="t-s">All outbound sockets forced via B3 Envoy</text>
-          </g>
-          <g class="k-inner">
-            <rect x="462" y="114" width="240" height="86" rx="6" class="b"/>
-            <text x="476" y="136" class="t-b">Deterministic Workflow Graph</text>
-            <text x="476" y="154" class="t-s">Code nodes + 1 single-turn LLM node</text>
-            <text x="476" y="171" class="t-s">CaMeL capability check · Schema gate</text>
-            <text x="476" y="188" class="t-m">HITL approval pause on mutations</text>
-          </g>
-          <g class="k-agentin">
-            <rect x="462" y="210" width="240" height="68" rx="6" class="b"/>
-            <text x="476" y="232" class="t-b">Workload Identity (SPIFFE)</text>
-            <text x="476" y="250" class="t-m">spiffe://corp/ns/ai/sa/agent-01</text>
-            <text x="476" y="266" class="t-s">Short-lived X.509 SVID + DPoP key</text>
-          </g>
-          <g class="k-inner">
-            <rect x="462" y="288" width="116" height="68" rx="6" class="b"/>
-            <text x="474" y="310" class="t-b">Memory Store</text>
-            <text x="474" y="328" class="t-s">Partitioned by</text>
-            <text x="474" y="344" class="t-m">tenant + user</text>
-          </g>
-          <g class="k-inner">
-            <rect x="586" y="288" width="116" height="68" rx="6" class="b"/>
-            <text x="598" y="310" class="t-b">Code Sandbox</text>
-            <text x="598" y="328" class="t-s">gVisor / MicroVM</text>
-            <text x="598" y="344" class="t-m">No net / Ephem</text>
-          </g>
+</g>
+<text x="586" y="516" class="t-bad">No DB credentials here · every call exits via the forward proxy</text>
+<g class="k-gate" data-concept="egress"><rect x="954" y="56" width="304" height="470" rx="8" class="b"/><text x="1106.0" y="82" class="t-d t-c">Forward Proxy (out)</text><text x="1106.0" y="101" class="t-s t-c">Default-deny exit for every outbound call</text><rect x="1208" y="66" width="38" height="17" rx="8" class="chb"/><text x="1227" y="78" class="chbt">Ch 8</text><text x="968" y="488" class="t-oss">OSS  Envoy Proxy (sidecar)</text><text x="968" y="505" class="t-gcp">GCP  Agent Gateway (agent→MCP)</text></g>
+<g class="k-gbox" data-concept="eg_who">
+<rect x="966" y="112" width="280" height="108" rx="7" class="b"/>
+<text x="978" y="135" class="t-b">Caller Proof</text>
+<rect x="1196" y="121" width="38" height="17" rx="8" class="chb"/><text x="1215" y="133" class="chbt">Ch 6</text>
+<text x="978" y="153" class="t-s">mTLS workload cert + sender-bound token</text>
+<text x="978" y="174" class="t-oss">OSS  SPIFFE mTLS + DPoP</text><text x="978" y="191" class="t-gcp">GCP  mTLS + DPoP</text>
 
-          <!-- B3: Egress Envoy Forward Proxy -->
-          <g class="k-gate">
-            <rect x="736" y="56" width="174" height="358" rx="8" class="b"/>
-            <text x="823" y="80" class="t-b t-c">B3 · Envoy Egress</text>
-            <text x="823" y="97" class="t-s t-c">Forward Proxy (Default-Deny)</text>
-            <text x="823" y="376" class="t-b t-c" style="fill:var(--stop)">Unregistered = Blocked</text>
-            <text x="823" y="394" class="t-s t-c">No raw internet / DNS egress</text>
-          </g>
-          <g class="k-gbox">
-            <rect x="748" y="110" width="150" height="72" rx="6" class="b"/>
-            <text x="823" y="132" class="t-b t-c">Workload Verifier</text>
-            <text x="823" y="150" class="t-m t-c">mTLS (X.509 SVID)</text>
-            <text x="823" y="166" class="t-s t-c">+ RFC 9449 DPoP proof</text>
-          </g>
-          <g class="k-gbox">
-            <rect x="748" y="194" width="150" height="72" rx="6" class="b"/>
-            <text x="823" y="216" class="t-b t-c">ext_authz Policy</text>
-            <text x="823" y="234" class="t-s t-c">Dual-Scope Intersection</text>
-            <text x="823" y="250" class="t-m t-c">Agent Scope ∩ User Scope</text>
-          </g>
-          <g class="k-ma">
-            <rect x="748" y="278" width="150" height="78" rx="6" class="b"/>
-            <text x="823" y="300" class="t-b t-c">ext_proc Guardrail</text>
-            <text x="823" y="318" class="t-s t-c">MCP &amp; A2A Payload Scan</text>
-            <text x="823" y="334" class="t-s t-c">Indirect injection block</text>
-            <text x="823" y="349" class="t-m t-c">Fail-closed on timeout</text>
-          </g>
+</g>
+<g class="k-gbox" data-concept="eg_authz">
+<rect x="966" y="232" width="280" height="108" rx="7" class="b"/>
+<text x="978" y="255" class="t-b">Destination AuthZ</text>
+<rect x="1196" y="241" width="38" height="17" rx="8" class="chb"/><text x="1215" y="253" class="chbt">Ch 8</text>
+<text x="978" y="273" class="t-s">Agent scope ∩ user scope per target</text>
+<text x="978" y="294" class="t-oss">OSS  Envoy ext_authz + OPA</text><text x="978" y="311" class="t-gcp">GCP  IAP access rules</text>
 
-          <!-- ==================== ZONE 3 BOXES (SHARED SERVICES) ==================== -->
-          <g>
-            <rect x="958" y="60" width="328" height="78" rx="6" class="b"/>
-            <text x="974" y="84" class="t-b">C1 · LLM Inference Service</text>
-            <text x="974" y="103" class="t-s">Hosted Model API · Reached only via Envoy B3</text>
-            <text x="974" y="122" class="t-m">HTTPS / gRPC (TLS 1.3) · Baseline safety filter</text>
-          </g>
-          <g>
-            <rect x="958" y="150" width="328" height="78" rx="6" class="b"/>
-            <text x="974" y="174" class="t-b">C2 · Capability &amp; Tool Registry</text>
-            <text x="974" y="193" class="t-s">Signed allowlist of MCP servers, A2A cards &amp; schemas</text>
-            <text x="974" y="212" class="t-m">gRPC ext_authz lookup · Hash-pinned tool specs</text>
-          </g>
-          <g>
-            <rect x="958" y="240" width="328" height="82" rx="6" class="b"/>
-            <text x="974" y="264" class="t-b">C3 · OAuth 2.1 STS &amp; KMS Signer</text>
-            <text x="974" y="283" class="t-s">Trades User Token T1 → Narrowed Tool Token T2</text>
-            <text x="974" y="301" class="t-m">RFC 8693 Token Exchange + Asymmetric KMS JWT</text>
-            <text x="974" y="316" class="t-s">Attaches act:{sub: spiffe_id} delegation claim</text>
-          </g>
-          <g>
-            <rect x="958" y="334" width="328" height="80" rx="6" class="b"/>
-            <text x="974" y="358" class="t-b">C4 · OpenTelemetry &amp; Audit Sink</text>
-            <text x="974" y="377" class="t-s">Immutable WORM Audit Log + Distributed Trace</text>
-            <text x="974" y="396" class="t-m">OTLP / gRPC · Logs (trace_id, agent_id, user_sub)</text>
-          </g>
+</g>
+<g class="k-ma" data-concept="eg_guard">
+<rect x="966" y="352" width="280" height="108" rx="7" class="b"/>
+<text x="978" y="375" class="t-b">Inline Tool Guardrail</text>
+<rect x="1196" y="361" width="38" height="17" rx="8" class="chb"/><text x="1215" y="373" class="chbt">Ch 9</text>
+<text x="978" y="393" class="t-s">Screen MCP / A2A args &amp; returned rows</text>
+<text x="978" y="414" class="t-oss">OSS  Envoy ext_proc + classifier</text><text x="978" y="431" class="t-gcp">GCP  Model Armor (MCP · A2A)</text>
 
-          <!-- ==================== ZONE 4 BOXES (PRIVATE DATA NETWORK & DATABASE) ==================== -->
-          <g class="k-nic">
-            <rect x="54" y="556" width="256" height="156" rx="8" class="b"/>
-            <text x="70" y="584" class="t-b">D1 · L4 Private Network Bridge</text>
-            <text x="70" y="604" class="t-s">Virtual NIC / PrivateLink Attachment</text>
-            <text x="70" y="624" class="t-m">10.10.9.2/28 · Unidirectional TCP</text>
-            <text x="70" y="644" class="t-s">Bridges Envoy B3 into Private VPC</text>
-            <text x="70" y="662" class="t-s">without transitive VPC peering</text>
-            <text x="70" y="682" class="t-p">Drops unsolicited return-path syn</text>
-          </g>
+</g>
+<g class="k" data-concept="llm">
+<rect x="1302" y="60" width="388" height="106" rx="7" class="b"/>
+<text x="1314" y="83" class="t-b">LLM Inference API</text>
+<rect x="1640" y="69" width="38" height="17" rx="8" class="chb"/><text x="1659" y="81" class="chbt">Ch 8</text>
+<text x="1314" y="101" class="t-s">Model endpoint reached only via egress proxy</text>
+<text x="1314" y="122" class="t-oss">OSS  vLLM · any hosted model</text><text x="1314" y="139" class="t-gcp">GCP  Gemini on Vertex AI</text>
 
-          <g>
-            <rect x="348" y="556" width="262" height="156" rx="8" class="b"/>
-            <text x="364" y="584" class="t-b">D2 · Private Endpoint &amp; DNS</text>
-            <text x="364" y="604" class="t-s">Internal Virtual IP (VIP) + Split DNS</text>
-            <text x="364" y="624" class="t-m">mcp.internal · db.internal</text>
-            <text x="364" y="644" class="t-s">Routes strictly inside private fabric</text>
-            <text x="364" y="662" class="t-s">Enforces Data Perimeter ingress rule</text>
-            <text x="364" y="682" class="t-p">L4 TCP + TLS 1.3 SNI inspection</text>
-          </g>
+</g>
+<g class="k" data-concept="registry">
+<rect x="1302" y="178" width="388" height="106" rx="7" class="b"/>
+<text x="1314" y="201" class="t-b">Tool &amp; Agent Registry</text>
+<rect x="1640" y="187" width="38" height="17" rx="8" class="chb"/><text x="1659" y="199" class="chbt">Ch 8</text>
+<text x="1314" y="219" class="t-s">Signed allowlist of MCP servers, agents, skills</text>
+<text x="1314" y="240" class="t-oss">OSS  signed Git catalogue + OPA</text><text x="1314" y="257" class="t-gcp">GCP  Agent Registry</text>
 
-          <g class="k-svc">
-            <rect x="648" y="556" width="272" height="156" rx="8" class="b"/>
-            <text x="664" y="584" class="t-b">D3 · Parameterized MCP Server</text>
-            <text x="664" y="604" class="t-s">Deterministic Query Gateway (Read/Write Split)</text>
-            <text x="664" y="624" class="t-m">North: MCP Streamable HTTP (JSON-RPC)</text>
-            <text x="664" y="644" class="t-m">South: Prepared SQL ($1 = verified sub)</text>
-            <text x="664" y="664" class="t-s">No raw execute_sql · Pre-compiled AST</text>
-            <text x="664" y="682" class="t-p">Verifies Envoy mTLS + OBO Token T2</text>
-          </g>
+</g>
+<g class="k" data-concept="sts">
+<rect x="1302" y="296" width="388" height="106" rx="7" class="b"/>
+<text x="1314" y="319" class="t-b">Token Exchange Service</text>
+<rect x="1640" y="305" width="38" height="17" rx="8" class="chb"/><text x="1659" y="317" class="chbt">Ch 6</text>
+<text x="1314" y="337" class="t-s">User token T1 → narrowed tool token T2</text>
+<text x="1314" y="358" class="t-oss">OSS  Keycloak STS · Vault</text><text x="1314" y="375" class="t-gcp">GCP  Auth Manager · IAM STS · KMS</text>
 
-          <g class="k-svc">
-            <rect x="968" y="556" width="300" height="156" rx="8" class="b"/>
-            <text x="984" y="584" class="t-d">D4 · Database Engine</text>
-            <text x="984" y="604" class="t-s">Analytical Warehouse OR Pooled OLTP</text>
-            <text x="984" y="624" class="t-m">TLS 1.3 + Short-Lived IAM / Cert Auth</text>
-            <text x="984" y="644" class="t-s">• Row-Level Security (RLS policy filter)</text>
-            <text x="984" y="662" class="t-s">• Column-Level Security (CLS / masking)</text>
-            <text x="984" y="680" class="t-s">• SECURITY DEFINER Stored Procs (writes)</text>
-            <text x="984" y="698" class="t-p">k-anonymity threshold on aggregations</text>
-          </g>
+</g>
+<g class="k" data-concept="audit">
+<rect x="1302" y="414" width="388" height="106" rx="7" class="b"/>
+<text x="1314" y="437" class="t-b">Telemetry &amp; Audit Sink</text>
+<rect x="1640" y="423" width="38" height="17" rx="8" class="chb"/><text x="1659" y="435" class="chbt">Ch 13</text>
+<text x="1314" y="455" class="t-s">Trace + immutable log of user &amp; agent per call</text>
+<text x="1314" y="476" class="t-oss">OSS  OpenTelemetry · WORM bucket</text><text x="1314" y="493" class="t-gcp">GCP  Audit Logs · Trace · SCC</text>
 
-          <!-- ==================== ZONE 5 BOXES (GOVERNANCE CONTROL PLANE) ==================== -->
-          <g>
-            <rect x="34" y="828" width="298" height="60" rx="6" class="b"/>
-            <text x="48" y="850" class="t-b">E1 · Identity Policy &amp; Access Ceiling</text>
-            <text x="48" y="868" class="t-s">RBAC/ABAC Allow + Explicit Deny + PAB Ceiling</text>
-          </g>
-          <g>
-            <rect x="348" y="828" width="298" height="60" rx="6" class="b"/>
-            <text x="362" y="850" class="t-b">E2 · Declarative Infra Guardrails</text>
-            <text x="362" y="868" class="t-s">Policy-as-Code (OPA/Org Policy): no public IPs/keys</text>
-          </g>
-          <g>
-            <rect x="662" y="828" width="298" height="60" rx="6" class="b"/>
-            <text x="676" y="850" class="t-b">E3 · Adversarial Eval &amp; Red-Team Gate</text>
-            <text x="676" y="868" class="t-s">CI/CD regression suite (injection, BOLA, schema)</text>
-          </g>
-          <g>
-            <rect x="976" y="828" width="308" height="60" rx="6" class="b"/>
-            <text x="990" y="850" class="t-b">E4 · Emergency Kill Switch</text>
-            <text x="990" y="868" class="t-s">Envoy deny rule + STS token revoke + log freeze</text>
-          </g>
+</g>
+<g class="k-nic" data-concept="link">
+<rect x="52" y="654" width="258" height="182" rx="7" class="b"/>
+<text x="64" y="677" class="t-b">Private Network Link</text>
+<rect x="260" y="663" width="38" height="17" rx="8" class="chb"/><text x="279" y="675" class="chbt">Ch 10</text>
+<text x="64" y="695" class="t-s">L4 bridge from proxy into private VPC</text>
+<text x="64" y="716" class="t-oss">OSS  WireGuard · Cilium mesh</text><text x="64" y="733" class="t-gcp">GCP  PSC interface</text>
+<text x="64" y="770" class="t-s">unidirectional: proxy → VPC only</text><text x="64" y="788" class="t-s">no transitive peering · fixed /28</text>
+</g>
+<g class="k" data-concept="endpoint">
+<rect x="328" y="654" width="262" height="182" rx="7" class="b"/>
+<text x="340" y="677" class="t-b">Private Endpoint &amp; DNS</text>
+<rect x="540" y="663" width="38" height="17" rx="8" class="chb"/><text x="559" y="675" class="chbt">Ch 10</text>
+<text x="340" y="695" class="t-s">Internal VIP + split-horizon names</text>
+<text x="340" y="716" class="t-oss">OSS  internal LB + CoreDNS</text><text x="340" y="733" class="t-gcp">GCP  PSC endpoint + Cloud DNS</text>
+<text x="340" y="770" class="t-s">tools.internal · db.internal</text><text x="340" y="788" class="t-s">perimeter rule checks caller + network</text>
+</g>
+<g class="k-svc" data-concept="tools">
+<rect x="608" y="654" width="656" height="182" rx="7" class="b"/>
+<text x="620" y="677" class="t-b">Parameterized Tool Server</text>
+<rect x="1214" y="663" width="38" height="17" rx="8" class="chb"/><text x="1233" y="675" class="chbt">Ch 3</text>
+<text x="620" y="695" class="t-s">MCP in · prepared SQL out · $1 = verified user</text>
+<text x="620" y="716" class="t-oss">OSS  MCP Toolbox (OSS) · FastMCP</text><text x="620" y="733" class="t-gcp">GCP  MCP Toolbox on Cloud Run</text>
+<text x="620" y="770" class="t-s">north: MCP Streamable HTTP (JSON-RPC 2.0) · south: prepared statements · read / write split</text><text x="620" y="790" class="t-p">never generic execute_sql for autonomous multi-tenant agents</text>
+</g>
+<g class="k-svc" data-concept="db">
+<rect x="1316" y="654" width="372" height="182" rx="7" class="b"/>
+<text x="1328" y="677" class="t-d">Database with RLS / CLS</text>
+<rect x="1638" y="663" width="38" height="17" rx="8" class="chb"/><text x="1657" y="675" class="chbt">Ch 5</text>
+<text x="1328" y="695" class="t-s">Engine decides rows, columns, writes</text>
+<text x="1328" y="716" class="t-oss">OSS  PostgreSQL FORCE RLS</text><text x="1328" y="733" class="t-gcp">GCP  BigQuery · Cloud SQL · AlloyDB</text>
+<text x="1328" y="770" class="t-s">Row-Level · Column-Level Security · SECURITY DEFINER writes</text><text x="1328" y="790" class="t-p">k-anonymity floor on aggregations</text>
+</g>
+<g class="k" data-concept="cp_iam">
+<rect x="34" y="936" width="402" height="118" rx="7" class="b"/>
+<text x="46" y="959" class="t-b">Identity Policy &amp; Ceiling</text>
+<rect x="386" y="945" width="38" height="17" rx="8" class="chb"/><text x="405" y="957" class="chbt">Ch 13</text>
+<text x="46" y="977" class="t-s">Allow + explicit deny + max boundary</text>
+<text x="46" y="998" class="t-oss">OSS  RBAC/ABAC + OPA</text><text x="46" y="1015" class="t-gcp">GCP  IAM allow · deny · PAB</text>
 
-          <!-- ==================== EDGES & PROTOCOL LABELS ==================== -->
-          <!-- Hop 1: Client -> Envoy Ingress -->
-          <path d="M208 110 L252 110" class="edge" marker-end="url(#ag-ah)"/>
-          <circle cx="230" cy="96" r="10" class="bd"/><text x="230" y="100" class="bd-t">1</text>
+</g>
+<g class="k" data-concept="cp_org">
+<rect x="452" y="936" width="402" height="118" rx="7" class="b"/>
+<text x="464" y="959" class="t-b">Infrastructure Guardrails</text>
+<rect x="804" y="945" width="38" height="17" rx="8" class="chb"/><text x="823" y="957" class="chbt">Ch 13</text>
+<text x="464" y="977" class="t-s">Policy-as-code no project can skip</text>
+<text x="464" y="998" class="t-oss">OSS  OPA Gatekeeper · Kyverno</text><text x="464" y="1015" class="t-gcp">GCP  Org Policy</text>
 
-          <!-- Hop 1b: IdP -> Envoy Ingress (JWKS) -->
-          <path d="M208 220 L252 150" class="edge e-ctrl" marker-end="url(#ag-ahc)"/>
+</g>
+<g class="k" data-concept="cp_eval">
+<rect x="870" y="936" width="402" height="118" rx="7" class="b"/>
+<text x="882" y="959" class="t-b">Adversarial Evaluation Gate</text>
+<rect x="1222" y="945" width="38" height="17" rx="8" class="chb"/><text x="1241" y="957" class="chbt">Ch 13</text>
+<text x="882" y="977" class="t-s">Attack cases gate every deploy</text>
+<text x="882" y="998" class="t-oss">OSS  promptfoo · garak in CI</text><text x="882" y="1015" class="t-gcp">GCP  adk eval · red team</text>
 
-          <!-- Hop 2: Event Bus -> Envoy Ingress -->
-          <path d="M208 336 L252 336" class="edge" marker-end="url(#ag-ah)"/>
-          <circle cx="230" cy="322" r="10" class="bd"/><text x="230" y="326" class="bd-t">2</text>
+</g>
+<g class="k" data-concept="cp_kill">
+<rect x="1288" y="936" width="402" height="118" rx="7" class="b"/>
+<text x="1300" y="959" class="t-b">Kill Switch</text>
+<rect x="1640" y="945" width="38" height="17" rx="8" class="chb"/><text x="1659" y="957" class="chbt">Ch 13</text>
+<text x="1300" y="977" class="t-s">Deny, revoke, keep evidence</text>
+<text x="1300" y="998" class="t-oss">OSS  proxy deny + token revoke</text><text x="1300" y="1015" class="t-gcp">GCP  kill-switch runbook</text>
 
-          <!-- Hop 3: Envoy Ingress -> Agent Runtime -->
-          <path d="M428 220 L446 220" class="edge e-id" marker-end="url(#ag-aht)"/>
-          <circle cx="437" cy="202" r="10" class="bd-g"/><text x="437" y="206" class="bd-t">3</text>
-
-          <!-- Hop 4: Agent Runtime -> Envoy Egress -->
-          <path d="M716 244 L734 244" class="edge e-id" marker-end="url(#ag-aht)"/>
-          <circle cx="725" cy="226" r="10" class="bd-g"/><text x="725" y="230" class="bd-t">4</text>
-
-          <!-- Hop 5a..5d: Envoy Egress -> Zone 3 Services -->
-          <path d="M910 210 L934 210 L934 99 L956 99" class="edge" marker-end="url(#ag-ah)"/>
-          <path d="M910 210 L934 210 L934 189 L956 189" class="edge" marker-end="url(#ag-ah)"/>
-          <path d="M910 210 L934 210 L934 281 L956 281" class="edge" marker-end="url(#ag-ah)"/>
-          <path d="M910 210 L934 210 L934 374 L956 374" class="edge" marker-end="url(#ag-ah)"/>
-          <circle cx="934" cy="144" r="10" class="bd"/><text x="934" y="148" class="bd-t">5</text>
-
-          <!-- Hop 6: Envoy Egress -> L4 Private Bridge (D1) -->
-          <path d="M823 414 L823 448 L182 448 L182 554" class="edge" marker-end="url(#ag-ah)"/>
-          <circle cx="823" cy="444" r="10" class="bd"/><text x="823" y="448" class="bd-t">6</text>
-          <rect x="370" y="436" width="390" height="22" rx="5" class="wire-pill"/>
-          <text x="565" y="451" class="wire-txt">Hop 6 · mTLS (SPIFFE SVID) + OBO Token T2 over L4 Private Tunnel</text>
-
-          <!-- Hop 7: D1 Bridge -> D2 Private Endpoint -->
-          <path d="M310 634 L346 634" class="edge" marker-end="url(#ag-ah)"/>
-          <circle cx="328" cy="616" r="10" class="bd"/><text x="328" y="620" class="bd-t">7</text>
-
-          <!-- Hop 8: D2 Private Endpoint -> D3 Parameterized MCP Server -->
-          <path d="M610 634 L646 634" class="edge" marker-end="url(#ag-ah)"/>
-          <circle cx="628" cy="616" r="10" class="bd"/><text x="628" y="620" class="bd-t">8</text>
-          <rect x="530" y="720" width="256" height="22" rx="5" class="wire-pill"/>
-          <text x="658" y="735" class="wire-txt">Hop 8 · MCP Streamable HTTP (JSON-RPC 2.0)</text>
-
-          <!-- Hop 9: D3 Parameterized MCP Server -> D4 Database Engine -->
-          <path d="M920 634 L966 634" class="edge e-db" marker-end="url(#ag-ahv)"/>
-          <circle cx="943" cy="616" r="10" class="bd-v"/><text x="943" y="620" class="bd-t">9</text>
-          <rect x="816" y="720" width="290" height="22" rx="5" class="wire-pill"/>
-          <text x="961" y="735" class="wire-txt">Hop 9 · TLS 1.3 DB Wire ($1 Bound + RLS/CLS)</text>
-
-          <!-- Blocked Direct Path from Agent Runtime B2 to Database -->
-          <line x1="530" y1="414" x2="530" y2="432" class="blocked"/>
-          <circle cx="530" cy="432" r="9" class="xbg"/>
-          <line x1="526" y1="428" x2="534" y2="436" class="xm"/>
-          <line x1="534" y1="428" x2="526" y2="436" class="xm"/>
-          <text x="514" y="436" class="t-bad" text-anchor="end">Direct Agent → DB socket blocked</text>
-        </svg>
+</g>
+<path d="M252 110 L294 110" class="edge" marker-end="url(#ag-ah)"/>
+<path d="M252 262 L294 170" class="edge e-ctrl"/>
+<path d="M252 402 L294 402" class="edge" marker-end="url(#ag-ah)"/>
+<path d="M556 286 L570 286" class="edge e-id" marker-end="url(#ag-aht)"/>
+<path d="M938 286 L952 286" class="edge e-id" marker-end="url(#ag-aht)"/>
+<path d="M1258 290 L1280 290 L1280 113 L1300 113" class="edge" marker-end="url(#ag-ah)"/>
+<path d="M1258 290 L1280 290 L1280 231 L1300 231" class="edge" marker-end="url(#ag-ah)"/>
+<path d="M1258 290 L1280 290 L1280 349 L1300 349" class="edge" marker-end="url(#ag-ah)"/>
+<path d="M1258 290 L1280 290 L1280 467 L1300 467" class="edge" marker-end="url(#ag-ah)"/>
+<path d="M1106 526 L1106 556 L181 556 L181 652" class="edge" marker-end="url(#ag-ah)"/>
+<path d="M310 745 L326 745" class="edge" marker-end="url(#ag-ah)"/>
+<path d="M590 745 L606 745" class="edge" marker-end="url(#ag-ah)"/>
+<path d="M1264 745 L1314 745" class="edge e-db" marker-end="url(#ag-ahv)"/>
+<line x1="760" y1="526" x2="760" y2="548" class="blocked"/><circle cx="760" cy="558" r="9" class="xbg"/><line x1="756" y1="554" x2="764" y2="562" class="xm"/><line x1="764" y1="554" x2="756" y2="562" class="xm"/>
+<text x="776" y="562" class="t-bad">no direct route agent → database</text>
+<circle cx="272" cy="96" r="10" class="bd"/><text x="272" y="100" class="bd-t">1</text>
+<circle cx="272" cy="388" r="10" class="bd"/><text x="272" y="392" class="bd-t">2</text>
+<circle cx="563" cy="268" r="10" class="bd"/><text x="563" y="272" class="bd-t">3</text>
+<circle cx="945" cy="268" r="10" class="bd"/><text x="945" y="272" class="bd-t">4</text>
+<circle cx="1280" cy="180" r="10" class="bd"/><text x="1280" y="184" class="bd-t">5</text>
+<circle cx="1106" cy="556" r="10" class="bd"/><text x="1106" y="560" class="bd-t">6</text>
+<circle cx="318" cy="727" r="10" class="bd"/><text x="318" y="731" class="bd-t">7</text>
+<circle cx="598" cy="727" r="10" class="bd"/><text x="598" y="731" class="bd-t">8</text>
+<circle cx="1289" cy="727" r="10" class="bd"/><text x="1289" y="731" class="bd-t">9</text>
+<text x="30" y="192" class="t-wire">1  HTTPS · user JWT (OAuth 2.1 PKCE)</text>
+<text x="30" y="490" class="t-wire">2  HTTPS · HMAC-signed event · nonce + TTL</text>
+<text x="572" y="548" class="t-wire">3–4  mTLS · SPIFFE cert + DPoP</text>
+<text x="1120" y="548" class="t-wire">6  mTLS tunnel into the private VPC (L4)</text>
+<text x="1302" y="536" class="t-wire">5  HTTPS/gRPC · OBO exchange T1 → T2 · registry lookup</text>
+<text x="328" y="850" class="t-wire">7–8  private DNS → MCP Streamable HTTP (JSON-RPC)</text>
+<text x="1316" y="850" class="t-wire">9  TLS DB wire · prepared SQL · $1 = verified user</text>
+</svg>
         <div class="fig-caption">
-          <span>Figure 0A — The Platform-Agnostic Zero-Trust Reference Architecture. Every component is defined by its architectural role, wire protocol, and cryptographic contract rather than a cloud vendor product name.</span>
+          <span>Figure 0A — The platform-agnostic decomposition. Every box is named by its role; the two lines inside each box name an open-source implementation (<b>OSS</b>, cyan) and the Google Cloud guardrail (<b>GCP</b>, green) that plays that role in Figure 0B. The chapter badge tells you where the box is explained. Hop numbers 1–9 are identical in both figures.</span>
           <div class="legend-items">
-            <span><i class="swatch-dot" style="background:var(--cyan-soft);border-color:var(--cyan)"></i> Envoy L7 Proxies (`PEP`)</span>
-            <span><i class="swatch-dot" style="background:var(--stop-soft);border-color:var(--stop)"></i> Inline `ext_proc` Safety Guardrail</span>
-            <span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good)"></i> Agent Runtime &amp; SPIFFE Identity</span>
-            <span><i class="swatch-dot" style="background:var(--violet-soft);border-color:var(--violet)"></i> Private Network, MCP &amp; Database</span>
-            <span><i class="swatch-dot" style="background:var(--warn-soft);border-color:var(--warn)"></i> Cryptographic Data Perimeter</span>
+            <span><i class="swatch-dot" style="background:var(--cyan-soft);border-color:var(--cyan)"></i> Proxy enforcement points</span>
+            <span><i class="swatch-dot" style="background:var(--stop-soft);border-color:var(--stop)"></i> Inline content guardrail</span>
+            <span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good)"></i> Agent runtime &amp; workload identity</span>
+            <span><i class="swatch-dot" style="background:var(--violet-soft);border-color:var(--violet)"></i> Private network, tool server, database</span>
+            <span><i class="swatch-dot" style="background:var(--warn-soft);border-color:var(--warn)"></i> Data perimeter</span>
           </div>
         </div>
       </div>
 
 
       <div class="post-prose">
-        <h3>2. Representing "Model Armor" Vendor-Agnostically: Inline Envoy <code>ext_proc</code> gRPC Pipeline</h3>
+        <h3>How "Model Armor" looks without the product name</h3>
         <p>
-          In a vendor-agnostic architecture, prompt and tool-output screening is not a magic cloud checkbox—it is an <strong>out-of-process gRPC External Processor (<code>envoy.filters.http.ext_proc</code>)</strong> wired into both the Ingress Envoy Proxy (<code>B1</code>, screening user prompts and final replies) and the Egress Envoy Proxy (<code>B3</code>, screening outbound MCP tool arguments and inbound database rows before they enter the LLM context window).
+          The red boxes in Figure 0A are the one component that is easiest to misread as a Google-only feature. It is not: the proxy pauses a request or response, streams the body to an external processor over gRPC, and only forwards when the processor returns a verdict. Figure 0A-2 shows the four stages that processor runs. On Google Cloud the processor is Model Armor with Cloud Sensitive Data Protection; in the open-source stack it is an Envoy <code>ext_proc</code> callout to a classifier such as Llama Guard with a de-identification library such as Presidio.
         </p>
       </div>
-
       
       <div class="diagram-frame" id="fig-agnostic-guardrail">
-        <svg viewBox="0 0 1160 280" role="img" aria-label="Vendor-Agnostic Representation of Model Armor as an Envoy ext_proc Inline Content Guardrail">
-          <defs>
-            <marker id="ep-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--ink)"/></marker>
-            <marker id="ep-stop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--stop)"/></marker>
-          </defs>
-          <rect x="16" y="16" width="1128" height="248" rx="10" class="zone-box"/>
-          <text x="32" y="40" class="t-zone">HOW TO REPRESENT "MODEL ARMOR" VENDOR-AGNOSTICALLY · ENVOY INLINE gRPC EXTERNAL PROCESSOR (ext_proc)</text>
-
-          <!-- Envoy Proxy Box -->
-          <rect x="32" y="64" width="190" height="176" rx="8" class="node-cyan"/>
-          <text x="48" y="92" class="t-title">Envoy Proxy (B1 / B3)</text>
-          <text x="48" y="114" class="t-sub">Intercepts HTTP/2 frame</text>
-          <text x="48" y="134" class="t-mono">envoy.filters.http.ext_proc</text>
-          <text x="48" y="156" class="t-sub">Holds request/response</text>
-          <text x="48" y="174" class="t-sub">buffer in memory until</text>
-          <text x="48" y="192" class="t-sub">gRPC verdict returns</text>
-          <text x="48" y="218" class="t-mono" style="fill:var(--stop)">failure_mode_allow: false</text>
-
-          <!-- Bi-directional gRPC stream -->
-          <path d="M222 115 L288 115" class="edge-line" marker-end="url(#ep-ah)"/>
-          <path d="M288 185 L222 185" class="edge-line" marker-end="url(#ep-ah)"/>
-          <text x="255" y="105" class="t-mono" text-anchor="middle">gRPC</text>
-          <text x="255" y="204" class="t-mono" text-anchor="middle">Verdict</text>
-
-          <!-- Inline Guardrail Service -->
-          <rect x="290" y="56" width="836" height="190" rx="10" class="node-bad"/>
-          <text x="310" y="82" class="t-title">Inline Content &amp; Prompt Safety Guardrail Service (gRPC ProcessingRequest / ProcessingResponse)</text>
-
-          <!-- Stage 1 -->
-          <rect x="310" y="98" width="188" height="130" rx="6" class="node-card"/>
-          <text x="322" y="120" class="t-mono" style="fill:var(--cyan)">STAGE 1 · CANONICALIZE</text>
-          <text x="322" y="140" class="t-sub">• UTF-8 NFKC normalize</text>
-          <text x="322" y="158" class="t-sub">• Strip Unicode tag chars</text>
-          <text x="322" y="176" class="t-sub">  (U+E0000..U+E007F)</text>
-          <text x="322" y="194" class="t-sub">• Decode Base64 / Hex</text>
-          <text x="322" y="212" class="t-sub">  evasion wrappers</text>
-
-          <path d="M498 162 L516 162" class="edge-line" marker-end="url(#ep-ah)"/>
-
-          <!-- Stage 2 -->
-          <rect x="518" y="98" width="194" height="130" rx="6" class="node-card"/>
-          <text x="530" y="120" class="t-mono" style="fill:var(--stop)">STAGE 2 · CLASSIFY</text>
-          <text x="530" y="140" class="t-sub">• Direct prompt injection</text>
-          <text x="530" y="158" class="t-sub">• Indirect injection in</text>
-          <text x="530" y="176" class="t-sub">  MCP DB tool results</text>
-          <text x="530" y="194" class="t-sub">• Malicious URL / Markdown</text>
-          <text x="530" y="212" class="t-sub">  image exfil detector</text>
-
-          <path d="M712 162 L730 162" class="edge-line" marker-end="url(#ep-ah)"/>
-
-          <!-- Stage 3 -->
-          <rect x="732" y="98" width="194" height="130" rx="6" class="node-card"/>
-          <text x="744" y="120" class="t-mono" style="fill:var(--violet)">STAGE 3 · DLP TOKENIZE</text>
-          <text x="744" y="140" class="t-sub">• Regex + ML PII detector</text>
-          <text x="744" y="158" class="t-sub">• Replaces SSN / CC /</text>
-          <text x="744" y="176" class="t-sub">  Email with format-</text>
-          <text x="744" y="194" class="t-sub">  preserving surrogate</text>
-          <text x="744" y="212" class="t-mono">  [PII_TOKEN_8f9a]</text>
-
-          <path d="M926 162 L944 162" class="edge-line" marker-end="url(#ep-ah)"/>
-
-          <!-- Stage 4 -->
-          <rect x="946" y="98" width="164" height="130" rx="6" class="node-card"/>
-          <text x="958" y="120" class="t-mono" style="fill:var(--good)">STAGE 4 · ACTION</text>
-          <text x="958" y="142" class="t-sub">• Clean: mutate body</text>
-          <text x="958" y="160" class="t-sub">  with tokenized text</text>
-          <text x="958" y="182" class="t-sub">• Threat OR Error:</text>
-          <text x="958" y="200" class="t-mono" style="fill:var(--stop)">  ImmediateResponse</text>
-          <text x="958" y="216" class="t-mono" style="fill:var(--stop)">  HTTP 403 (Fail-Closed)</text>
+        <svg viewBox="0 0 1160 300" role="img" aria-label="Inline Content Guardrail expressed as an Envoy ext_proc service">
+          <defs><marker id="ep-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--ink)"/></marker></defs>
+          <rect x="16" y="16" width="1128" height="268" rx="10" class="zone-box"/>
+          <text x="32" y="40" class="t-zone">INLINE CONTENT GUARDRAIL · THE CONCEPT BEHIND "MODEL ARMOR" · ENVOY EXTERNAL PROCESSOR (ext_proc) OVER gRPC</text>
+          <rect x="32" y="64" width="200" height="196" rx="8" class="node-cyan"/>
+          <text x="48" y="92" class="t-title">Envoy Proxy</text>
+          <text x="48" y="112" class="t-sub">Ingress or Egress Reverse Proxy</text>
+          <text x="48" y="136" class="t-mono">envoy.filters.http.ext_proc</text>
+          <text x="48" y="160" class="t-sub">buffers the body, streams it</text>
+          <text x="48" y="178" class="t-sub">to the guardrail, waits for a</text>
+          <text x="48" y="196" class="t-sub">verdict before forwarding</text>
+          <text x="48" y="226" class="t-mono" style="fill:var(--stop)">failure_mode_allow: false</text>
+          <text x="48" y="244" class="t-sub">GCP: Model Armor + Cloud SDP</text>
+          <path d="M232 120 L298 120" class="edge-line" marker-end="url(#ep-ah)"/>
+          <path d="M298 200 L232 200" class="edge-line" marker-end="url(#ep-ah)"/>
+          <text x="265" y="110" class="t-mono" text-anchor="middle">gRPC</text>
+          <text x="265" y="220" class="t-mono" text-anchor="middle">verdict</text>
+          <rect x="300" y="56" width="826" height="212" rx="10" class="node-bad"/>
+          <text x="320" y="82" class="t-title">Guardrail service · OSS: Llama Guard / NeMo Guardrails + Presidio · GCP: Model Armor + Sensitive Data Protection</text>
+          <rect x="320" y="100" width="188" height="150" rx="6" class="node-card"/>
+          <text x="332" y="122" class="t-mono" style="fill:var(--cyan)">1 · CANONICALIZE</text>
+          <text x="332" y="144" class="t-sub">NFKC normalize</text><text x="332" y="162" class="t-sub">strip Unicode tag chars</text><text x="332" y="180" class="t-sub">decode Base64 / hex wrappers</text><text x="332" y="198" class="t-sub">flatten Markdown / HTML</text>
+          <path d="M508 170 L526 170" class="edge-line" marker-end="url(#ep-ah)"/>
+          <rect x="528" y="100" width="194" height="150" rx="6" class="node-card"/>
+          <text x="540" y="122" class="t-mono" style="fill:var(--stop)">2 · CLASSIFY</text>
+          <text x="540" y="144" class="t-sub">direct prompt injection</text><text x="540" y="162" class="t-sub">indirect injection in tool rows</text><text x="540" y="180" class="t-sub">malicious URL / image exfil</text><text x="540" y="198" class="t-sub">jailbreak · harmful content</text>
+          <path d="M722 170 L740 170" class="edge-line" marker-end="url(#ep-ah)"/>
+          <rect x="742" y="100" width="194" height="150" rx="6" class="node-card"/>
+          <text x="754" y="122" class="t-mono" style="fill:var(--violet)">3 · DE-IDENTIFY</text>
+          <text x="754" y="144" class="t-sub">detect PII (regex + ML)</text><text x="754" y="162" class="t-sub">replace with deterministic</text><text x="754" y="180" class="t-sub">surrogate tokens</text><text x="754" y="200" class="t-mono">[EMAIL_8f9a]</text>
+          <path d="M936 170 L954 170" class="edge-line" marker-end="url(#ep-ah)"/>
+          <rect x="956" y="100" width="154" height="150" rx="6" class="node-card"/>
+          <text x="968" y="122" class="t-mono" style="fill:var(--good)">4 · VERDICT</text>
+          <text x="968" y="144" class="t-sub">clean → forward the</text><text x="968" y="162" class="t-sub">rewritten body</text><text x="968" y="186" class="t-sub">threat or timeout →</text><text x="968" y="204" class="t-mono" style="fill:var(--stop)">403 · fail closed</text>
         </svg>
-        <div class="fig-caption">
-          <span>Figure 0A-2 — Vendor-Agnostic Representation of "Model Armor": an Envoy External Processor (`ext_proc`) gRPC service that canonicalizes, classifies, and tokenizes payloads inline with `failure_mode_allow: false`.</span>
-        </div>
+        <div class="fig-caption"><span>Figure 0A-2 — The Inline Content Guardrail is an out-of-process service the proxy consults on every request and response. On Google Cloud that service is Model Armor (with Cloud SDP for de-identification); in the open-source stack it is an Envoy <code>ext_proc</code> callout to a classifier.</span></div>
       </div>
 
 
       <div class="post-prose">
-        <h3>3. Wire-by-Wire Connection &amp; Communication Protocol Contract (Hops 1–10)</h3>
-        <p>
-          Every arrow in <strong>Figure 0A</strong> represents a strict network and cryptographic contract between two boxes. If a connection lacks any of the transport, framing, or identity properties listed below, an attacker can bypass the control plane.
-        </p>
+        <h3>Concept → open-source → Google Cloud: the master map</h3>
+        <p>Every row below is one box in Figure 0A. The last two columns tell you which box it becomes in Figure 0B and which chapter introduces it. The same strip repeats at the top of each chapter so the mapping is never more than one scroll away.</p>
       </div>
-
-      <div class="tbl-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Hop</th>
-              <th>Source → Destination</th>
-              <th>Transport &amp; Wire Protocol</th>
-              <th>Identity &amp; Credential on the Wire</th>
-              <th>What the Receiver Must Verify</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="b-pill llm">Hop 1</span></td>
-              <td><strong><code>A1</code> Client App</strong> → <strong><code>B1</code> Envoy Ingress</strong></td>
-              <td><code>HTTPS (TLS 1.3)</code> · <code>HTTP/2</code> or <code>gRPC-Web</code> · Carries <code>traceparent</code> header</td>
-              <td>End-user <strong>OAuth 2.1 Bearer / OIDC ID Token</strong> (<code>T1</code>) obtained via <code>Authorization Code + PKCE</code> from <code>A2</code></td>
-              <td>Verify TLS 1.3; call <code>ext_authz</code> to validate JWT signature against <code>A2</code> JWKS, check <code>iss</code>, <code>aud</code>, <code>exp</code>, and apply per-tenant token bucket rate limits.</td>
-            </tr>
-            <tr>
-              <td><span class="b-pill llm">Hop 1b</span></td>
-              <td><strong><code>B1</code> Envoy Ingress</strong> → <strong><code>A2</code> Identity Provider</strong></td>
-              <td><code>HTTPS (TLS 1.3)</code> · <code>GET /.well-known/jwks.json</code> (cached with short TTL)</td>
-              <td>Public OIDC Discovery / mTLS client authentication for introspection</td>
-              <td>Verify IdP TLS certificate chain and pin expected issuer URI (<code>iss</code>).</td>
-            </tr>
-            <tr>
-              <td><span class="b-pill llm">Hop 2</span></td>
-              <td><strong><code>A3</code> Event &amp; Cron Bus</strong> → <strong><code>B1</code> Envoy Ingress</strong></td>
-              <td><code>HTTPS Push (TLS 1.3)</code> · <code>HTTP/2 POST</code> JSON event envelope</td>
-              <td><strong>Detached HMAC-SHA256 Signature</strong> (<code>X-Signature-256</code> + <code>X-Timestamp</code> + <code>X-Nonce</code>) or short-lived Scheduler OIDC JWT</td>
-              <td>Recompute HMAC over raw body; reject if <code>|now - timestamp| &gt; 300s</code> or if <code>nonce</code> exists in Redis replay cache; validate JSON schema.</td>
-            </tr>
-            <tr>
-              <td><span class="b-pill g">Hop 3</span></td>
-              <td><strong><code>B1</code> Envoy Ingress</strong> → <strong><code>B2</code> Agent Runtime</strong></td>
-              <td><strong>Pod Localhost Loopback / UDS</strong> (sidecar) OR <strong><code>mTLS</code> over <code>HTTP/2</code></strong> (gateway)</td>
-              <td>Ingress Envoy <strong>SPIFFE X.509 SVID</strong> + Envoy-signed internal header containing verified <code>user_sub</code> &amp; <code>tenant_id</code></td>
-              <td>Agent Runtime rejects any connection not coming from <code>B1</code> Envoy's SPIFFE identity; strips untrusted external headers; receives canonicalized, DLP-tokenized prompt.</td>
-            </tr>
-            <tr>
-              <td><span class="b-pill g">Hop 4</span></td>
-              <td><strong><code>B2</code> Agent Runtime</strong> → <strong><code>B3</code> Envoy Egress</strong></td>
-              <td><strong><code>mTLS 1.3</code> over TCP</strong> (or Unix Domain Socket with peer credential check) · <code>HTTP/2</code></td>
-              <td><strong>Agent SPIFFE X.509 SVID</strong> (<code>spiffe://corp/ns/ai/sa/agent-01</code>) + <strong>RFC 9449 <code>DPoP</code> Proof JWT</strong> + User Token <code>T1</code></td>
-              <td><code>B3</code> Envoy terminates mTLS, extracts SAN URI (<code>spiffe://...</code>), and verifies the <code>DPoP</code> header signature matches the public key bound (`cnf.jkt`) to the token.</td>
-            </tr>
-            <tr>
-              <td><span class="b-pill api">Hop 5a</span></td>
-              <td><strong><code>B1 / B3</code> Envoy</strong> ↔ <strong><code>ext_proc</code> Guardrail</strong></td>
-              <td><strong>Bi-directional <code>gRPC</code> Stream over <code>mTLS</code></strong> (<code>envoy.service.ext_proc.v3.ExternalProcessor</code>)</td>
-              <td>Mutual SPIFFE X.509 SVIDs between Envoy and Guardrail service</td>
-              <td>Envoy sets <code>failure_mode_allow: false</code>; waits for explicit <code>ProcessingResponse</code> (`CONTINUE` with tokenized body or `ImmediateResponse 403`).</td>
-            </tr>
-            <tr>
-              <td><span class="b-pill api">Hop 5b</span></td>
-              <td><strong><code>B3</code> Envoy Egress</strong> → <strong><code>C2</code> Capability Registry</strong></td>
-              <td><strong><code>gRPC</code> over <code>mTLS</code></strong> (<code>envoy.service.auth.v3.Authorization.Check</code>)</td>
-              <td>Tuple: <code>(agent_spiffe_id, user_sub, target_mcp_uri, tool_name, http_method)</code></td>
-              <td>Evaluates <strong>Dual-Scope Intersection</strong> (<code>Agent Allowed Tools ∩ User RBAC Scopes</code>) against signed Registry manifest; returns `OK` or `PERMISSION_DENIED`.</td>
-            </tr>
-            <tr>
-              <td><span class="b-pill api">Hop 5c</span></td>
-              <td><strong><code>B3</code> Envoy Egress</strong> → <strong><code>C3</code> OAuth 2.1 STS / KMS</strong></td>
-              <td><strong><code>HTTPS (TLS 1.3)</code> POST <code>/oauth2/token</code></strong> (<code>RFC 8693</code> Token Exchange)</td>
-              <td><code>subject_token = T1</code> (User JWT), <code>actor_token = Agent SPIFFE JWT-SVID</code>, <code>audience = mcp://db-read</code>, <code>scope = orders:read</code></td>
-              <td>STS verifies both tokens and issues a short-lived (5-min), audience-restricted <strong>OBO Token <code>T2</code></strong> containing <code>sub: user_123</code> and <code>act: {sub: spiffe://.../agent-01}</code>.</td>
-            </tr>
-            <tr>
-              <td><span class="b-pill api">Hop 5d</span></td>
-              <td><strong><code>B3</code> Envoy Egress</strong> → <strong><code>C1</code> LLM Inference API</strong></td>
-              <td><strong><code>HTTPS (TLS 1.3)</code> / <code>gRPC</code></strong> · Streaming or Unary inference call</td>
-              <td>Platform-injected short-lived model-invoker token (attached by <code>B3</code> Envoy, never held by <code>B2</code>)</td>
-              <td>Model receives only DLP-tokenized prompt + approved tool declarations; model output is streamed back through <code>B3</code> <code>ext_proc</code> before reaching <code>B2</code>.</td>
-            </tr>
-            <tr>
-              <td><span class="b-pill asi">Hop 6</span></td>
-              <td><strong><code>B3</code> Envoy Egress</strong> → <strong><code>D1</code> L4 Private Bridge</strong></td>
-              <td><strong><code>TCP</code> over L4 Private Tunnel Interface</strong> (`10.10.9.2/28`) · Carries outer <code>mTLS 1.3</code> session</td>
-              <td>Source IP pinned to dedicated Private Bridge CIDR (`10.10.9.0/28`); carries <code>B3</code> Envoy SPIFFE X.509 cert</td>
-              <td>Unidirectional initiation: <code>B3 → D1</code> allowed; unsolicited connections from Data VPC back into Agent DMZ are dropped at L4.</td>
-            </tr>
-            <tr>
-              <td><span class="b-pill asi">Hop 7</span></td>
-              <td><strong><code>D1</code> L4 Private Bridge</strong> → <strong><code>D2</code> Private Endpoint &amp; DNS</strong></td>
-              <td><strong>Private L4 Routing (RFC 1918)</strong> + Split-Horizon DNS resolution (<code>mcp.internal → 10.10.2.20</code>)</td>
-              <td>Network provenance metadata (VPC ID + Bridge Attachment ID) + Caller Identity</td>
-              <td><strong>Zone 4 Data Perimeter</strong> verifies that both the caller identity (`agent/toolbox`) and source network (`D1`) satisfy the Perimeter Ingress Policy.</td>
-            </tr>
-            <tr>
-              <td><span class="b-pill asi">Hop 8</span></td>
-              <td><strong><code>D2</code> Private Endpoint</strong> → <strong><code>D3</code> Parameterized MCP Server</strong></td>
-              <td><strong><code>MCP Streamable HTTP</code> (<code>HTTP/2 POST</code> + <code>JSON-RPC 2.0</code>) over <code>mTLS 1.3</code></strong></td>
-              <td>1) Transport: <code>B3</code> Envoy client X.509 cert<br>2) Header: Downscoped OBO Token <code>T2</code> (or KMS-signed Context JWT for async jobs)</td>
-              <td><code>D3</code> verifies client mTLS cert belongs to <code>B3</code> Envoy, validates <code>T2</code> signature and <code>aud == mcp://db-read</code>, extracts <code>verified_sub = T2.sub</code>, and validates tool args against JSON Schema.</td>
-            </tr>
-            <tr>
-              <td><span class="b-pill asi">Hop 9</span></td>
-              <td><strong><code>D3</code> Parameterized MCP Server</strong> → <strong><code>D4</code> Database Engine</strong></td>
-              <td><strong>Mode A (Analytical HTTP):</strong> <code>HTTPS / gRPC Storage API</code><br><strong>Mode B (OLTP Pooled TCP):</strong> <code>TLS 1.3</code> + <code>mTLS</code> over DB Wire Protocol (e.g., <code>pgwire :5432</code>)</td>
-              <td><strong>Mode A:</strong> Per-query OAuth 2.1 Bearer Token <code>T2</code><br><strong>Mode B:</strong> Short-lived IAM DB Auth token for <code>toolbox-sa</code> + server-bound parameter <code>$1 = verified_sub</code> (or <code>SET LOCAL app.current_user_id</code>)</td>
-              <td>Database executes pre-compiled prepared statement (never model-written SQL), evaluates <strong>Row-Level Security (RLS)</strong> and <strong>Column-Level Security (CLS)</strong> for <code>verified_sub</code>, and enforces <code>SECURITY DEFINER</code> stored procedures for writes.</td>
-            </tr>
-            <tr>
-              <td><span class="b-pill llm">Hop 10</span></td>
-              <td><strong><code>B1, B2, B3, D3, D4</code></strong> → <strong><code>C4</code> OpenTelemetry &amp; Audit Sink</strong></td>
-              <td><strong><code>OTLP / gRPC</code> over <code>TLS 1.3</code></strong> + Control-Plane Immutable Log Stream</td>
-              <td>Service workload identity with write-only (`appendOnly`) permission to WORM log bucket</td>
-              <td>Correlates every hop under a single <code>W3C traceparent</code> (`trace_id`) and records both <code>actor_id (spiffe)</code> and <code>subject_id (user_sub)</code>.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="post-prose">
-        <h3>4. Box-by-Box Specification: What Each Agnostic Component Must Be</h3>
-        <p>
-          Below is the complete engineering specification for every box in <strong>Figure 0A</strong>: its core responsibility, mandatory security invariants, and why substituting a weaker pattern fails.
-        </p>
-      </div>
-
-      <div class="tbl-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Box ID &amp; Agnostic Name</th>
-              <th>What It Must Be (Architectural Role)</th>
-              <th>Mandatory Technical Requirements &amp; Invariants</th>
-              <th>Threats Closed</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong><code>A1 · A2 · A3</code><br>External Callers, IdP &amp; Event Bus</strong></td>
-              <td>Untrusted entry plane originating human interactive requests and asynchronous system triggers.</td>
-              <td>
-                • <code>A1</code> uses <code>OAuth 2.1 Authorization Code + PKCE</code>.<br>
-                • <code>A2</code> signs short-lived JWTs and exposes a public <code>JWKS</code> endpoint.<br>
-                • <code>A3</code> signs every webhook/cron payload with <code>HMAC-SHA256</code> (or OIDC JWT) including a timestamp and unique replay nonce.
-              </td>
-              <td><span class="b-pill t">T1 Spoofed Caller</span><br><span class="b-pill asi">ASI07</span></td>
-            </tr>
-            <tr>
-              <td><strong><code>B1</code><br>Envoy Ingress Reverse Proxy (<code>PEP</code>)</strong></td>
-              <td>Dedicated L7 reverse proxy terminating external TLS and enforcing authentication, prompt safety, and rate limits <em>before</em> the agent process wakes up.</td>
-              <td>
-                • <strong><code>ext_authz</code> filter:</strong> Verifies JWT against <code>A2</code> JWKS or checks <code>A3</code> HMAC + Redis replay cache.<br>
-                • <strong><code>ext_proc</code> filter:</strong> Calls inline content guardrail on user prompt and final agent reply.<br>
-                • <strong>Rate-limit filter:</strong> Enforces per-user and per-tenant token/request budgets.
-              </td>
-              <td><span class="b-pill t">T1</span> <span class="b-pill t">T4</span> <span class="b-pill t">T6</span><br><span class="b-pill llm">LLM01</span> <span class="b-pill llm">LLM10</span></td>
-            </tr>
-            <tr>
-              <td><strong><code>B2</code><br>Agent Runtime Container</strong></td>
-              <td>Stateless orchestration container running your agent framework (ADK, LangGraph, custom state machine) with four internal compartments.</td>
-              <td>
-                • <strong>Workflow Graph:</strong> Deterministic code nodes wrap a single-turn LLM node; enforces Plan-Then-Execute, CaMeL capability tags, and Human-in-the-Loop (<code>HITL</code>) pause on writes.<br>
-                • <strong>Workload Identity:</strong> Holds a cryptographic <code>SPIFFE X.509 SVID</code> rotated via Workload API.<br>
-                • <strong>Memory Store:</strong> Keyed strictly by <code>(tenant_id, user_sub)</code>.<br>
-                • <strong>Code Sandbox:</strong> Runs generated code in an unprivileged gVisor / Firecracker microVM with zero network interfaces.<br>
-                • <strong>Zero-Secret Rule:</strong> Holds <em>no</em> database credentials or static API keys.
-              </td>
-              <td><span class="b-pill t">T5 Destructive Write</span><br><span class="b-pill asi">ASI01</span> <span class="b-pill asi">ASI02</span> <span class="b-pill asi">ASI05</span> <span class="b-pill asi">ASI06</span></td>
-            </tr>
-            <tr>
-              <td><strong><code>B3</code><br>Envoy Egress Forward Proxy (<code>Default-Deny PEP</code>)</strong></td>
-              <td>Outbound L7 forward proxy (sidecar or shared egress gateway) that intercepts 100% of traffic leaving <code>B2</code>.</td>
-              <td>
-                • <strong>Default-Deny Routing:</strong> Any destination host/URI not in <code>C2</code> Registry is rejected with <code>403</code>.<br>
-                • <strong>Caller Proof:</strong> Requires <code>mTLS</code> (Agent SPIFFE cert) + <code>RFC 9449 DPoP</code> proof.<br>
-                • <strong>Dual-Scope Check (<code>ext_authz</code>):</strong> Verifies <code>Agent Scope ∩ User Scope</code>.<br>
-                • <strong>Inline Payload Scan (<code>ext_proc</code>):</strong> Scans outbound MCP arguments and inbound DB rows with <code>failure_mode_allow: false</code>.
-              </td>
-              <td><span class="b-pill t">T2</span> <span class="b-pill t">T4</span> <span class="b-pill t">T7</span><br><span class="b-pill asi">ASI03</span> <span class="b-pill asi">ASI04</span> <span class="b-pill llm">LLM02</span></td>
-            </tr>
-            <tr>
-              <td><strong><code>C1 · C2 · C3 · C4</code><br>LLM, Registry, STS &amp; Audit Sink</strong></td>
-              <td>Shared control and model services consulted by Envoy Egress (<code>B3</code>).</td>
-              <td>
-                • <strong><code>C1</code> LLM API:</strong> Reached only via <code>B3</code>; receives DLP-tokenized context.<br>
-                • <strong><code>C2</code> Capability Registry:</strong> Cryptographically signed catalog of approved MCP servers and JSON schemas.<br>
-                • <strong><code>C3</code> OAuth 2.1 STS &amp; KMS:</strong> Performs <code>RFC 8693</code> On-Behalf-Of (OBO) exchange (<code>T1 → T2</code>) and signs Context JWTs with asymmetric KMS keys (<code>ALLOWED_KIDS</code>).<br>
-                • <strong><code>C4</code> Telemetry &amp; Audit Sink:</strong> Append-only 400-day WORM log recording <code>(trace_id, spiffe_id, user_sub, tool_name, row_count)</code>.
-              </td>
-              <td><span class="b-pill t">T1</span> <span class="b-pill t">T3</span> <span class="b-pill t">T8</span><br><span class="b-pill asi">ASI03</span> <span class="b-pill asi">ASI09</span></td>
-            </tr>
-            <tr>
-              <td><strong><code>D1 · D2</code><br>L4 Private Bridge &amp; Private Endpoint / DNS</strong></td>
-              <td>Private L4 network transport connecting the Egress Envoy Proxy into the isolated Data VPC without public IPs or transitive VPC peering.</td>
-              <td>
-                • <strong><code>D1</code> L4 Bridge:</strong> Dedicated point-to-point virtual NIC (`10.10.9.2/28`) that allows only outbound connections initiated by <code>B3</code>.<br>
-                • <strong><code>D2</code> Private Endpoint &amp; Split DNS:</strong> Resolves internal tool and DB hostnames to private RFC 1918 VIPs with zero route to the public internet.
-              </td>
-              <td><span class="b-pill t">T7 Network Exfil</span><br><span class="b-pill llm">LLM02</span></td>
-            </tr>
-            <tr>
-              <td><strong><code>D3</code><br>Parameterized MCP Tool Server</strong></td>
-              <td>Deterministic database gateway speaking MCP (`JSON-RPC 2.0`) on the north side and parameterized SQL on the south side.</td>
-              <td>
-                • <strong>No Raw <code>execute_sql</code>:</strong> Exposes only named, pre-compiled SQL templates (`tools.yaml`).<br>
-                • <strong>Out-of-Band Identity Binding:</strong> Extracts <code>verified_sub</code> from the validated OBO Token <code>T2</code> header (never from LLM arguments) and binds it to SQL parameter <code>$1</code>.<br>
-                • <strong>Read/Write Split:</strong> Runs separate read-only and write-scoped service instances.
-              </td>
-              <td><span class="b-pill t">T2 Arbitrary SQL</span><br><span class="b-pill t">T3 Cross-Tenant Read</span><br><span class="b-pill api">A03:2021 SQLi</span></td>
-            </tr>
-            <tr>
-              <td><strong><code>D4</code><br>Database Engine (OLTP / Warehouse)</strong></td>
-              <td>Final authoritative data store enforcing row, column, and mutation invariants inside the database kernel.</td>
-              <td>
-                • <strong>Row-Level Security (RLS):</strong> Per-request OAuth <code>SESSION_USER()</code> filter (stateless HTTP warehouse) or <code>SET LOCAL</code> + <code>FORCE ROW LEVEL SECURITY</code> / Parameterized Secure Views (stateful pooled TCP OLTP).<br>
-                • <strong>Column-Level Security (CLS):</strong> Policy tags / column <code>GRANT</code>s + <code>security_invoker = true</code> views.<br>
-                • <strong>Bounded Writes:</strong> Mutations only via atomic <code>SECURITY DEFINER</code> stored procedures.<br>
-                • <strong>Aggregation Floor:</strong> <code>HAVING COUNT(DISTINCT owner_id) &gt;= 5</code> (`k`-anonymity).
-              </td>
-              <td><span class="b-pill t">T3 BOLA / IDOR</span><br><span class="b-pill t">T5 Destructive Write</span><br><span class="b-pill api">API1:2023 BOLA</span></td>
-            </tr>
-            <tr>
-              <td><strong><code>Zone 4 &amp; E1–E4</code><br>Data Perimeter &amp; Control Plane</strong></td>
-              <td>Outer cryptographic data boundary and continuous governance controls across all environments.</td>
-              <td>
-                • <strong>Zone 4 Data Perimeter:</strong> Rejects any data request unless <em>both</em> caller identity and source network (`D1`/`D2`) belong to the perimeter (stops stolen tokens used from outside).<br>
-                • <strong><code>E1–E4</code> Control Plane:</strong> Principal Access Boundary (`PAB`), declarative Org Policies (`OPA`), CI/CD adversarial eval gate, and 3-step emergency Kill Switch.
-              </td>
-              <td><span class="b-pill t">T7</span> <span class="b-pill t">T8</span><br><span class="b-pill asi">ASI08</span> <span class="b-pill asi">ASI10</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="tbl-wrap"><table>
+<thead><tr><th>Concept (Figure 0A box)</th><th>What it does</th><th>Open-source implementation</th><th>Google Cloud guardrail</th><th>Box in Figure 0B</th><th>Explained in</th></tr></thead>
+<tbody><tr>
+  <td><strong>Callers &amp; Apps</strong></td>
+  <td>Browser · mobile · CLI · partner app</td>
+  <td><span class="cm-pill oss">OSS</span>Any OAuth 2.1 client (PKCE)</td>
+  <td><span class="cm-pill gcp">GCP</span>Same (OAuth token)</td>
+  <td><code>Users and apps</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-01">Ch. 1</a></td>
+</tr><tr>
+  <td><strong>Identity Provider</strong></td>
+  <td>Issues user JWT (sub, groups) · JWKS</td>
+  <td><span class="cm-pill oss">OSS</span>Keycloak · Dex · any OIDC IdP</td>
+  <td><span class="cm-pill gcp">GCP</span>Cloud Identity · Okta/Entra via Workforce IdF</td>
+  <td><code>Corporate sign-in</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-06">Ch. 6</a></td>
+</tr><tr>
+  <td><strong>Events &amp; Schedules</strong></td>
+  <td>Webhooks · queues · cron mandates</td>
+  <td><span class="cm-pill oss">OSS</span>Kafka · NATS · cron (HMAC-signed)</td>
+  <td><span class="cm-pill gcp">GCP</span>Pub/Sub · Cloud Scheduler · Eventarc</td>
+  <td><code>Events &amp; schedules</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-07">Ch. 7</a></td>
+</tr><tr>
+  <td><strong>Reverse Proxy (in)</strong></td>
+  <td>L7 policy enforcement point in front of agent</td>
+  <td><span class="cm-pill oss">OSS</span>Envoy Proxy</td>
+  <td><span class="cm-pill gcp">GCP</span>Agent Gateway (CLIENT_TO_AGENT)</td>
+  <td><code>Ingress gateway</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-07">Ch. 7</a></td>
+</tr><tr>
+  <td><strong>Caller Authentication</strong></td>
+  <td>Verify JWT / HMAC · RBAC decision</td>
+  <td><span class="cm-pill oss">OSS</span>Envoy ext_authz + OPA</td>
+  <td><span class="cm-pill gcp">GCP</span>IAM auth policy · IAP · Cloud Armor</td>
+  <td><code>Who may invoke</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-07">Ch. 7</a></td>
+</tr><tr>
+  <td><strong>Inline Content Guardrail</strong></td>
+  <td>Screen prompt &amp; reply before the model</td>
+  <td><span class="cm-pill oss">OSS</span>Envoy ext_proc + Llama Guard + Presidio</td>
+  <td><span class="cm-pill gcp">GCP</span>Model Armor + Cloud SDP</td>
+  <td><code>Model Armor (prompt and reply)</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-09">Ch. 9</a></td>
+</tr><tr>
+  <td><strong>Rate &amp; Budget Limiter</strong></td>
+  <td>Per-tenant token bucket · cost circuit</td>
+  <td><span class="cm-pill oss">OSS</span>Envoy ratelimit (Redis)</td>
+  <td><span class="cm-pill gcp">GCP</span>Agent Gateway quotas · Cloud Armor</td>
+  <td><code>Quotas</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-07">Ch. 7</a></td>
+</tr><tr>
+  <td><strong>Agent Runtime</strong></td>
+  <td>Stateless container · any framework</td>
+  <td><span class="cm-pill oss">OSS</span>Container on Kubernetes</td>
+  <td><span class="cm-pill gcp">GCP</span>ADK 2.x on Vertex AI Agent Engine / Cloud Run</td>
+  <td><code>ADK 2.x agent</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-01">Ch. 1</a></td>
+</tr><tr>
+  <td><strong>Deterministic Workflow + HITL</strong></td>
+  <td>Code nodes · one single-turn model node</td>
+  <td><span class="cm-pill oss">OSS</span>LangGraph · state machine</td>
+  <td><span class="cm-pill gcp">GCP</span>ADK 2.x Workflow + RequestInput</td>
+  <td><code>Workflow graph</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-12">Ch. 12</a></td>
+</tr><tr>
+  <td><strong>Workload Identity</strong></td>
+  <td>Short-lived X.509 SVID · no static keys</td>
+  <td><span class="cm-pill oss">OSS</span>SPIFFE / SPIRE</td>
+  <td><span class="cm-pill gcp">GCP</span>Agent Identity (principal://…/AGENT_ID)</td>
+  <td><code>Agent identity · SPIFFE</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-04">Ch. 4</a></td>
+</tr><tr>
+  <td><strong>Memory Store</strong></td>
+  <td>Sessions keyed by (tenant, user)</td>
+  <td><span class="cm-pill oss">OSS</span>Redis · Postgres</td>
+  <td><span class="cm-pill gcp">GCP</span>Memory Bank</td>
+  <td><code>Memory Bank</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-12">Ch. 12</a></td>
+</tr><tr>
+  <td><strong>Code Sandbox</strong></td>
+  <td>Generated code · no network · ephemeral</td>
+  <td><span class="cm-pill oss">OSS</span>gVisor · Firecracker</td>
+  <td><span class="cm-pill gcp">GCP</span>Agent Engine Code Execution</td>
+  <td><code>Code sandbox</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-12">Ch. 12</a></td>
+</tr><tr>
+  <td><strong>Forward Proxy (out)</strong></td>
+  <td>Default-deny exit for every outbound call</td>
+  <td><span class="cm-pill oss">OSS</span>Envoy Proxy (sidecar / egress gateway)</td>
+  <td><span class="cm-pill gcp">GCP</span>Agent Gateway (AGENT_TO_MCP) · Envoy sidecar</td>
+  <td><code>Egress gateway</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-08">Ch. 8</a></td>
+</tr><tr>
+  <td><strong>Caller Proof</strong></td>
+  <td>mTLS workload cert + sender-bound token</td>
+  <td><span class="cm-pill oss">OSS</span>SPIFFE mTLS + DPoP (RFC 9449)</td>
+  <td><span class="cm-pill gcp">GCP</span>mTLS + DPoP</td>
+  <td><code>Who is calling</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-06">Ch. 6</a></td>
+</tr><tr>
+  <td><strong>Destination AuthZ</strong></td>
+  <td>Agent scope ∩ user scope per target</td>
+  <td><span class="cm-pill oss">OSS</span>Envoy ext_authz + OPA</td>
+  <td><span class="cm-pill gcp">GCP</span>IAP access rules (CEL)</td>
+  <td><code>May it call this</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-08">Ch. 8</a></td>
+</tr><tr>
+  <td><strong>Inline Tool Guardrail</strong></td>
+  <td>Screen MCP / A2A args &amp; returned rows</td>
+  <td><span class="cm-pill oss">OSS</span>Envoy ext_proc + Llama Guard</td>
+  <td><span class="cm-pill gcp">GCP</span>Model Armor (MCP and A2A)</td>
+  <td><code>Model Armor (MCP and A2A)</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-09">Ch. 9</a></td>
+</tr><tr>
+  <td><strong>LLM Inference API</strong></td>
+  <td>Model endpoint reached only via egress proxy</td>
+  <td><span class="cm-pill oss">OSS</span>vLLM · Ollama · any hosted model</td>
+  <td><span class="cm-pill gcp">GCP</span>Gemini on Vertex AI</td>
+  <td><code>Gemini on Vertex AI</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-08">Ch. 8</a></td>
+</tr><tr>
+  <td><strong>Tool &amp; Agent Registry</strong></td>
+  <td>Signed allowlist of MCP servers, agents, skills</td>
+  <td><span class="cm-pill oss">OSS</span>Git catalogue + OPA bundle · Backstage</td>
+  <td><span class="cm-pill gcp">GCP</span>Agent Registry</td>
+  <td><code>Agent Registry</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-08">Ch. 8</a></td>
+</tr><tr>
+  <td><strong>Token Exchange Service</strong></td>
+  <td>User token T1 → narrowed tool token T2</td>
+  <td><span class="cm-pill oss">OSS</span>Keycloak STS (RFC 8693) · Vault Transit</td>
+  <td><span class="cm-pill gcp">GCP</span>Auth Manager · IAM STS · Cloud KMS</td>
+  <td><code>Auth Manager</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-06">Ch. 6</a></td>
+</tr><tr>
+  <td><strong>Telemetry &amp; Audit Sink</strong></td>
+  <td>Trace + immutable log of user &amp; agent per call</td>
+  <td><span class="cm-pill oss">OSS</span>OpenTelemetry · Loki/Tempo · WORM bucket</td>
+  <td><span class="cm-pill gcp">GCP</span>Cloud Audit Logs · Cloud Trace · SCC</td>
+  <td><code>Audit Logs · Trace · SCC</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-13">Ch. 13</a></td>
+</tr><tr>
+  <td><strong>Private Application Network</strong></td>
+  <td>RFC 1918 only · no internet route</td>
+  <td><span class="cm-pill oss">OSS</span>Kubernetes NetworkPolicy · private subnets</td>
+  <td><span class="cm-pill gcp">GCP</span>Your VPC (no external IPs / NAT)</td>
+  <td><code>YOUR VPC</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-10">Ch. 10</a></td>
+</tr><tr>
+  <td><strong>Private Network Link</strong></td>
+  <td>L4 bridge from proxy into private VPC</td>
+  <td><span class="cm-pill oss">OSS</span>WireGuard · Cilium ClusterMesh</td>
+  <td><span class="cm-pill gcp">GCP</span>PSC interface (network attachment)</td>
+  <td><code>PSC interface</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-10">Ch. 10</a></td>
+</tr><tr>
+  <td><strong>Private Endpoint &amp; DNS</strong></td>
+  <td>Internal VIP + split-horizon names</td>
+  <td><span class="cm-pill oss">OSS</span>Internal LB + CoreDNS</td>
+  <td><span class="cm-pill gcp">GCP</span>PSC endpoint + Cloud DNS private zone</td>
+  <td><code>PSC endpoint &amp; DNS</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-10">Ch. 10</a></td>
+</tr><tr>
+  <td><strong>Parameterized Tool Server</strong></td>
+  <td>MCP in · prepared SQL out · $1 = verified user</td>
+  <td><span class="cm-pill oss">OSS</span>MCP Toolbox for Databases (OSS) · FastMCP</td>
+  <td><span class="cm-pill gcp">GCP</span>MCP Toolbox on Cloud Run (internal ingress)</td>
+  <td><code>MCP Toolbox</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-03">Ch. 3</a></td>
+</tr><tr>
+  <td><strong>Database with RLS / CLS</strong></td>
+  <td>Engine decides rows, columns, writes</td>
+  <td><span class="cm-pill oss">OSS</span>PostgreSQL FORCE RLS · column GRANTs</td>
+  <td><span class="cm-pill gcp">GCP</span>BigQuery · Cloud SQL · AlloyDB</td>
+  <td><code>Database</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-05">Ch. 5</a></td>
+</tr><tr>
+  <td><strong>Data Perimeter</strong></td>
+  <td>Identity + network boundary around data</td>
+  <td><span class="cm-pill oss">OSS</span>SPIFFE federation + Cilium identity policy</td>
+  <td><span class="cm-pill gcp">GCP</span>VPC Service Controls</td>
+  <td><code>VPC SERVICE CONTROLS PERIMETER</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-11">Ch. 11</a></td>
+</tr><tr>
+  <td><strong>Identity Policy &amp; Ceiling</strong></td>
+  <td>Allow + explicit deny + max boundary</td>
+  <td><span class="cm-pill oss">OSS</span>RBAC/ABAC + OPA constraints</td>
+  <td><span class="cm-pill gcp">GCP</span>IAM allow, deny, PAB</td>
+  <td><code>IAM allow, deny, PAB</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-13">Ch. 13</a></td>
+</tr><tr>
+  <td><strong>Infrastructure Guardrails</strong></td>
+  <td>Policy-as-code no project can skip</td>
+  <td><span class="cm-pill oss">OSS</span>OPA Gatekeeper · Kyverno</td>
+  <td><span class="cm-pill gcp">GCP</span>Org Policy</td>
+  <td><code>Org Policy</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-13">Ch. 13</a></td>
+</tr><tr>
+  <td><strong>Adversarial Evaluation Gate</strong></td>
+  <td>Attack cases gate every deploy</td>
+  <td><span class="cm-pill oss">OSS</span>promptfoo · garak · CI job</td>
+  <td><span class="cm-pill gcp">GCP</span>adk eval · Evaluation and red team</td>
+  <td><code>Evaluation and red team</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-13">Ch. 13</a></td>
+</tr><tr>
+  <td><strong>Kill Switch</strong></td>
+  <td>Deny, revoke, keep evidence</td>
+  <td><span class="cm-pill oss">OSS</span>Proxy deny rule + token revoke</td>
+  <td><span class="cm-pill gcp">GCP</span>Kill switch runbook</td>
+  <td><code>Kill switch</code></td>
+  <td><a href="../ep01_securing_agent_to_database.html#part-13">Ch. 13</a></td>
+</tr></tbody></table></div>
 
       <div class="post-prose">
-        <h3>5. Cross-Platform Implementation Mapping (Agnostic → Open-Source / K8s → Google Cloud → AWS → Azure)</h3>
-        <p>
-          Once you lock in the agnostic architecture in <strong>Figure 0A</strong>, mapping it to any target platform is a mechanical 1-to-1 substitution:
-        </p>
+        <h3>What travels on each wire (hops 1–9)</h3>
+        <p>The arrows are contracts, not just lines. Each hop has a transport, an identity that must be on the wire, and a check the receiver must perform. Hop numbers match Figure 0B exactly.</p>
       </div>
+      <div class="tbl-wrap"><table>
+<thead><tr><th>Hop</th><th>From → To (Figure 0A names; same numbering as Figure 0B)</th><th>Transport & wire protocol</th><th>Identity on the wire</th><th>What the receiver must verify</th></tr></thead>
+<tbody><tr><td><span class="b-pill llm">Hop 1</span></td><td><strong>Callers & Client Apps → Ingress Reverse Proxy</strong></td><td>HTTPS (TLS 1.3) · HTTP/2 · carries <code>traceparent</code></td><td>End-user OAuth 2.1 / OIDC JWT (<code>T1</code>) from Identity Provider via Authorization Code + PKCE</td><td>Caller Authentication (<code>ext_authz</code>) validates signature against IdP JWKS, <code>iss</code>, <code>aud</code>, <code>exp</code>; Rate & Budget Limiter applies tenant quota.</td></tr><tr><td><span class="b-pill llm">Hop 2</span></td><td><strong>Event & Schedule Sources → Ingress Reverse Proxy</strong></td><td>HTTPS push · JSON event envelope</td><td>Detached HMAC-SHA256 (<code>X-Signature</code>, <code>X-Timestamp</code>, <code>X-Nonce</code>) or short-lived scheduler OIDC JWT</td><td>Recompute HMAC over raw body; reject if older than 300 s or nonce already seen; validate schema before the agent wakes up.</td></tr><tr><td><span class="b-pill llm">Hop 3</span></td><td><strong>Ingress Reverse Proxy → Agent Runtime</strong></td><td>Loopback / Unix socket (sidecar) or mTLS HTTP/2 (gateway)</td><td>Proxy workload cert + proxy-signed internal header with verified <code>user_sub</code>, <code>tenant_id</code></td><td>Runtime accepts only the proxy's identity; strips external headers; receives the already screened and de-identified prompt.</td></tr><tr><td><span class="b-pill llm">Hop 4</span></td><td><strong>Agent Runtime → Egress Forward Proxy</strong></td><td>mTLS 1.3 over TCP (or UDS with peer check) · HTTP/2</td><td>Agent workload cert (SPIFFE SVID) + DPoP proof (RFC 9449) + user token <code>T1</code></td><td>Caller Proof: extract SAN URI <code>spiffe://…</code>, verify DPoP signature matches key bound to token (<code>cnf.jkt</code>).</td></tr><tr><td><span class="b-pill llm">Hop 5</span></td><td><strong>Egress Forward Proxy → Registry · Token Exchange · LLM · Audit</strong></td><td>gRPC / HTTPS over TLS 1.3</td><td>Registry: <code>(agent_id, user_sub, target, tool)</code> tuple · STS: <code>subject_token=T1</code>, <code>actor_token=SVID</code>, <code>audience=tools</code> · LLM: platform model token injected by proxy</td><td>Destination Authorization = Agent scope ∩ User scope against the signed registry; STS returns 5-minute, audience-bound <code>T2</code> with <code>act</code> claim; model output streams back through the guardrail.</td></tr><tr><td><span class="b-pill llm">Hop 6</span></td><td><strong>Egress Forward Proxy → Private Network Link</strong></td><td>TCP over L4 private tunnel · carries outer mTLS session</td><td>Source pinned to the link's /28 range + proxy workload cert</td><td>Only proxy-initiated connections cross; unsolicited connections back into the agent platform are dropped.</td></tr><tr><td><span class="b-pill llm">Hop 7</span></td><td><strong>Private Network Link → Private Endpoint & DNS</strong></td><td>Private L4 routing (RFC 1918) + split-horizon DNS</td><td>Network provenance (VPC + attachment id) + caller identity</td><td>Data Perimeter ingress rule requires both an allowed identity and an allowed source network.</td></tr><tr><td><span class="b-pill llm">Hop 8</span></td><td><strong>Private Endpoint → Parameterized Tool Server</strong></td><td>MCP Streamable HTTP (HTTP/2 POST + JSON-RPC 2.0) over mTLS</td><td>Transport: proxy client cert · Header: downscoped <code>T2</code> (or KMS-signed context JWT for jobs)</td><td>Tool server checks <code>aud</code>, extracts <code>verified_sub = T2.sub</code>, validates arguments against JSON Schema; the model never supplies the user id.</td></tr><tr><td><span class="b-pill llm">Hop 9</span></td><td><strong>Parameterized Tool Server → Database</strong></td><td>Warehouse: HTTPS/gRPC per query · OLTP: TLS 1.3 on the DB wire protocol via a pool</td><td>Warehouse: per-query bearer <code>T2</code> · OLTP: short-lived IAM DB token for the tool-server identity + <code>$1 = verified_sub</code> (or <code>SET LOCAL</code>)</td><td>Database executes prepared statements only; Row-Level and Column-Level Security filter for <code>verified_sub</code>; writes go through <code>SECURITY DEFINER</code> procedures.</td></tr><tr><td><span class="b-pill llm">Hop ∗</span></td><td><strong>Every component → Telemetry & Audit Sink</strong></td><td>OTLP / gRPC over TLS 1.3 · append-only log stream</td><td>Workload identity with write-only permission</td><td>One <code>trace_id</code> across all hops; every record carries both <code>agent_id</code> and <code>user_sub</code>.</td></tr></tbody></table></div>
+      
 
-      <div class="tbl-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Agnostic Component (Figure 0A)</th>
-              <th>Open-Source / Self-Hosted K8s</th>
-              <th>Google Cloud Implementation (Figure 0B)</th>
-              <th>AWS Equivalent</th>
-              <th>Azure Equivalent</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong><code>B1</code> Envoy Ingress Proxy (<code>PEP</code>)</strong></td>
-              <td><strong>Envoy Proxy</strong> / Istio Ingress Gateway + OPA <code>ext_authz</code> + Redis rate limit</td>
-              <td><strong>Agent Gateway (<code>CLIENT_TO_AGENT</code>)</strong> + Cloud Armor + Identity-Aware Proxy (IAP)</td>
-              <td>Envoy on ECS/EKS + AWS WAF + API Gateway / ALB OIDC Authorizer</td>
-              <td>Envoy on AKS / Azure Application Gateway + Front Door WAF + Entra EasyAuth</td>
-            </tr>
-            <tr>
-              <td><strong><code>B1/B3</code> Inline <code>ext_proc</code> Safety Guardrail</strong></td>
-              <td><strong>Envoy <code>ext_proc</code> gRPC filter</strong> → Llama Guard / NeMo Guardrails + Microsoft Presidio DLP</td>
-              <td><strong>Model Armor</strong> (inline Service Extension / Floor Settings) + <strong>Cloud SDP (DLP)</strong></td>
-              <td>Envoy <code>ext_proc</code> → Amazon Bedrock Guardrails ApplyGuardrail API + Macie/Comprehend PII</td>
-              <td>Envoy <code>ext_proc</code> → Azure AI Content Safety + Prompt Shields + Purview DLP</td>
-            </tr>
-            <tr>
-              <td><strong><code>B2</code> Agent Runtime &amp; Workload ID</strong></td>
-              <td>Container on K8s + <strong>SPIFFE / SPIRE</strong> (`X.509-SVID`) + LangGraph/ADK + gVisor (`runsc`)</td>
-              <td><strong>ADK 2.x on Vertex AI Agent Engine</strong> (or Cloud Run) + <strong>Agent Identity (SPIFFE)</strong> + Code Execution Sandbox</td>
-              <td>Bedrock AgentCore / EKS Pod + SPIRE / IAM Roles for Service Accounts (IRSA) + Firecracker</td>
-              <td>Azure Container Apps / AKS + Workload Identity Federation + Dynamic Sessions Sandbox</td>
-            </tr>
-            <tr>
-              <td><strong><code>B3</code> Envoy Egress Proxy (<code>Default-Deny</code>)</strong></td>
-              <td><strong>Envoy Sidecar / Egress Gateway</strong> (`mTLS` + `DPoP` + OPA `ext_authz` + NetworkPolicy)</td>
-              <td><strong>Agent Gateway (<code>AGENT_TO_MCP</code> / <code>AGENT_TO_AGENT</code>)</strong> or <strong>Cloud Run Envoy Sidecar</strong> + IAP</td>
-              <td>Envoy Egress Sidecar + AWS VPC Lattice / App Mesh + Verified Permissions (Cedar)</td>
-              <td>Envoy Egress Sidecar + Azure API Management (Self-Hosted Gateway) + NSG Default-Deny</td>
-            </tr>
-            <tr>
-              <td><strong><code>C2</code> Capability &amp; Tool Registry</strong></td>
-              <td>Signed GitOps YAML Catalog / Backstage + OPA bundle server</td>
-              <td><strong>Google Cloud Agent Registry</strong> (approved agents, MCP servers &amp; schemas)</td>
-              <td>AWS Service Catalog / Private API Registry + Systems Manager Parameter Store</td>
-              <td>Azure API Center (MCP &amp; Agent Inventory)</td>
-            </tr>
-            <tr>
-              <td><strong><code>C3</code> OAuth 2.1 STS &amp; KMS Signer</strong></td>
-              <td><strong>Keycloak / Ory Hydra</strong> (`RFC 8693` STS) + HashiCorp Vault Transit KMS</td>
-              <td><strong>Agent Engine Auth Manager</strong> + <strong>Cloud IAM STS</strong> + <strong>Cloud KMS</strong> (`AsymmetricSign`)</td>
-              <td>AWS STS / Cognito + AWS KMS (`Sign` API with ECC_NIST_P256)</td>
-              <td>Microsoft Entra ID On-Behalf-Of (OBO) flow + Azure Key Vault HSM</td>
-            </tr>
-            <tr>
-              <td><strong><code>D1 · D2</code> L4 Private Bridge &amp; Endpoint</strong></td>
-              <td>WireGuard / Cilium ClusterMesh L4 Point-to-Point Tunnel + CoreDNS Split-Horizon</td>
-              <td><strong>Private Service Connect (PSC) Network Attachment (`10.10.9.2`)</strong> + <strong>PSC Endpoint</strong> + Private Cloud DNS</td>
-              <td>AWS PrivateLink Interface Endpoint + VPC Endpoint Service (NLB) + Route 53 Private Hosted Zone</td>
-              <td>Azure Private Link Service + Private Endpoint + Azure Private DNS Zone</td>
-            </tr>
-            <tr>
-              <td><strong><code>Zone 4</code> Cryptographic Data Perimeter</strong></td>
-              <td>SPIFFE Federation + Cilium L7/L4 Identity-Aware Network Policy + mTLS mesh boundary</td>
-              <td><strong>VPC Service Controls (VPC-SC)</strong> Perimeter (`bigquery.googleapis.com`, `sqladmin.googleapis.com`, `run.googleapis.com`)</td>
-              <td>AWS Data Perimeter (SCPs + VPC Endpoint Policies `aws:PrincipalOrgID` + `aws:SourceVpce`)</td>
-              <td>Azure Network Security Perimeter (NSP) + Conditional Access for Workload Identities</td>
-            </tr>
-            <tr>
-              <td><strong><code>D3</code> Parameterized MCP Tool Server</strong></td>
-              <td><strong>MCP Toolbox for Databases</strong> (OSS binary) or Custom FastMCP Server with pre-compiled SQL</td>
-              <td><strong>MCP Toolbox for Databases on Cloud Run</strong> (`--ingress=internal`, `tools.yaml`, `authServices`)</td>
-              <td>MCP Toolbox on AWS Fargate (Private Subnet) with RDS Proxy IAM Auth</td>
-              <td>MCP Toolbox on Azure Container Apps (Internal VNet) with Managed Identity</td>
-            </tr>
-            <tr>
-              <td><strong><code>D4</code> Database Engine (`RLS` / `CLS`)</strong></td>
-              <td><strong>PostgreSQL 16+</strong> (`FORCE ROW LEVEL SECURITY`, `SET LOCAL`, `security_invoker` views, `SECURITY DEFINER` procs)</td>
-              <td><strong>BigQuery</strong> (Stateless HTTP + Policy Tags + RLS) &amp; <strong>Cloud SQL / AlloyDB</strong> (Stateful TCP + Parameterized Secure Views / PG RLS)</td>
-              <td>Amazon Redshift RLS/CLS &amp; Amazon Aurora PostgreSQL (`FORCE RLS` + `SECURITY DEFINER`)</td>
-              <td>Microsoft Fabric / Synapse RLS/DDM &amp; Azure Database for PostgreSQL (`FORCE RLS`)</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
+      <div class="post-prose" id="xcloud"><h3>The same map for other platforms</h3><p>Because the concepts are stable, the substitution is mechanical. Google Cloud is the reference used in the episode; the other columns show that nothing in the design depends on it.</p></div>
+      <div class="tbl-wrap"><table>
+<thead><tr><th>Concept (Figure 0A)</th><th>Open-source / self-hosted</th><th>Google Cloud (Figure 0B)</th><th>AWS</th><th>Azure</th></tr></thead>
+<tbody><tr><td><strong>Ingress Reverse Proxy + Caller Authentication + Limiter</strong></td><td>Envoy + OPA ext_authz + Redis ratelimit</td><td><strong>Agent Gateway (CLIENT_TO_AGENT) + IAP + Cloud Armor</strong></td><td>Envoy on EKS + WAF + ALB OIDC</td><td>Envoy on AKS + App Gateway WAF + Entra EasyAuth</td></tr><tr><td><strong>Inline Content Guardrail (both proxies)</strong></td><td>Envoy ext_proc → Llama Guard / NeMo Guardrails + Presidio</td><td><strong>Model Armor + Cloud SDP</strong></td><td>Envoy ext_proc → Bedrock Guardrails + Macie</td><td>Envoy ext_proc → Azure AI Content Safety + Purview</td></tr><tr><td><strong>Agent Runtime + Workload Identity + Sandbox</strong></td><td>Kubernetes + SPIRE + gVisor</td><td><strong>ADK 2.x on Vertex AI Agent Engine + Agent Identity + Code Execution</strong></td><td>Bedrock AgentCore / EKS + IRSA + Firecracker</td><td>Container Apps / AKS + Workload Identity + Dynamic Sessions</td></tr><tr><td><strong>Egress Forward Proxy + Caller Proof + Destination AuthZ</strong></td><td>Envoy sidecar + SPIFFE mTLS + DPoP + OPA</td><td><strong>Agent Gateway (AGENT_TO_MCP) + IAP CEL, or Cloud Run Envoy sidecar</strong></td><td>Envoy sidecar + VPC Lattice + Verified Permissions</td><td>Envoy sidecar + APIM self-hosted gateway + NSG</td></tr><tr><td><strong>Tool & Agent Registry</strong></td><td>Signed Git catalogue + OPA bundles / Backstage</td><td><strong>Agent Registry</strong></td><td>Service Catalog + Parameter Store</td><td>Azure API Center</td></tr><tr><td><strong>Token Exchange Service</strong></td><td>Keycloak / Ory Hydra (RFC 8693) + Vault Transit</td><td><strong>Auth Manager + IAM STS + Cloud KMS</strong></td><td>AWS STS / Cognito + KMS Sign</td><td>Entra OBO flow + Key Vault HSM</td></tr><tr><td><strong>Private Network Link + Private Endpoint & DNS</strong></td><td>WireGuard / Cilium ClusterMesh + CoreDNS</td><td><strong>PSC interface + PSC endpoint + Cloud DNS private zone</strong></td><td>PrivateLink interface endpoint + Route 53 private zone</td><td>Private Link service + Private Endpoint + Private DNS zone</td></tr><tr><td><strong>Data Perimeter</strong></td><td>SPIFFE federation + Cilium identity-aware policy</td><td><strong>VPC Service Controls</strong></td><td>AWS data perimeter (SCP + VPC endpoint policies)</td><td>Network Security Perimeter + Conditional Access</td></tr><tr><td><strong>Parameterized Tool Server</strong></td><td>MCP Toolbox for Databases (OSS) / FastMCP</td><td><strong>MCP Toolbox on Cloud Run (internal ingress)</strong></td><td>MCP Toolbox on Fargate + RDS Proxy IAM auth</td><td>MCP Toolbox on Container Apps + Managed Identity</td></tr><tr><td><strong>Database with RLS / CLS</strong></td><td>PostgreSQL 16 FORCE RLS + column GRANTs + SECURITY DEFINER</td><td><strong>BigQuery (policy tags, row access policies) · Cloud SQL / AlloyDB (parameterized secure views, PG RLS)</strong></td><td>Redshift RLS/CLS · Aurora PostgreSQL RLS</td><td>Fabric / Synapse RLS + DDM · Azure PostgreSQL RLS</td></tr><tr><td><strong>Governance Control Plane</strong></td><td>OPA Gatekeeper / Kyverno + promptfoo / garak CI</td><td><strong>IAM allow/deny/PAB + Org Policy + adk eval + kill switch</strong></td><td>SCPs + Config + Bedrock evaluations</td><td>Azure Policy + Defender + AI Foundry evaluations</td></tr></tbody></table></div>
+      <div class="post-prose"><h3>Back to the episode</h3><p>Return to <a href="../ep01_securing_agent_to_database.html#fig-hero">Figure 0B</a>, where the Google Cloud column is switched on and built one box at a time from Chapter 3 to Chapter 13.</p></div>
     </div>
   </section>
 </main>
 <script>
   const btn = document.getElementById('theme-toggle');
-  if (btn) {
-    btn.addEventListener('click', () => {
-      const html = document.documentElement;
-      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      html.setAttribute('data-theme', next);
-      btn.textContent = next === 'dark' ? '◐ Switch to Light Mode' : '◑ Switch to Dark Mode';
-    });
-  }
+  if (btn) btn.addEventListener('click', () => { const h = document.documentElement; const n = h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; h.setAttribute('data-theme', n); btn.textContent = n === 'dark' ? '◐ Switch to Light Mode' : '◑ Switch to Dark Mode'; });
 </script>
-</body>
-</html>
+</body></html>

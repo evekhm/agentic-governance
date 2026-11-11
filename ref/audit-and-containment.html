@@ -369,8 +369,26 @@
       
       <div class="post-prose">
         <h3>1. Closing the Audit Blind Spot (<code>T8</code>)</h3>
-        <p>By default, Cloud SQL, AlloyDB, and Spanner disable <code>DATA_READ</code> and <code>DATA_WRITE</code> audit logs, and logs in <code>_Default</code> expire after 30 days. Our control plane enables Data Access logs across all data stores, routes them to a 400-day partitioned BigQuery sink, propagates W3C <code>traceparent</code> from the client edge into SQL comments/job labels, and streams full agent trajectories via ADK's <code>BigQueryAgentAnalyticsPlugin</code>.</p>
-        <h3>2. The 3-Step Emergency Kill Switch Runbook</h3>
+        <p>By default, Cloud SQL, AlloyDB, and Spanner disable <code>DATA_READ</code> and <code>DATA_WRITE</code> audit logs, and logs in <code>_Default</code> expire after 30 days. Our control plane enables Data Access logs across all data stores, routes them to a 400-day partitioned BigQuery sink, propagates W3C <code>traceparent</code> from the client edge into SQL comments/job labels, and streams full agent trajectories via ADK's <a href="https://google.github.io/adk-docs/integrations/bigquery-agent-analytics/" target="_blank" rel="noopener"><code>BigQueryAgentAnalyticsPlugin</code></a>.</p>
+
+        <h3>2. ADK <code>BigQueryAgentAnalyticsPlugin</code> &amp; <code>BigQueryLoggerConfig</code></h3>
+        <p>Attached to the ADK <code>App</code> container (or enabled at scaffold time via <code>uvx agent-starter-pack create . --bq-analytics</code>), <code>BigQueryAgentAnalyticsPlugin</code> streams structured agent lifecycle events directly into BigQuery using the <strong>BigQuery Storage Write API</strong>, supporting auto-schema upgrades, GCS offloading for multimodal content, and OpenTelemetry <code>trace_id</code> / <code>span_id</code> correlation:</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Parameter / Field</th><th>Type / Scope</th><th>Security &amp; Governance Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>trace_id</code> / <code>span_id</code></td><td>Event Column</td><td>OpenTelemetry distributed trace context; joins directly with <code>sqlcommenter</code> <code>traceparent</code> tags in 400-day Database Data Access Audit Logs.</td></tr>
+            <tr><td><code>tool_provenance</code></td><td>Event Metadata</td><td>Identifies tool execution origin: <code>LOCAL</code>, <code>MCP</code>, <code>SUB_AGENT</code>, <code>A2A</code>, or <code>TRANSFER_AGENT</code>.</td></tr>
+            <tr><td><code>content_formatter</code></td><td><code>BigQueryLoggerConfig</code></td><td>Pre-ingestion Python callback that scrubs or redacts residual SSNs, credit cards, or bearer tokens before events leave the container (<code>T2</code> / <code>LLM02</code>).</td></tr>
+            <tr><td><code>event_allowlist</code></td><td><code>BigQueryLoggerConfig</code></td><td>Optional filter restricting logged events (e.g., <code>USER_MESSAGE_RECEIVED</code>, <code>LLM_REQUEST</code>, <code>LLM_RESPONSE</code>, <code>TOOL_STARTING</code>, <code>TOOL_COMPLETED</code>, <code>TOOL_ERROR</code>).</td></tr>
+            <tr><td><code>max_content_length</code> &amp; <code>shutdown_timeout</code></td><td><code>BigQueryLoggerConfig</code></td><td>Caps inline string payloads (with optional GCS bucket offloading for large/multimodal content) and flushes buffered events on container shutdown.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="post-prose">
+        <h3>3. The 3-Step Emergency Kill Switch Runbook</h3>
       </div>
       <div class="tbl-wrap">
         <table>
