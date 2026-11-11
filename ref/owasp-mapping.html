@@ -284,6 +284,7 @@
   .b-pill.llm { color: var(--cyan); background: var(--cyan-soft); border-color: color-mix(in srgb, var(--cyan) 35%, transparent); }
   .b-pill.api { color: var(--amber); background: var(--amber-soft); border-color: color-mix(in srgb, var(--amber) 35%, transparent); }
   .b-pill.t { color: var(--stop); background: var(--stop-soft); border-color: color-mix(in srgb, var(--stop) 35%, transparent); }
+  a.b-pill { text-decoration: none; }
   .b-pill.g { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 35%, transparent); }
   .opt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 18px 0; }
   @media (max-width: 900px) { .opt-grid { grid-template-columns: 1fr; } }
@@ -338,7 +339,7 @@
         <table>
           <thead>
             <tr>
-              <th>Question</th>
+              <th>Defense layers</th>
               <th>Threat</th>
               <th>What the attacker does</th>
               <th>OWASP Agentic 2026</th>
@@ -348,74 +349,74 @@
           </thead>
           <tbody>
             <tr>
-              <td><code>Q2</code></td>
-              <td><span class="b-pill t">T1</span> Prompt injection → model-written SQL</td>
+              <td><a class="b-pill g" href="../ep01_securing_agent_to_database.html#l1-card">L1</a> <a class="b-pill g" href="../ep01_securing_agent_to_database.html#l2-card">L2</a> <a class="b-pill g" href="../ep01_securing_agent_to_database.html#l4-card">L4</a></td>
+              <td><a class="b-pill t" href="../ep01_securing_agent_to_database.html#t1-card">T1</a> Prompt injection → model-written SQL</td>
               <td>Types instructions that override the system prompt; the model composes and runs arbitrary SQL through <code>execute_sql</code>.</td>
-              <td><span class="b-pill asi">ASI01</span> Goal Hijack <span class="b-pill asi">ASI02</span> Tool Misuse <span class="b-pill asi">ASI05</span> Code Execution</td>
+              <td><span class="b-pill asi">ASI01</span> Agent Goal Hijack <span class="b-pill asi">ASI02</span> Tool Misuse &amp; Exploitation <span class="b-pill asi">ASI05</span> Unexpected Code Execution</td>
               <td><span class="b-pill llm">LLM01</span> Prompt Injection <span class="b-pill llm">LLM05</span> Improper Output Handling</td>
               <td><span class="b-pill api">A03:2021</span> Injection</td>
             </tr>
             <tr>
-              <td><code>Q4</code></td>
-              <td><span class="b-pill t">T2</span> Poisoned rows &amp; raw PII into the model</td>
+              <td><a class="b-pill g" href="../ep01_securing_agent_to_database.html#l2-card">L2</a> <a class="b-pill g" href="../ep01_securing_agent_to_database.html#l3-card">L3</a> <a class="b-pill g" href="../ep01_securing_agent_to_database.html#l7-card">L7</a></td>
+              <td><a class="b-pill t" href="../ep01_securing_agent_to_database.html#t2-card">T2</a> Poisoned rows &amp; raw PII into the model</td>
               <td>Writes instructions into a free-text column the agent will later read; or over-broad queries return SSNs and card numbers into the model's context and logs.</td>
-              <td><span class="b-pill asi">ASI01</span> Goal Hijack <span class="b-pill asi">ASI06</span> Memory &amp; Context Poisoning</td>
+              <td><span class="b-pill asi">ASI01</span> Agent Goal Hijack <span class="b-pill asi">ASI06</span> Memory &amp; Context Poisoning</td>
               <td><span class="b-pill llm">LLM01</span> Prompt Injection <span class="b-pill llm">LLM02</span> Sensitive Info Disclosure <span class="b-pill llm">LLM04</span> Data Poisoning</td>
               <td>—</td>
             </tr>
             <tr>
-              <td><code>Q1</code> <code>Q3</code></td>
-              <td><span class="b-pill t">T3</span> Shared admin account (confused deputy)</td>
+              <td><a class="b-pill g" href="../ep01_securing_agent_to_database.html#l5-card">L5</a> <a class="b-pill g" href="../ep01_securing_agent_to_database.html#l7-card">L7</a></td>
+              <td><a class="b-pill t" href="../ep01_securing_agent_to_database.html#t3-card">T3</a> Shared admin account (confused deputy)</td>
               <td>Does nothing special: the agent already connects as one privileged account, so any mistake or injection exposes every tenant's rows and columns.</td>
               <td><span class="b-pill asi">ASI03</span> Identity &amp; Privilege Abuse</td>
               <td><span class="b-pill llm">LLM02</span> Sensitive Info Disclosure <span class="b-pill llm">LLM06</span> Excessive Agency</td>
               <td><span class="b-pill api">API1:2023</span> BOLA / IDOR</td>
             </tr>
             <tr>
-              <td><code>Q1</code></td>
-              <td><span class="b-pill t">T4</span> Identity spoofed in tool arguments</td>
+              <td><a class="b-pill g" href="../ep01_securing_agent_to_database.html#l4-card">L4</a> <a class="b-pill g" href="../ep01_securing_agent_to_database.html#l5-card">L5</a></td>
+              <td><a class="b-pill t" href="../ep01_securing_agent_to_database.html#t4-card">T4</a> Identity spoofed in tool arguments</td>
               <td>Convinces the model to pass <code>user_id="bob@example.com"</code> to a tool whose schema lets the model choose the caller.</td>
-              <td><span class="b-pill asi">ASI02</span> Tool Misuse <span class="b-pill asi">ASI03</span> Identity &amp; Privilege Abuse</td>
+              <td><span class="b-pill asi">ASI02</span> Tool Misuse &amp; Exploitation <span class="b-pill asi">ASI03</span> Identity &amp; Privilege Abuse</td>
               <td><span class="b-pill llm">LLM06</span> Excessive Agency</td>
               <td><span class="b-pill api">API1:2023</span> BOLA / IDOR</td>
             </tr>
             <tr>
-              <td><code>Q1</code> <em>(appears in Part 04)</em></td>
-              <td><span class="b-pill t">T5</span> Token passthrough across hops</td>
+              <td><a class="b-pill g" href="../ep01_securing_agent_to_database.html#l1-card">L1</a> <a class="b-pill g" href="../ep01_securing_agent_to_database.html#l5-card">L5</a></td>
+              <td><a class="b-pill t" href="../ep01_securing_agent_to_database.html#t5-card">T5</a> Token passthrough across hops</td>
               <td>Once a tool server exists, the agent forwards the user's broad frontend token to it; a compromised server replays that token against every other API it was valid for.</td>
               <td><span class="b-pill asi">ASI03</span> Identity &amp; Privilege Abuse <span class="b-pill asi">ASI07</span> Insecure Inter-Agent Communication</td>
               <td>—</td>
               <td>OAuth 2.1 / MCP Authorization Spec</td>
             </tr>
             <tr>
-              <td><code>Q7</code></td>
-              <td><span class="b-pill t">T6</span> Network exposure &amp; exfiltration</td>
+              <td><a class="b-pill g" href="../ep01_securing_agent_to_database.html#l6-card">L6</a> <a class="b-pill g" href="../ep01_securing_agent_to_database.html#l7-card">L7</a></td>
+              <td><a class="b-pill t" href="../ep01_securing_agent_to_database.html#t6-card">T6</a> Network exposure &amp; exfiltration</td>
               <td>Reaches the database from outside (public IP, flat VPC), or makes the agent send retrieved rows to an external endpoint, including via a rendered Markdown image link.</td>
-              <td><span class="b-pill asi">ASI05</span> Code Execution <span class="b-pill asi">ASI10</span> Rogue Agents</td>
+              <td><span class="b-pill asi">ASI05</span> Unexpected Code Execution <span class="b-pill asi">ASI10</span> Rogue Agents</td>
               <td><span class="b-pill llm">LLM02</span> Sensitive Info Disclosure</td>
               <td>—</td>
             </tr>
             <tr>
-              <td><code>Q5</code></td>
-              <td><span class="b-pill t">T7</span> Unapproved / duplicated writes</td>
+              <td><a class="b-pill g" href="../ep01_securing_agent_to_database.html#l3-card">L3</a> <a class="b-pill g" href="../ep01_securing_agent_to_database.html#l8-card">L8</a></td>
+              <td><a class="b-pill t" href="../ep01_securing_agent_to_database.html#t7-card">T7</a> Unapproved / duplicated writes</td>
               <td>Triggers a refund or cancellation with no human confirmation; a timeout retry runs the same mutation twice.</td>
-              <td><span class="b-pill asi">ASI02</span> Tool Misuse <span class="b-pill asi">ASI08</span> Cascading Failures</td>
+              <td><span class="b-pill asi">ASI02</span> Tool Misuse &amp; Exploitation <span class="b-pill asi">ASI08</span> Cascading Failures</td>
               <td><span class="b-pill llm">LLM06</span> Excessive Agency</td>
               <td>—</td>
             </tr>
             <tr>
-              <td><code>Q7</code></td>
-              <td><span class="b-pill t">T8</span> Repudiation — no end-to-end trace</td>
+              <td><a class="b-pill g" href="../ep01_securing_agent_to_database.html#l9-card">L9</a></td>
+              <td><a class="b-pill t" href="../ep01_securing_agent_to_database.html#t8-card">T8</a> Repudiation — no end-to-end trace</td>
               <td>After an incident, the database log shows only the shared account; nothing links the query to a user, a session, or a prompt.</td>
               <td><span class="b-pill asi">ASI09</span> Human-Agent Trust Exploitation</td>
               <td>—</td>
               <td>Logging &amp; Monitoring Failures</td>
             </tr>
             <tr>
-              <td><code>Q6</code></td>
+              <td><a class="b-pill g" href="../ep01_securing_agent_to_database.html#l1-card">L1</a> <a class="b-pill g" href="../ep01_securing_agent_to_database.html#l4-card">L4</a></td>
               <td><span class="b-pill llm">LLM10</span> Bulk extraction &amp; cost flooding</td>
               <td>Pages through every row "1,000 at a time", or triggers warehouse-wide scans on each turn.</td>
-              <td><span class="b-pill asi">ASI02</span> Tool Misuse</td>
+              <td><span class="b-pill asi">ASI02</span> Tool Misuse &amp; Exploitation</td>
               <td><span class="b-pill llm">LLM02</span> Sensitive Info Disclosure <span class="b-pill llm">LLM10</span> Unbounded Consumption</td>
               <td>—</td>
             </tr>

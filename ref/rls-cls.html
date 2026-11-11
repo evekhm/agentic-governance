@@ -477,8 +477,8 @@
               <td>Best for custom transactional and lookup workflows where the agent maps intents to known query patterns.</td>
             </tr>
             <tr>
-              <td><b>2. Cloud SQL Parameterized Secure Views (<code>cloudsql_parameterized_secure_view</code> / <code>cloudsql.enable_parameterized_views</code>)</b></td>
-              <td>You create a restricted view (<code>CREATE VIEW v_orders WITH (security_invoker = true) AS SELECT col1, col2 FROM orders WHERE customer_id = @local_customer_id</code>) and grant the shared connection pool role access only to the view, not the base table. When using the Conversational Analytics <code>QueryData</code> API or MCP Toolbox, the application injects the verified user parameter so even AI-generated ad-hoc SQL is strictly confined to that user's rows and columns.</td>
+              <td><b>2. Cloud SQL Parameterized Secure Views</b></td>
+              <td>You create a restricted view whose row filter is a named parameter and grant the shared connection pool role access only to the view, not the base table. When using the Conversational Analytics <code>QueryData</code> API or MCP Toolbox, the application injects the verified user parameter so even AI-generated ad-hoc SQL is strictly confined to that user's rows and columns. The syntax differs by engine: Cloud SQL for MySQL (8.0.43 and later) uses session variables (<code>CREATE VIEW v_orders AS SELECT … FROM orders WHERE customer_id = @local_customer_id</code>); Cloud SQL for PostgreSQL requires the <code>cloudsql.enable_parameterized_views</code> flag and the <code>parameterized_views</code> extension, and uses <code>WITH (security_barrier)</code> views with <code>$@</code>-prefixed parameters (<code>WHERE customer_id = $@app_user_id</code>).</td>
               <td>Best when you need open-ended natural-language-to-SQL analytics over Cloud SQL (supported in Cloud SQL for MySQL 8.0.43+ and PostgreSQL) without exposing other tenants' data.</td>
             </tr>
             <tr>
@@ -833,6 +833,8 @@ WORKFORCE_AUD = <span class="hl-s">"//iam.googleapis.com/locations/global/workfo
 
 <span class="hl-c">-- 2b. Cloud SQL Parameterized Secure View (for Conversational Analytics / NL2SQL)</span>
 <span class="hl-c">-- Requires flag: cloudsql.enable_parameterized_views = on</span>
+<span class="hl-c">-- Syntax note: PostgreSQL parameterized views use WITH (security_barrier) and $@param (plus the parameterized_views extension);</span>
+<span class="hl-c">-- the @param form shown below is the Cloud SQL for MySQL 8.0.43+ syntax.</span>
 <span class="hl-k">CREATE</span> <span class="hl-k">VIEW</span> sales.v_customer_orders <span class="hl-k">WITH</span> (security_invoker = true) <span class="hl-k">AS</span>
 <span class="hl-k">SELECT</span> order_id, status, total, updated_at
 <span class="hl-k">FROM</span> sales.orders

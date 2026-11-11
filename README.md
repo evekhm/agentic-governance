@@ -19,7 +19,7 @@ When I began researching Agentic Governance, I struggled to find material that e
 1. **Platform-Agnostic Zero-Trust Reference Architecture:** [`ref/agnostic-architecture.html`](ref/agnostic-architecture.html) ([PDF](ref/agnostic-architecture.pdf))
 2. **MCP Tool Server Options (`FastMCP` vs. `MCP Toolbox` vs. Managed MCP):** [`ref/mcp-tool-server-options.html`](ref/mcp-tool-server-options.html) ([PDF](ref/mcp-tool-server-options.pdf))
 3. **Row- & Column-Level Security (BigQuery Stateless HTTP vs. Cloud SQL Pooled TCP):** [`ref/rls-cls.html`](ref/rls-cls.html) ([PDF](ref/rls-cls.pdf))
-4. **mTLS, SPIFFE SVIDs, DPoP & OAuth 2.1 RFC 8693 OBO Token Exchange:** [`ref/mtls-and-tokens.html`](ref/mtls-and-tokens.html) ([PDF](ref/mtls-and-tokens.pdf))
+4. **mTLS, SPIFFE SVIDs, DPoP & OAuth 2.0 RFC 8693 OBO Token Exchange:** [`ref/mtls-and-tokens.html`](ref/mtls-and-tokens.html) ([PDF](ref/mtls-and-tokens.pdf))
 5. **Envoy Proxy at Ingress & Egress (`ext_authz` + `ext_proc`):** [`ref/envoy-proxy.html`](ref/envoy-proxy.html) ([PDF](ref/envoy-proxy.pdf))
 6. **Model Armor Inline Screening & Cloud SDP Deterministic Tokenization:** [`ref/model-armor.html`](ref/model-armor.html) ([PDF](ref/model-armor.pdf))
 7. **Private Service Connect (3 PSC Doors) & VPC Service Controls:** [`ref/psc-and-vpc-sc.html`](ref/psc-and-vpc-sc.html) ([PDF](ref/psc-and-vpc-sc.pdf))

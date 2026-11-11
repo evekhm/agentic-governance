@@ -284,6 +284,7 @@
   .b-pill.llm { color: var(--cyan); background: var(--cyan-soft); border-color: color-mix(in srgb, var(--cyan) 35%, transparent); }
   .b-pill.api { color: var(--amber); background: var(--amber-soft); border-color: color-mix(in srgb, var(--amber) 35%, transparent); }
   .b-pill.t { color: var(--stop); background: var(--stop-soft); border-color: color-mix(in srgb, var(--stop) 35%, transparent); }
+  a.b-pill { text-decoration: none; }
   .b-pill.g { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 35%, transparent); }
   .opt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 18px 0; }
   @media (max-width: 900px) { .opt-grid { grid-template-columns: 1fr; } }
@@ -440,7 +441,7 @@
       <div class="post-prose" style="margin-top:22px;">
         <h3>Option A · A Custom MCP Server</h3>
         <p>
-          You write the server yourself—for example with <code>FastMCP</code> in Python, deployed on Cloud Run. This is the right choice when the tools are not simple SQL statements: multi-step business logic, calls to several systems, or a database that no off-the-shelf server supports. The cost is that every guardrail is your code. To close the threats from Part 03 the server must, at minimum: verify the caller's token on every request and reject calls without one; expose only named tools whose SQL is fixed in code with bound parameters; take the user's identity from the verified token and never from a tool argument; connect to the database with the server's own IAM identity rather than a password; set the per-request identity context on the connection (for Row-Level Security) inside the same transaction as the query; enforce <code>LIMIT</code> and statement timeouts; and emit a trace ID with every call. None of this is difficult, but all of it is easy to omit, and an omission is invisible in a functional test.
+          You write the server yourself—for example with <code>FastMCP</code> in Python, deployed on Cloud Run. This is the right choice when the tools are not simple SQL statements: multi-step business logic, calls to several systems, or a database that no off-the-shelf server supports. The cost is that every guardrail is your code. To close the threats listed in <a href="../ep01_securing_agent_to_database.html#part-02">Episode 01</a> the server must, at minimum: verify the caller's token on every request and reject calls without one; expose only named tools whose SQL is fixed in code with bound parameters; take the user's identity from the verified token and never from a tool argument; connect to the database with the server's own IAM identity rather than a password; set the per-request identity context on the connection (for Row-Level Security) inside the same transaction as the query; enforce <code>LIMIT</code> and statement timeouts; and emit a trace ID with every call. None of this is difficult, but all of it is easy to omit, and an omission is invisible in a functional test.
         </p>
 
         <h3>Option B · MCP Toolbox for Databases</h3>
@@ -487,7 +488,7 @@
   <span class="hl-k">customer_support</span>: [get_order]   <span class="hl-c"># the agent is given this set, nothing else</span></pre>
         </div>
         <p>
-          With this configuration the agent sees one tool, <code>get_order(order_id)</code>. Its SQL cannot be changed from the prompt (closes <code>T1</code>), the owner is bound server-side from the token (closes <code>T4</code>), the view hides PII columns (part of <code>T2</code>), and the <code>LIMIT</code> bounds the result size (<code>LLM10</code>). What Toolbox does not do by itself is make the database enforce the filter: the <code>WHERE owner_email = $1</code> is still a clause in a statement, not an engine policy. If a second tool is added later without that clause, the protection is gone. That is why Part 06 moves the filter into the database with Row-Level Security, keyed to the same bound identity.
+          With this configuration the agent sees one tool, <code>get_order(order_id)</code>. Its SQL cannot be changed from the prompt (closes <code>T1</code>), the owner is bound server-side from the token (closes <code>T4</code>), the view hides PII columns (part of <code>T2</code>), and the <code>LIMIT</code> bounds the result size (<code>LLM10</code>). What Toolbox does not do by itself is make the database enforce the filter: the <code>WHERE owner_email = $1</code> is still a clause in a statement, not an engine policy. If a second tool is added later without that clause, the protection is gone. That is why <a href="../ep01_securing_agent_to_database.html#part-05">the database stage of Episode 01</a> moves the filter into the database with Row-Level Security, keyed to the same bound identity.
         </p>
 
         <h3>Option C · Google-Managed MCP Endpoints</h3>
@@ -533,15 +534,15 @@
             </tr>
             <tr>
               <td><b>Threats closed by the layer itself</b></td>
-              <td><span class="b-pill t">T1</span> <span class="b-pill t">T4</span> <span class="b-pill llm">LLM10</span> — only if implemented</td>
-              <td><span class="b-pill t">T1</span> <span class="b-pill t">T4</span> <span class="b-pill llm">LLM10</span> by configuration</td>
-              <td>None directly; relies on <span class="b-pill t">T3</span> controls in the DB</td>
+              <td><a class="b-pill t" href="../ep01_securing_agent_to_database.html#t1-card">T1</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t4-card">T4</a> <span class="b-pill llm">LLM10</span> — only if implemented</td>
+              <td><a class="b-pill t" href="../ep01_securing_agent_to_database.html#t1-card">T1</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t4-card">T4</a> <span class="b-pill llm">LLM10</span> by configuration</td>
+              <td>None directly; relies on <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t3-card">T3</a> controls in the DB</td>
             </tr>
             <tr>
               <td><b>Threats that remain</b></td>
-              <td><span class="b-pill t">T2</span> <span class="b-pill t">T3</span> <span class="b-pill t">T5</span> <span class="b-pill t">T6</span> <span class="b-pill t">T7</span> <span class="b-pill t">T8</span></td>
-              <td><span class="b-pill t">T2</span> <span class="b-pill t">T3</span> <span class="b-pill t">T5</span> <span class="b-pill t">T6</span> <span class="b-pill t">T7</span> <span class="b-pill t">T8</span></td>
-              <td><span class="b-pill t">T1</span> <span class="b-pill t">T2</span> <span class="b-pill t">T3</span> <span class="b-pill t">T5</span> <span class="b-pill t">T6</span> <span class="b-pill t">T7</span> <span class="b-pill t">T8</span> <span class="b-pill llm">LLM10</span></td>
+              <td><a class="b-pill t" href="../ep01_securing_agent_to_database.html#t2-card">T2</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t3-card">T3</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t5-card">T5</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t6-card">T6</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t7-card">T7</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t8-card">T8</a></td>
+              <td><a class="b-pill t" href="../ep01_securing_agent_to_database.html#t2-card">T2</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t3-card">T3</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t5-card">T5</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t6-card">T6</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t7-card">T7</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t8-card">T8</a></td>
+              <td><a class="b-pill t" href="../ep01_securing_agent_to_database.html#t1-card">T1</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t2-card">T2</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t3-card">T3</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t5-card">T5</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t6-card">T6</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t7-card">T7</a> <a class="b-pill t" href="../ep01_securing_agent_to_database.html#t8-card">T8</a> <span class="b-pill llm">LLM10</span></td>
             </tr>
             <tr>
               <td><b>Best fit</b></td>

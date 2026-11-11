@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Workload Identity (SPIFFE), mTLS, DPoP & OAuth 2.1 OBO Token Exchange — Agentic Governance Reference</title>
+<title>Workload Identity (SPIFFE), mTLS, DPoP & OAuth 2.0 OBO Token Exchange — Agentic Governance Reference</title>
 <style>
   :root,
   html[data-theme="light"] {
@@ -368,7 +368,7 @@
     <div class="sheet-h">
       <div>
         <span class="sec-badge">Reference · Chapters 4 & 6</span>
-        <h1>Workload Identity (SPIFFE), mTLS, DPoP & OAuth 2.1 OBO Token Exchange</h1>
+        <h1>Workload Identity (SPIFFE), mTLS, DPoP & OAuth 2.0 OBO Token Exchange</h1>
         <p>How every hop between the User, Agent, Egress Gateway, and MCP Tool Server proves both workload identity and delegated human authority.</p>
       </div>
     </div>
@@ -385,7 +385,7 @@
             <tr><td><b>Workload Identity</b></td><td><b>SPIFFE ID + X.509 SVID</b> (<code>principal://agents.global…/reasoningEngines/AGENT_ID</code>)</td><td>Issued by the Agent Runtime control plane at startup; zero static JSON keys in environment variables or container layers.</td><td><code>T3</code> (Credential theft)</td></tr>
             <tr><td><b>Transport Layer</b></td><td><b>Mutual TLS (mTLS)</b></td><td>Both client (agent) and server (Egress Gateway / MCP server) verify each other's X.509 certificates during the TLS handshake.</td><td><code>T5</code> / <code>ASI07</code> (Spoofed caller)</td></tr>
             <tr><td><b>Proof-of-Possession</b></td><td><b>DPoP (<code>RFC 9449</code>)</b></td><td>Binds the OAuth token to the agent's private key via a per-request signed <code>DPoP</code> HTTP header covering <code>htm</code>, <code>htu</code>, and <code>ath</code>.</td><td><code>T5</code> (Stolen bearer token replay)</td></tr>
-            <tr><td><b>Delegated Token Hop</b></td><td><b>OAuth 2.1 OBO Token Exchange (<code>RFC 8693</code>)</b> or <b>KMS-Signed Context JWT</b></td><td>Swaps inbound token <code>T1</code> (<code>aud=agent-a</code>) for a 5-minute, audience-locked token <code>T2</code> (<code>aud=orders-mcp</code>, <code>scp=orders:read</code>, <code>act={sub: agent-a}</code>).</td><td><code>T4</code> / <code>T5</code> (Token passthrough &amp; BOLA)</td></tr>
+            <tr><td><b>Delegated Token Hop</b></td><td><b>OAuth 2.0 OBO Token Exchange (<code>RFC 8693</code>)</b> or <b>KMS-Signed Context JWT</b></td><td>Swaps inbound token <code>Token_in</code> (<code>aud=web-app</code>) for a 5-minute, audience-locked token <code>Token_obo</code> (<code>aud=orders-mcp</code>, <code>scp=orders:read</code>, <code>act={sub: agent-a}</code>).</td><td><code>T4</code> / <code>T5</code> (Token passthrough &amp; BOLA)</td></tr>
           </tbody>
         </table>
       </div>
@@ -400,7 +400,7 @@ EXPECTED_MCP_AUD = <span class="hl-s">"https://orders-mcp-xyz-uc.a.run.app"</spa
 ALLOWED_AGENT_ACTORS = {<span class="hl-s">"spiffe://agents.global.org-123.system.id.goog/resources/aiplatform/projects/111/locations/us-central1/reasoningEngines/orders-agent"</span>}
 
 <span class="hl-k">def</span> <span class="hl-f">exchange_user_token_for_mcp_target</span>(subject_jwt: str, target_aud: str, scope: str) -> str:
-    <span class="hl-c"># Exchanges inbound T1 (aud=orders-agent) for downscoped 5-min T2 (aud=orders-mcp)</span>
+    <span class="hl-c"># Exchanges inbound Token_in (aud=web-app) for downscoped 5-min Token_obo (aud=orders-mcp)</span>
     resp = requests.post(
         STS_URL,
         json={
@@ -418,7 +418,7 @@ ALLOWED_AGENT_ACTORS = {<span class="hl-s">"spiffe://agents.global.org-123.syste
     <span class="hl-k">return</span> resp.json()[<span class="hl-s">"access_token"</span>]
 
 <span class="hl-k">def</span> <span class="hl-f">verify_obo_token_on_mcp_server</span>(auth_header: str) -> dict:
-    <span class="hl-c"># Verifies T2 signature, expiry, exact audience (rejects T1!), and acting agent claim</span>
+    <span class="hl-c"># Verifies Token_obo signature, expiry, exact audience (rejects Token_in), and acting agent claim</span>
     raw_jwt = auth_header.removeprefix(<span class="hl-s">"Bearer "</span>).strip()
     claims = id_token.verify_oauth2_token(raw_jwt, google_requests.Request(), audience=EXPECTED_MCP_AUD)
     actor = claims.get(<span class="hl-s">"act"</span>, {}).get(<span class="hl-s">"sub"</span>)
