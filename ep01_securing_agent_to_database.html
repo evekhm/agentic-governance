@@ -1615,7 +1615,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <p>Executes every query under the intersection of the agent's cryptographic workload identity and the verified human caller's narrowed delegation token—stored out-of-band and bound directly to SQL parameter <code>$1</code>.</p>
           <div class="t-fix-row"><b>Boundary &amp; Mitigation (<a href="#part-04">Workload Identity</a> &amp; <a href="#part-06">OBO Token Exchange</a>):</b> Per-agent SPIFFE mTLS ID + out-of-band <code>SessionService</code> + <code>RFC 8693</code> OBO exchange (<code>Token_in → Token_obo</code> bound to <code>$1</code>) (Boundary), with 5-minute token TTLs (Mitigation).</div>
           <div class="t-fix-row oss"><b>Open-Source:</b> <code>SPIFFE / SPIRE</code> mTLS · <code>Redis</code> OOB session store · <code>Keycloak STS</code> / <code>Envoy tokenx</code></div>
-          <div class="t-fix-row gcp"><b>Google Cloud:</b> <code>Agent Identity</code> (SPIFFE) · <code>VertexAiSessionService</code> · <code>Auth Manager</code> OBO · <code>MCP Toolbox authServices</code></div>
+          <div class="t-fix-row gcp"><b>Google Cloud:</b> <code>Agent Identity</code> (SPIFFE) · <code>VertexAiSessionService</code> · <code>RFC 8693</code> exchange at the IdP or <code>Google Cloud STS</code> · <code>MCP Toolbox authServices</code></div>
         </div>
 
         <div class="t-card-full l-card-full" id="l6-card">
@@ -1707,7 +1707,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
               <tr>
                 <td><b>Egress Gate &amp; Managed Services</b></td>
                 <td>Outbound allowlisting, OBO token exchange, and row screening</td>
-                <td><code>Cloud Run</code> Envoy + <code>tokenx</code> sidecar (or managed <code>Egress Agent Gateway</code>), <code>Agent Registry</code>, <code>Auth Manager / IAM STS</code> (<code>RFC 8693</code> OBO), and inline <code>Model Armor</code> + <code>Cloud SDP</code>.</td>
+                <td><code>Cloud Run</code> Envoy + <code>tokenx</code> sidecar (or managed <code>Egress Agent Gateway</code>), <code>Agent Registry</code>, <code>Token Exchange · IdP / STS</code> (<code>RFC 8693</code> OBO), and inline <code>Model Armor</code> + <code>Cloud SDP</code>.</td>
               </tr>
               <tr>
                 <td><b>Private Network &amp; 3. Database Tier</b></td>
@@ -1950,7 +1950,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <g>
             <rect x="866" y="230" width="298" height="66" rx="6" class="b"/>
             <circle cx="1146" cy="250" r="10" class="l-dot"/><text x="1146" y="254" class="bd-t">L5</text>
-            <text x="882" y="258" class="t-b">Auth Manager / IAM STS</text>
+            <text x="882" y="258" class="t-b">Token Exchange · IdP / STS</text>
             <text x="882" y="280" class="t-s">RFC 8693 OBO exchange (Token_in → Token_obo)</text>
           </g>
           <g>
@@ -2088,7 +2088,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
               <tr>
                 <td><a href="#part-06"><b>Token Exchange &amp; OOB State</b></a></td>
                 <td><a class="b-pill g" href="#l1-card">L1</a> <a class="b-pill g" href="#l5-card">L5</a></td>
-                <td><code>Corporate Sign-In</code> · <code>OOB Session</code> · <code>Who is calling</code> · <code>Auth Manager / IAM STS</code></td>
+                <td><code>Corporate Sign-In</code> · <code>OOB Session</code> · <code>Who is calling</code> · <code>Token Exchange · IdP / STS</code></td>
                 <td>Out-of-band token storage in <code>VertexAiSessionService</code>, SPIFFE mTLS, sender-constrained DPoP (<code>RFC 9449</code>), and OAuth 2.0 OBO token exchange (<code>RFC 8693</code>, <code>Token_in → Token_obo</code>).</td>
                 <td><a class="b-pill t" href="#t4-card">T4</a> <a class="b-pill t" href="#t5-card">T5</a></td>
               </tr>
@@ -2303,7 +2303,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-wait"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
           <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-wait"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-wait"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Token Exchange · IdP / STS</text><text x="882" y="280" class="pt-s">RFC 8693: Token_in → Token_obo</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
@@ -2584,7 +2584,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-wait"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
           <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-wait"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-wait"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Token Exchange · IdP / STS</text><text x="882" y="280" class="pt-s">RFC 8693: Token_in → Token_obo</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
@@ -2890,7 +2890,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-wait"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
           <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-wait"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-wait"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Token Exchange · IdP / STS</text><text x="882" y="280" class="pt-s">RFC 8693: Token_in → Token_obo</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
@@ -3039,7 +3039,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
       <div>
         <span class="sec-badge">Architecture Stage · Cryptographic Transport &amp; Token Exchange</span>
         <h2>Prove Who Is Calling on Every Hop</h2>
-        <p>Adding four boxes to Figure 4: <code>Corporate Sign-In</code> (in <code>1. User</code>), <code>Who is calling: SPIFFE mTLS + DPoP</code> (in <code>Egress Gate</code>), <code>Auth Manager / IAM STS</code> (in <code>Google Cloud Managed Services</code>), and <code>OOB Session</code> (in <code>2. AI Agent</code>).</p>
+        <p>Adding four boxes to Figure 4: <code>Corporate Sign-In</code> (in <code>1. User</code>), <code>Who is calling: SPIFFE mTLS + DPoP</code> (in <code>Egress Gate</code>), <code>Token Exchange · IdP / STS</code> (in <code>Google Cloud Managed Services</code>), and <code>OOB Session</code> (in <code>2. AI Agent</code>).</p>
       </div>
     </div>
     <div class="sheet-b">
@@ -3047,8 +3047,8 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
       <div class="concept-map">
         <div class="cm-concept"><span class="cm-k">Concept · <a href="#fig-2b-defense-layers">Figure 3</a></span>Identity Provider · Caller Proof · Token Exchange Service</div>
         <div class="cm-oss"><span class="cm-k">Open-source implementation</span>Keycloak · Dex · any OIDC IdP · SPIFFE mTLS + DPoP (RFC 9449) · Keycloak STS (RFC 8693) · Vault Transit</div>
-        <div class="cm-gcp"><span class="cm-k">Google Cloud guardrail</span>Cloud Identity · Okta/Entra via Workforce IdF · mTLS + DPoP · Auth Manager · IAM STS · Cloud KMS</div>
-        <div class="cm-fig"><span class="cm-k">Box in <a href="#fig-hero">Figure 4</a></span><code>Corporate Sign-In</code> · <code>Who is calling</code> · <code>Auth Manager / IAM STS</code> · <code>OOB Session</code></div>
+        <div class="cm-gcp"><span class="cm-k">Google Cloud guardrail</span>Cloud Identity · Okta/Entra via Workforce IdF · mTLS + DPoP · IdP token endpoint (RFC 8693) · Google Cloud STS · Cloud KMS</div>
+        <div class="cm-fig"><span class="cm-k">Box in <a href="#fig-hero">Figure 4</a></span><code>Corporate Sign-In</code> · <code>Who is calling</code> · <code>Token Exchange · IdP / STS</code> · <code>OOB Session</code></div>
       </div>
 <!-- /CONCEPT_STRIP_CH6 -->
 
@@ -3156,7 +3156,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-wait"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
           <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-new"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-new"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Token Exchange · IdP / STS</text><text x="882" y="280" class="pt-s">RFC 8693: Token_in → Token_obo</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
@@ -3217,7 +3217,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <text x="472" y="402" style="fill:var(--good);font:600 10px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
-          <span>Figure 11 — Progressive Build of Figure 4 (Step 4 of 11): Corporate Sign-In, Who is calling (mTLS + DPoP), Auth Manager / IAM STS, and OOB Session (SessionService) added.</span>
+          <span>Figure 11 — Progressive Build of Figure 4 (Step 4 of 11): Corporate Sign-In, Who is calling (mTLS + DPoP), Token Exchange · IdP / STS, and OOB Session (SessionService) added.</span>
           <div class="legend-items">
             <span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good);border-width:2.5px"></i> <b>Added in This Stage</b></span>
             <span><i class="swatch-dot" style="background:var(--panel);border-color:var(--good)"></i> Added in Earlier Stages</span>
@@ -3246,8 +3246,11 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
         <ul>
           <li><strong>1. Mutual TLS (<code>mTLS</code>):</strong> In ordinary HTTPS (one-way TLS), only the server presents a certificate; the client is anonymous at the transport layer. In <strong>Mutual TLS (mTLS)</strong>, both sides present X.509 certificates during the TLS handshake. The agent presents the short-lived <strong>SPIFFE X.509 certificate</strong> it received from its <a href="#part-04">SPIFFE workload identity</a> (<code>spiffe://…/AGENT_ID</code>), so the Egress Gateway cryptographically verifies <em>which exact agent workload</em> opened the socket before reading a single HTTP header.</li>
           <li><strong>2. Sender-constrained tokens (<code>DPoP</code>, <code>RFC 9449</code>):</strong> A <em>bearer</em> token says "whoever holds this string is Alice." <strong>DPoP (Demonstrating Proof-of-Possession)</strong> binds the token to the caller's private key: on every HTTP request, the caller sends a short-lived <code>DPoP</code> proof JWT signed by its private key covering the HTTP method, target URI (<code>htm</code>, <code>htu</code>), and a hash of the access token (<code>ath</code>). Even if an attacker steals the access token, they cannot use it without the agent's unexportable private key.</li>
-          <li><strong>3. Token exchange (<code>RFC 8693</code>) or a KMS-signed context token:</strong> The agent, or its egress proxy, does not forward <code>Token_in</code> (<code>subject_token</code>, <code>aud=web-app</code>). It calls <strong><code>Auth Manager</code></strong> or the corporate IdP (Okta, Microsoft Entra, or Google Identity, configured under <strong><code>Corporate Sign-In</code></strong> with OAuth 2.0 <code>PKCE</code>) and exchanges it for <code>Token_obo</code>. That token lives five minutes, is locked to one tool server (<code>aud=orders-mcp</code>, <code>scp=orders:read</code>), and records the acting agent in its <code>act</code> claim (<code>act: {"sub": "spiffe://…/orders-agent"}</code>). When the application front door owns user authentication, an alternative is a five-minute <strong>Cloud KMS-signed ES256 context token</strong> carrying the verified <code>sub</code>, <code>tenant_id</code>, and <code>aud</code>, which MCP Toolbox verifies against an explicit <code>ALLOWED_KIDS</code> key allowlist.</li>
+          <li><strong>3. Token exchange (<code>RFC 8693</code>) or a KMS-signed context token:</strong> The agent, or its egress proxy, does not forward <code>Token_in</code> (<code>subject_token</code>, <code>aud=web-app</code>). It sends it to a token-exchange endpoint and receives <code>Token_obo</code>. When the tool server defines its own scopes, that endpoint is the corporate IdP's <code>RFC 8693</code> token endpoint (Okta, Microsoft Entra, or another authorization server, the same one configured under <strong><code>Corporate Sign-In</code></strong>). When the tool server is authorized with Google Cloud IAM, it is Google Cloud Security Token Service (<code>sts.googleapis.com</code>). In both cases the agent presents its own SPIFFE identity token as the <code>actor_token</code>. The resulting token lives five minutes, is locked to one tool server (<code>aud=orders-mcp</code>, <code>scp=orders:read</code>), and records the acting agent in its <code>act</code> claim (<code>act: {"sub": "spiffe://…/orders-agent"}</code>). When the application front door owns user authentication, an alternative is a five-minute <strong>Cloud KMS-signed ES256 context token</strong> carrying the verified <code>sub</code>, <code>tenant_id</code>, and <code>aud</code>, which MCP Toolbox verifies against an explicit <code>ALLOWED_KIDS</code> key allowlist.</li>
         </ul>
+        <p>
+          <strong>Where Auth Manager fits.</strong> Agent Identity Auth Manager is not part of this exchange. It is a Google-managed credential vault and OAuth broker: it stores API keys and client credentials, runs the user-consent (three-legged) OAuth flow for an external service, keeps the resulting tokens, and injects them into the tool call. That suits an agent that calls a SaaS API on a user's behalf after a one-time consent screen. It does not take the user's incoming token and issue a new audience-restricted token on each call, which is what this stage requires, so the internal tool server in this episode relies on the IdP or Security Token Service exchange above.
+        </p>
       </div>
 
       <div class="diagram-frame" id="fig-ch6-tokens">
@@ -3265,7 +3268,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <rect class="node-card" x="46" y="122" width="187" height="96" rx="5"/>
           <text class="t-mono" x="56" y="142">Token_in (subject_token)</text>
           <text class="t-sub" x="56" y="160">sub: "alice@corp.com"</text>
-          <text class="t-sub" x="56" y="176">aud: "orders-agent"</text>
+          <text class="t-sub" x="56" y="176">aud: "web-app"</text>
           <text class="t-sub" x="56" y="192">scp: "chat:invoke"</text>
 
           <rect class="node-good" x="320" y="60" width="250" height="175" rx="8"/>
@@ -3278,12 +3281,12 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <text class="t-sub" x="344" y="198">  Signs htm + htu + ath(token)</text>
 
           <rect class="node-violet" x="645" y="60" width="230" height="175" rx="8"/>
-          <text class="t-title" x="661" y="88" style="fill:var(--violet)">3. Auth Manager / STS</text>
+          <text class="t-title" x="661" y="88" style="fill:var(--violet)">3. IdP / STS</text>
           <text class="t-sub" x="661" y="108">RFC 8693 OBO Exchange</text>
           <rect class="node-card" x="659" y="122" width="202" height="96" rx="5"/>
           <text class="t-mono" x="669" y="142" style="fill:var(--violet)">Mints Token_obo (5-min TTL)</text>
           <text class="t-sub" x="669" y="160">sub: "alice@corp.com"</text>
-          <text class="t-sub" x="669" y="176">aud: "https://orders-mcp"</text>
+          <text class="t-sub" x="669" y="176">aud: "orders-mcp"</text>
           <text class="t-sub" x="669" y="192">act: {"sub":"orders-agent"}</text>
           <text class="t-sub" x="669" y="208">scp: "orders:read"</text>
 
@@ -3542,7 +3545,7 @@ orders_mcp_toolset = McpToolset(
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-wait"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
           <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Token Exchange · IdP / STS</text><text x="882" y="280" class="pt-s">RFC 8693: Token_in → Token_obo</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
@@ -3769,7 +3772,7 @@ orders_mcp_toolset = McpToolset(
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-new"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
           <g class="p-new"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Token Exchange · IdP / STS</text><text x="882" y="280" class="pt-s">RFC 8693: Token_in → Token_obo</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
@@ -4143,7 +4146,7 @@ orders_mcp_toolset = McpToolset(
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-done"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
           <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Token Exchange · IdP / STS</text><text x="882" y="280" class="pt-s">RFC 8693: Token_in → Token_obo</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
@@ -4450,7 +4453,7 @@ B64_RUN_RE = re.compile(<span class="hl-s">r</span><span class="hl-s">"</span><s
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-done"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
           <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Token Exchange · IdP / STS</text><text x="882" y="280" class="pt-s">RFC 8693: Token_in → Token_obo</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
@@ -4801,7 +4804,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-done"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
           <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Token Exchange · IdP / STS</text><text x="882" y="280" class="pt-s">RFC 8693: Token_in → Token_obo</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
@@ -5036,7 +5039,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-done"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
           <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Token Exchange · IdP / STS</text><text x="882" y="280" class="pt-s">RFC 8693: Token_in → Token_obo</text></g>
           <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
@@ -5429,7 +5432,7 @@ privileged_order_responder = LlmAgent(
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-done"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
           <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Token Exchange · IdP / STS</text><text x="882" y="280" class="pt-s">RFC 8693: Token_in → Token_obo</text></g>
           <g class="p-new"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
@@ -5523,7 +5526,7 @@ privileged_order_responder = LlmAgent(
           <li><strong>2. <code>IAM Allow, Deny &amp; PAB (least privilege + identity ceiling)</code>:</strong> Combine narrow IAM allow grants with <strong>IAM Deny policies</strong> and a <strong>Principal Access Boundary (PAB)</strong> bound to the agent's SPIFFE identity so the agent principal cannot use permissions on resources outside its designated Data Project, even if someone accidentally grants it a broad role elsewhere.</li>
           <li><strong>3. <code>Org Policy Constraints (restrictPublicIp · no SA keys)</code>:</strong> Enforce organization-wide constraints across every agent and data project: <code>constraints/sql.restrictPublicIp</code> (zero public DB IPs), <code>constraints/iam.disableServiceAccountKeyCreation</code> (zero static JSON keys), <code>constraints/run.allowedIngress</code> (internal/LB ingress only), and Vertex AI Model Armor floor settings.</li>
           <li><strong>4. <code>ADK Eval &amp; Red Team CI (injection &amp; BOLA tests gate deploy)</code>:</strong> Run automated CI/CD evaluation suites (<code>adk eval</code>) before every rollout, testing the agent against adversarial direct/indirect prompt injections (<code>T1</code>/<code>T2</code>), cross-tenant BOLA tool-argument spoofing (<code>T4</code>), and tool-trajectory compliance.</li>
-          <li><strong>5. <code>3-Step Kill Switch (deny PAB · revoke OBO · keep logs)</code>:</strong> A pre-scripted runbook that stops an agent in seconds and keeps the evidence. Step one attaches an IAM Deny / PAB block to the agent's SPIFFE principal and revokes <code>roles/iap.egressor</code> at the Egress gateway. Step two revokes active OAuth refresh and OBO tokens in Auth Manager. Step three leaves the Cloud Run / Agent Runtime revision, memory state, and audit log sinks untouched for investigation.</li>
+          <li><strong>5. <code>3-Step Kill Switch (deny PAB · revoke OBO · keep logs)</code>:</strong> A pre-scripted runbook that stops an agent in seconds and keeps the evidence. Step one attaches an IAM Deny / PAB block to the agent's SPIFFE principal and revokes <code>roles/iap.egressor</code> at the Egress gateway. Step two revokes the user's sessions and refresh tokens at the identity provider, and removes any credentials vaulted in Auth Manager; tokens already issued by the exchange expire within five minutes. Step three leaves the Cloud Run / Agent Runtime revision, memory state, and audit log sinks untouched for investigation.</li>
         </ul>
       </div>
 
@@ -5795,7 +5798,7 @@ Authorization: Bearer &lt;Token_obo_or_KMS_Context_JWT&gt;
             </div>
             <div class="p-col guarded-col">
               <span class="p-col-title">Governed Architecture (Egress Gateway / Envoy + tokenx Sidecar)</span>
-              <div class="p-code">• Agent Runtime: Egress gateway verifies SPIFFE mTLS + DPoP, checks Agent Registry ∩ IAP CEL rules, exchanges Token_in → Token_obo via Auth Manager, and screens /mcp payloads with Model Armor + normalize().
+              <div class="p-code">• Agent Runtime: Egress gateway verifies SPIFFE mTLS + DPoP, checks Agent Registry ∩ IAP CEL rules, and screens /mcp payloads with Model Armor + normalize(). The agent exchanges Token_in → Token_obo at the IdP or Google Cloud STS before the call.
 • Cloud Run: Local Envoy + tokenx sidecar swaps Token_in → Token_obo out-of-process and blocks unknown hosts (403).</div>
               <div>Default-deny outbound routing. Effective authority is strictly <code>Agent Scope ∩ User Scope</code>.</div>
             </div>
@@ -5891,7 +5894,7 @@ Authorization: Bearer &lt;Token_obo_or_KMS_Context_JWT&gt;
               <tr>
                 <td><a class="b-pill t" href="#t5-card">T5</a> Token Passthrough</td>
                 <td><a class="b-pill g" href="#l1-card">L1</a> <a class="b-pill g" href="#l5-card">L5</a></td>
-                <td><a href="#part-06">RFC 8693 OBO</a> &amp; <a href="#part-08">Egress Proxy</a>: OAuth 2.0 <code>RFC 8693</code> OBO Exchange (<code>Auth Manager</code> / <code>Envoy + tokenx</code>) + mTLS/DPoP</td>
+                <td><a href="#part-06">RFC 8693 OBO</a> &amp; <a href="#part-08">Egress Proxy</a>: OAuth 2.0 <code>RFC 8693</code> OBO Exchange (IdP or <code>Google Cloud STS</code> / <code>Envoy + tokenx</code>) + mTLS/DPoP</td>
                 <td><span class="b-pill g">Boundary</span></td>
                 <td>Downstream MCP server accepts only sender-constrained tokens with <code>aud=orders-mcp</code> and <code>act.sub=orders-agent</code>, rejecting replayed frontend tokens.</td>
               </tr>
