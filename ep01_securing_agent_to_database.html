@@ -1672,6 +1672,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
         </div>
       </div>
 
+      <div class="post-prose" style="margin-top:16px;"><p style="margin-bottom:0;">With all eight threat vectors (<code>T1</code>–<code>T8</code>) and nine defense layers (<code>L1</code>–<code>L9</code>) defined in vendor-neutral terms, we next instantiate this architecture on Google Cloud and establish the stage-by-stage implementation roadmap.</p></div>
     </div>
   </section>
 
@@ -2161,6 +2162,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           </table>
         </div>
       </div>
+      <div class="post-prose" style="margin-top:16px;"><p style="margin-bottom:0;">Starting from the baseline three-component loop of Figure 1, we assemble Figure 4 one boundary at a time—beginning with the tool boundary between the agent and the database.</p></div>
     </div>
   </section>
 
@@ -2276,7 +2278,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           </g>
           <g class="p-wait">
             <rect x="34" y="264" width="152" height="72" rx="6" class="pb"/>
-            <text x="44" y="294" class="pt-b">Browser Safeguards</text>
+            <text x="44" y="294" class="pt-b">Browser Guard</text>
             <text x="44" y="316" class="pt-s">CSP &amp; HITL card</text>
           </g>
 
@@ -2289,7 +2291,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           </g>
           <g class="p-wait"><rect x="244" y="100" width="126" height="58" rx="6" class="pb"/><text x="307" y="125" class="pt-b pt-c">Who may invoke</text><text x="307" y="143" class="pt-s pt-c">IAP · Cloud Armor</text></g>
           <g class="p-wait"><rect x="244" y="170" width="126" height="58" rx="6" class="pb"/><text x="307" y="195" class="pt-b pt-c">Model Armor</text><text x="307" y="213" class="pt-s pt-c">prompt and reply</text></g>
-          <g class="p-wait"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
+          <g class="p-wait"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Rate Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
 
           <!-- ADK 2.x AGENT (Stage 1, 4, 12) -->
           <g class="p-done">
@@ -2299,7 +2301,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
-          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b">Workflow graph</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
+          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b" style="font-size:13px">Workflow &amp; Quarantine</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
           <g class="p-wait"><rect x="412" y="206" width="222" height="60" rx="6" class="pb"/><text x="426" y="232" class="pt-b">Agent identity · SPIFFE</text><text x="426" y="252" class="pt-m">principal://…/AGENT_ID</text></g>
           <g class="p-wait"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
           <g class="p-wait"><rect x="528" y="278" width="106" height="50" rx="6" class="pb"/><text x="538" y="300" class="pt-b">Code Sandbox</text><text x="538" y="318" class="pt-s">gVisor runtime</text></g>
@@ -2317,21 +2319,21 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-wait"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-wait"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
-          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s">400-day BQ sink + ADKBQPlugin</text></g>
+          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-wait"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
           <g class="p-wait">
             <rect x="64" y="520" width="220" height="122" rx="8" class="pb"/>
-            <text x="82" y="556" class="pt-b">PSC interface</text>
-            <text x="82" y="580" class="pt-m">10.10.9.2</text>
+            <text x="82" y="556" class="pt-b" style="font-size:13px">PSC Network Attachment</text>
+            <text x="82" y="580" class="pt-m">10.10.9.2 (/28)</text>
             <text x="82" y="604" class="pt-s">the gateway's network card</text>
             <text x="82" y="624" class="pt-s">into your private VPC</text>
           </g>
           <g class="p-wait">
             <rect x="314" y="520" width="236" height="122" rx="8" class="pb"/>
-            <text x="332" y="556" class="pt-b">PSC endpoint &amp; DNS</text>
+            <text x="332" y="556" class="pt-b" style="font-size:13px">PSC Endpoint &amp; DNS</text>
             <text x="332" y="580" class="pt-m">*.run.app · *.googleapis.com</text>
             <text x="332" y="604" class="pt-s">private routing inside VPC</text>
             <text x="332" y="624" class="pt-s">no external IPs or NAT</text>
@@ -2352,10 +2354,10 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           </g>
 
           <!-- CONTROL PLANE (Stage 13) -->
-          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM allow, deny, PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
-          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
-          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">Evaluation and red team</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
-          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">Kill switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
+          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM Allow, Deny &amp; PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
+          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy Constraints</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
+          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">ADK Eval &amp; Red Team CI</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
+          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">3-Step Kill Switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
 
           <!-- Edges -->
           <path d="M186 116 L230 116" class="p-edge" marker-end="url(#pah-3)"/>
@@ -2557,7 +2559,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           </g>
           <g class="p-wait">
             <rect x="34" y="264" width="152" height="72" rx="6" class="pb"/>
-            <text x="44" y="294" class="pt-b">Browser Safeguards</text>
+            <text x="44" y="294" class="pt-b">Browser Guard</text>
             <text x="44" y="316" class="pt-s">CSP &amp; HITL card</text>
           </g>
 
@@ -2570,7 +2572,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           </g>
           <g class="p-wait"><rect x="244" y="100" width="126" height="58" rx="6" class="pb"/><text x="307" y="125" class="pt-b pt-c">Who may invoke</text><text x="307" y="143" class="pt-s pt-c">IAP · Cloud Armor</text></g>
           <g class="p-wait"><rect x="244" y="170" width="126" height="58" rx="6" class="pb"/><text x="307" y="195" class="pt-b pt-c">Model Armor</text><text x="307" y="213" class="pt-s pt-c">prompt and reply</text></g>
-          <g class="p-wait"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
+          <g class="p-wait"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Rate Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
 
           <!-- ADK 2.x AGENT (Stage 1, 4, 12) -->
           <g class="p-done">
@@ -2580,7 +2582,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
-          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b">Workflow graph</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
+          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b" style="font-size:13px">Workflow &amp; Quarantine</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
           <g class="p-new"><rect x="412" y="206" width="222" height="60" rx="6" class="pb"/><text x="426" y="232" class="pt-b">Agent identity · SPIFFE</text><text x="426" y="252" class="pt-m">principal://…/AGENT_ID</text></g>
           <g class="p-wait"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
           <g class="p-wait"><rect x="528" y="278" width="106" height="50" rx="6" class="pb"/><text x="538" y="300" class="pt-b">Code Sandbox</text><text x="538" y="318" class="pt-s">gVisor runtime</text></g>
@@ -2598,21 +2600,21 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-wait"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-wait"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
-          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s">400-day BQ sink + ADKBQPlugin</text></g>
+          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-wait"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
           <g class="p-wait">
             <rect x="64" y="520" width="220" height="122" rx="8" class="pb"/>
-            <text x="82" y="556" class="pt-b">PSC interface</text>
-            <text x="82" y="580" class="pt-m">10.10.9.2</text>
+            <text x="82" y="556" class="pt-b" style="font-size:13px">PSC Network Attachment</text>
+            <text x="82" y="580" class="pt-m">10.10.9.2 (/28)</text>
             <text x="82" y="604" class="pt-s">the gateway's network card</text>
             <text x="82" y="624" class="pt-s">into your private VPC</text>
           </g>
           <g class="p-wait">
             <rect x="314" y="520" width="236" height="122" rx="8" class="pb"/>
-            <text x="332" y="556" class="pt-b">PSC endpoint &amp; DNS</text>
+            <text x="332" y="556" class="pt-b" style="font-size:13px">PSC Endpoint &amp; DNS</text>
             <text x="332" y="580" class="pt-m">*.run.app · *.googleapis.com</text>
             <text x="332" y="604" class="pt-s">private routing inside VPC</text>
             <text x="332" y="624" class="pt-s">no external IPs or NAT</text>
@@ -2633,10 +2635,10 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           </g>
 
           <!-- CONTROL PLANE (Stage 13) -->
-          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM allow, deny, PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
-          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
-          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">Evaluation and red team</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
-          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">Kill switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
+          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM Allow, Deny &amp; PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
+          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy Constraints</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
+          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">ADK Eval &amp; Red Team CI</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
+          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">3-Step Kill Switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
 
           <!-- Edges -->
           <path d="M186 116 L230 116" class="p-edge" marker-end="url(#pah-4)"/>
@@ -2862,7 +2864,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           </g>
           <g class="p-wait">
             <rect x="34" y="264" width="152" height="72" rx="6" class="pb"/>
-            <text x="44" y="294" class="pt-b">Browser Safeguards</text>
+            <text x="44" y="294" class="pt-b">Browser Guard</text>
             <text x="44" y="316" class="pt-s">CSP &amp; HITL card</text>
           </g>
 
@@ -2875,7 +2877,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           </g>
           <g class="p-wait"><rect x="244" y="100" width="126" height="58" rx="6" class="pb"/><text x="307" y="125" class="pt-b pt-c">Who may invoke</text><text x="307" y="143" class="pt-s pt-c">IAP · Cloud Armor</text></g>
           <g class="p-wait"><rect x="244" y="170" width="126" height="58" rx="6" class="pb"/><text x="307" y="195" class="pt-b pt-c">Model Armor</text><text x="307" y="213" class="pt-s pt-c">prompt and reply</text></g>
-          <g class="p-wait"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
+          <g class="p-wait"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Rate Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
 
           <!-- ADK 2.x AGENT (Stage 1, 4, 12) -->
           <g class="p-done">
@@ -2885,7 +2887,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
-          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b">Workflow graph</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
+          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b" style="font-size:13px">Workflow &amp; Quarantine</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
           <g class="p-done"><rect x="412" y="206" width="222" height="60" rx="6" class="pb"/><text x="426" y="232" class="pt-b">Agent identity · SPIFFE</text><text x="426" y="252" class="pt-m">principal://…/AGENT_ID</text></g>
           <g class="p-wait"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
           <g class="p-wait"><rect x="528" y="278" width="106" height="50" rx="6" class="pb"/><text x="538" y="300" class="pt-b">Code Sandbox</text><text x="538" y="318" class="pt-s">gVisor runtime</text></g>
@@ -2903,21 +2905,21 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-wait"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-wait"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
-          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s">400-day BQ sink + ADKBQPlugin</text></g>
+          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-wait"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
           <g class="p-wait">
             <rect x="64" y="520" width="220" height="122" rx="8" class="pb"/>
-            <text x="82" y="556" class="pt-b">PSC interface</text>
-            <text x="82" y="580" class="pt-m">10.10.9.2</text>
+            <text x="82" y="556" class="pt-b" style="font-size:13px">PSC Network Attachment</text>
+            <text x="82" y="580" class="pt-m">10.10.9.2 (/28)</text>
             <text x="82" y="604" class="pt-s">the gateway's network card</text>
             <text x="82" y="624" class="pt-s">into your private VPC</text>
           </g>
           <g class="p-wait">
             <rect x="314" y="520" width="236" height="122" rx="8" class="pb"/>
-            <text x="332" y="556" class="pt-b">PSC endpoint &amp; DNS</text>
+            <text x="332" y="556" class="pt-b" style="font-size:13px">PSC Endpoint &amp; DNS</text>
             <text x="332" y="580" class="pt-m">*.run.app · *.googleapis.com</text>
             <text x="332" y="604" class="pt-s">private routing inside VPC</text>
             <text x="332" y="624" class="pt-s">no external IPs or NAT</text>
@@ -2938,10 +2940,10 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           </g>
 
           <!-- CONTROL PLANE (Stage 13) -->
-          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM allow, deny, PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
-          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
-          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">Evaluation and red team</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
-          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">Kill switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
+          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM Allow, Deny &amp; PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
+          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy Constraints</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
+          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">ADK Eval &amp; Red Team CI</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
+          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">3-Step Kill Switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
 
           <!-- Edges -->
           <path d="M186 116 L230 116" class="p-edge" marker-end="url(#pah-5)"/>
@@ -3149,7 +3151,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           </g>
           <g class="p-wait">
             <rect x="34" y="264" width="152" height="72" rx="6" class="pb"/>
-            <text x="44" y="294" class="pt-b">Browser Safeguards</text>
+            <text x="44" y="294" class="pt-b">Browser Guard</text>
             <text x="44" y="316" class="pt-s">CSP &amp; HITL card</text>
           </g>
 
@@ -3162,7 +3164,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           </g>
           <g class="p-wait"><rect x="244" y="100" width="126" height="58" rx="6" class="pb"/><text x="307" y="125" class="pt-b pt-c">Who may invoke</text><text x="307" y="143" class="pt-s pt-c">IAP · Cloud Armor</text></g>
           <g class="p-wait"><rect x="244" y="170" width="126" height="58" rx="6" class="pb"/><text x="307" y="195" class="pt-b pt-c">Model Armor</text><text x="307" y="213" class="pt-s pt-c">prompt and reply</text></g>
-          <g class="p-wait"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
+          <g class="p-wait"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Rate Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
 
           <!-- ADK 2.x AGENT (Stage 1, 4, 12) -->
           <g class="p-done">
@@ -3172,9 +3174,9 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
-          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b">Workflow graph</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
+          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b" style="font-size:13px">Workflow &amp; Quarantine</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
           <g class="p-done"><rect x="412" y="206" width="222" height="60" rx="6" class="pb"/><text x="426" y="232" class="pt-b">Agent identity · SPIFFE</text><text x="426" y="252" class="pt-m">principal://…/AGENT_ID</text></g>
-          <g class="p-wait"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
+          <g class="p-new"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
           <g class="p-wait"><rect x="528" y="278" width="106" height="50" rx="6" class="pb"/><text x="538" y="300" class="pt-b">Code Sandbox</text><text x="538" y="318" class="pt-s">gVisor runtime</text></g>
 
           <!-- EGRESS GATEWAY (Stage 6, 8, 9) -->
@@ -3190,21 +3192,21 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-wait"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-new"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
-          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s">400-day BQ sink + ADKBQPlugin</text></g>
+          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-new"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
           <g class="p-wait">
             <rect x="64" y="520" width="220" height="122" rx="8" class="pb"/>
-            <text x="82" y="556" class="pt-b">PSC interface</text>
-            <text x="82" y="580" class="pt-m">10.10.9.2</text>
+            <text x="82" y="556" class="pt-b" style="font-size:13px">PSC Network Attachment</text>
+            <text x="82" y="580" class="pt-m">10.10.9.2 (/28)</text>
             <text x="82" y="604" class="pt-s">the gateway's network card</text>
             <text x="82" y="624" class="pt-s">into your private VPC</text>
           </g>
           <g class="p-wait">
             <rect x="314" y="520" width="236" height="122" rx="8" class="pb"/>
-            <text x="332" y="556" class="pt-b">PSC endpoint &amp; DNS</text>
+            <text x="332" y="556" class="pt-b" style="font-size:13px">PSC Endpoint &amp; DNS</text>
             <text x="332" y="580" class="pt-m">*.run.app · *.googleapis.com</text>
             <text x="332" y="604" class="pt-s">private routing inside VPC</text>
             <text x="332" y="624" class="pt-s">no external IPs or NAT</text>
@@ -3225,10 +3227,10 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           </g>
 
           <!-- CONTROL PLANE (Stage 13) -->
-          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM allow, deny, PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
-          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
-          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">Evaluation and red team</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
-          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">Kill switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
+          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM Allow, Deny &amp; PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
+          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy Constraints</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
+          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">ADK Eval &amp; Red Team CI</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
+          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">3-Step Kill Switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
 
           <!-- Edges -->
           <path d="M186 116 L230 116" class="p-edge" marker-end="url(#pah-6)"/>
@@ -3252,7 +3254,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
-          <span>Figure 11 — Progressive Build of Figure 4 (Step 4 of 11): Corporate sign-in, Who is calling (mTLS + DPoP), and Auth Manager added.</span>
+          <span>Figure 11 — Progressive Build of Figure 4 (Step 4 of 11): Corporate sign-in, Who is calling (mTLS + DPoP), Auth Manager / IAM STS, and OOB Session (SessionService) added.</span>
           <div class="legend-items">
             <span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good);border-width:2.5px"></i> <b>Added in This Stage</b></span>
             <span><i class="swatch-dot" style="background:var(--panel);border-color:var(--good)"></i> Added in Earlier Stages</span>
@@ -3459,8 +3461,8 @@ orders_mcp_toolset = McpToolset(
     <div class="sheet-h">
       <div>
         <span class="sec-badge">Architecture Stage · Ingress Reverse Proxy &amp; Quotas</span>
-        <h2>Put a Reverse Proxy in Front of the Agent: <code>Ingress Gate</code> (<code>Who may invoke</code>, <code>Rate Quotas</code>) &amp; <code>Browser Safeguards</code></h2>
-        <p>Adding the perimeter boxes to Figure 4: <code>Ingress Gate</code> (<code>Cloud LB + Envoy</code> or <code>Agent Gateway</code>), <code>Who may invoke (IAP · Cloud Armor)</code>, <code>Rate Quotas (Apigee / Cloud Quotas)</code>, and <code>Browser Safeguards</code>.</p>
+        <h2>Put a Reverse Proxy in Front of the Agent: <code>Ingress Gate</code> (<code>Who may invoke</code>, <code>Rate Quotas</code>) &amp; <code>Browser Guard</code></h2>
+        <p>Adding the perimeter boxes to Figure 4: <code>Ingress Gate</code> (<code>Cloud LB + Envoy</code> or <code>Agent Gateway</code>), <code>Who may invoke (IAP · Cloud Armor)</code>, <code>Rate Quotas (Apigee / Cloud Quotas)</code>, and <code>Browser Guard</code>.</p>
       </div>
     </div>
     <div class="sheet-b">
@@ -3469,7 +3471,7 @@ orders_mcp_toolset = McpToolset(
         <div class="cm-concept"><span class="cm-k">Concept · <a href="#fig-2b-defense-layers">Figure 3</a></span>Reverse Proxy (in) · Caller Authentication · Rate &amp; Budget Limiter · Client Edge Guard</div>
         <div class="cm-oss"><span class="cm-k">Open-source implementation</span>Envoy Proxy · Envoy ext_authz + OPA · Envoy ratelimit (Redis) · HMAC-SHA256 + CSP</div>
         <div class="cm-gcp"><span class="cm-k">Google Cloud guardrail</span>Cloud Load Balancing (Envoy Service Extensions) / Ingress Agent Gateway · IAP · Cloud Armor · Apigee / Cloud Quotas</div>
-        <div class="cm-fig"><span class="cm-k">Box in <a href="#fig-hero">Figure 4</a></span><code>Ingress Gate</code> · <code>Who may invoke</code> · <code>Rate Quotas</code> · <code>Browser Safeguards</code></div>
+        <div class="cm-fig"><span class="cm-k">Box in <a href="#fig-hero">Figure 4</a></span><code>Ingress Gate</code> · <code>Who may invoke</code> · <code>Rate Quotas</code> · <code>Browser Guard</code></div>
       </div>
 <!-- /CONCEPT_STRIP_CH7 -->
 
@@ -3535,7 +3537,7 @@ orders_mcp_toolset = McpToolset(
           </g>
           <g class="p-new">
             <rect x="34" y="264" width="152" height="72" rx="6" class="pb"/>
-            <text x="44" y="294" class="pt-b">Browser Safeguards</text>
+            <text x="44" y="294" class="pt-b">Browser Guard</text>
             <text x="44" y="316" class="pt-s">CSP &amp; HITL card</text>
           </g>
 
@@ -3548,7 +3550,7 @@ orders_mcp_toolset = McpToolset(
           </g>
           <g class="p-new"><rect x="244" y="100" width="126" height="58" rx="6" class="pb"/><text x="307" y="125" class="pt-b pt-c">Who may invoke</text><text x="307" y="143" class="pt-s pt-c">IAP · Cloud Armor</text></g>
           <g class="p-wait"><rect x="244" y="170" width="126" height="58" rx="6" class="pb"/><text x="307" y="195" class="pt-b pt-c">Model Armor</text><text x="307" y="213" class="pt-s pt-c">prompt and reply</text></g>
-          <g class="p-new"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
+          <g class="p-new"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Rate Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
 
           <!-- ADK 2.x AGENT (Stage 1, 4, 12) -->
           <g class="p-done">
@@ -3558,9 +3560,9 @@ orders_mcp_toolset = McpToolset(
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
-          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b">Workflow graph</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
+          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b" style="font-size:13px">Workflow &amp; Quarantine</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
           <g class="p-done"><rect x="412" y="206" width="222" height="60" rx="6" class="pb"/><text x="426" y="232" class="pt-b">Agent identity · SPIFFE</text><text x="426" y="252" class="pt-m">principal://…/AGENT_ID</text></g>
-          <g class="p-wait"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
+          <g class="p-done"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
           <g class="p-wait"><rect x="528" y="278" width="106" height="50" rx="6" class="pb"/><text x="538" y="300" class="pt-b">Code Sandbox</text><text x="538" y="318" class="pt-s">gVisor runtime</text></g>
 
           <!-- EGRESS GATEWAY (Stage 6, 8, 9) -->
@@ -3576,21 +3578,21 @@ orders_mcp_toolset = McpToolset(
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-wait"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
-          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s">400-day BQ sink + ADKBQPlugin</text></g>
+          <g class="p-wait"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
           <g class="p-wait">
             <rect x="64" y="520" width="220" height="122" rx="8" class="pb"/>
-            <text x="82" y="556" class="pt-b">PSC interface</text>
-            <text x="82" y="580" class="pt-m">10.10.9.2</text>
+            <text x="82" y="556" class="pt-b" style="font-size:13px">PSC Network Attachment</text>
+            <text x="82" y="580" class="pt-m">10.10.9.2 (/28)</text>
             <text x="82" y="604" class="pt-s">the gateway's network card</text>
             <text x="82" y="624" class="pt-s">into your private VPC</text>
           </g>
           <g class="p-wait">
             <rect x="314" y="520" width="236" height="122" rx="8" class="pb"/>
-            <text x="332" y="556" class="pt-b">PSC endpoint &amp; DNS</text>
+            <text x="332" y="556" class="pt-b" style="font-size:13px">PSC Endpoint &amp; DNS</text>
             <text x="332" y="580" class="pt-m">*.run.app · *.googleapis.com</text>
             <text x="332" y="604" class="pt-s">private routing inside VPC</text>
             <text x="332" y="624" class="pt-s">no external IPs or NAT</text>
@@ -3611,10 +3613,10 @@ orders_mcp_toolset = McpToolset(
           </g>
 
           <!-- CONTROL PLANE (Stage 13) -->
-          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM allow, deny, PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
-          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
-          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">Evaluation and red team</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
-          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">Kill switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
+          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM Allow, Deny &amp; PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
+          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy Constraints</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
+          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">ADK Eval &amp; Red Team CI</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
+          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">3-Step Kill Switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
 
           <!-- Edges -->
           <path d="M186 116 L230 116" class="p-edge" marker-end="url(#pah-7)"/>
@@ -3638,7 +3640,7 @@ orders_mcp_toolset = McpToolset(
           <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
-          <span>Figure 14 — Progressive Build of Figure 4 (Step 5 of 11): Ingress Gate (Who may invoke, Rate Quotas) and Browser Safeguards added.</span>
+          <span>Figure 14 — Progressive Build of Figure 4 (Step 5 of 11): Ingress Gate (Who may invoke, Rate Quotas) and Browser Guard added.</span>
           <div class="legend-items">
             <span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good);border-width:2.5px"></i> <b>Added in This Stage</b></span>
             <span><i class="swatch-dot" style="background:var(--panel);border-color:var(--good)"></i> Added in Earlier Stages</span>
@@ -3667,6 +3669,7 @@ orders_mcp_toolset = McpToolset(
         <ul>
           <li><strong><code>Who may invoke (IAP · Cloud Armor)</code>:</strong> Envoy's authentication (<code>jwt_authn</code>) and external authorization (<code>ext_authz</code>) filters verify the caller's IAM/OAuth token and check access policy before the agent container is invoked. Unauthenticated or unauthorized callers get <code>401</code>/<code>403</code> at the proxy edge.</li>
           <li><strong><code>Rate Quotas (Apigee / Cloud Quotas)</code>:</strong> Enforce per-user and per-tenant request rate limits, concurrency caps, and token/cost budgets at the gateway so no single user or runaway loop can starve other tenants.</li>
+          <li><strong><code>Browser Guard (CSP &amp; Image Stripping)</code>:</strong> At the client edge, the Ingress gateway sets a strict HTTP <code>Content-Security-Policy</code> header (<code>img-src 'self' data:; connect-src 'self'</code>) while the chat UI strips external Markdown images—blocking browser-mediated exfiltration (<code>T6</code>; detailed across all four layers in <a href="#guardrail-markdown-exfil">Part 8</a>).</li>
           <li><strong>Webhook &amp; Asynchronous Caller Verification (<code>HMAC-SHA256</code> / OIDC Push):</strong> When the caller is an asynchronous webhook or scheduled job rather than a human browser, the ingress edge verifies the partner's <code>X-Hub-Signature-256</code> HMAC-SHA256 signature (or OIDC push token) and binds the verified <code>user_id</code>/<code>tenant_id</code> into trusted attributes before invoking the agent.</li>
         </ul>
         <p>
@@ -3674,7 +3677,7 @@ orders_mcp_toolset = McpToolset(
         </p>
       </div>
 
-      <div class="closes"><span><b>Closes:</b> LLM10 runaway request volume &amp; cost at ingress · forged-webhook &amp; skip-edge</span><span><i>Still open:</i> T6 (outbound egress from the agent) · T1/T2 content screening · T7 (writes) · T8 (audit)</span></div>
+      <div class="closes"><span><b>Closes:</b> LLM10 runaway request volume &amp; cost at ingress · forged-webhook &amp; skip-edge · T6 browser-mediated Markdown exfiltration (CSP at ingress)</span><span><i>Still open:</i> T6 (outbound egress from the agent) · T1/T2 content screening · T7 (writes) · T8 (audit)</span></div>
       <p class="deeper">Go deeper: <a href="ref/envoy-proxy.html">Envoy Proxy Deep Dive: Listeners, Filter Chains (<code>ext_authz</code> &amp; <code>ext_proc</code>), Managed Agent Gateway vs. Self-Managed Sidecars</a>.</p>
       <div class="post-prose" style="margin-top:14px;"><p>The front door to the agent is now locked down. Next, we put the same Envoy proxy discipline <em>behind</em> the agent so it cannot talk to any unapproved tool server, model, or external host.</p></div>
     </div>
@@ -3761,7 +3764,7 @@ orders_mcp_toolset = McpToolset(
           </g>
           <g class="p-done">
             <rect x="34" y="264" width="152" height="72" rx="6" class="pb"/>
-            <text x="44" y="294" class="pt-b">Browser Safeguards</text>
+            <text x="44" y="294" class="pt-b">Browser Guard</text>
             <text x="44" y="316" class="pt-s">CSP &amp; HITL card</text>
           </g>
 
@@ -3774,7 +3777,7 @@ orders_mcp_toolset = McpToolset(
           </g>
           <g class="p-done"><rect x="244" y="100" width="126" height="58" rx="6" class="pb"/><text x="307" y="125" class="pt-b pt-c">Who may invoke</text><text x="307" y="143" class="pt-s pt-c">IAP · Cloud Armor</text></g>
           <g class="p-wait"><rect x="244" y="170" width="126" height="58" rx="6" class="pb"/><text x="307" y="195" class="pt-b pt-c">Model Armor</text><text x="307" y="213" class="pt-s pt-c">prompt and reply</text></g>
-          <g class="p-done"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
+          <g class="p-done"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Rate Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
 
           <!-- ADK 2.x AGENT (Stage 1, 4, 12) -->
           <g class="p-done">
@@ -3784,9 +3787,9 @@ orders_mcp_toolset = McpToolset(
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
-          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b">Workflow graph</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
+          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b" style="font-size:13px">Workflow &amp; Quarantine</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
           <g class="p-done"><rect x="412" y="206" width="222" height="60" rx="6" class="pb"/><text x="426" y="232" class="pt-b">Agent identity · SPIFFE</text><text x="426" y="252" class="pt-m">principal://…/AGENT_ID</text></g>
-          <g class="p-wait"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
+          <g class="p-done"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
           <g class="p-wait"><rect x="528" y="278" width="106" height="50" rx="6" class="pb"/><text x="538" y="300" class="pt-b">Code Sandbox</text><text x="538" y="318" class="pt-s">gVisor runtime</text></g>
 
           <!-- EGRESS GATEWAY (Stage 6, 8, 9) -->
@@ -3802,21 +3805,21 @@ orders_mcp_toolset = McpToolset(
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-new"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-new"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
-          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s">400-day BQ sink + ADKBQPlugin</text></g>
+          <g class="p-new"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
           <g class="p-wait">
             <rect x="64" y="520" width="220" height="122" rx="8" class="pb"/>
-            <text x="82" y="556" class="pt-b">PSC interface</text>
-            <text x="82" y="580" class="pt-m">10.10.9.2</text>
+            <text x="82" y="556" class="pt-b" style="font-size:13px">PSC Network Attachment</text>
+            <text x="82" y="580" class="pt-m">10.10.9.2 (/28)</text>
             <text x="82" y="604" class="pt-s">the gateway's network card</text>
             <text x="82" y="624" class="pt-s">into your private VPC</text>
           </g>
           <g class="p-wait">
             <rect x="314" y="520" width="236" height="122" rx="8" class="pb"/>
-            <text x="332" y="556" class="pt-b">PSC endpoint &amp; DNS</text>
+            <text x="332" y="556" class="pt-b" style="font-size:13px">PSC Endpoint &amp; DNS</text>
             <text x="332" y="580" class="pt-m">*.run.app · *.googleapis.com</text>
             <text x="332" y="604" class="pt-s">private routing inside VPC</text>
             <text x="332" y="624" class="pt-s">no external IPs or NAT</text>
@@ -3837,10 +3840,10 @@ orders_mcp_toolset = McpToolset(
           </g>
 
           <!-- CONTROL PLANE (Stage 13) -->
-          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM allow, deny, PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
-          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
-          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">Evaluation and red team</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
-          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">Kill switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
+          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM Allow, Deny &amp; PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
+          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy Constraints</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
+          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">ADK Eval &amp; Red Team CI</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
+          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">3-Step Kill Switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
 
           <!-- Edges -->
           <path d="M186 116 L230 116" class="p-edge" marker-end="url(#pah-8)"/>
@@ -3864,7 +3867,7 @@ orders_mcp_toolset = McpToolset(
           <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
-          <span>Figure 15 — Progressive Build of Figure 4 (Step 6 of 11): Egress gateway (default deny, May it call this), Agent Registry, Gemini on Vertex AI, and blocked direct DB route added.</span>
+          <span>Figure 15 — Progressive Build of Figure 4 (Step 6 of 11): Egress gateway (default deny, May it call this), Vertex AI Agent Registry, Gemini on Vertex AI, and blocked direct DB route added.</span>
           <div class="legend-items">
             <span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good);border-width:2.5px"></i> <b>Added in This Stage</b></span>
             <span><i class="swatch-dot" style="background:var(--panel);border-color:var(--good)"></i> Added in Earlier Stages</span>
@@ -4135,7 +4138,7 @@ orders_mcp_toolset = McpToolset(
           </g>
           <g class="p-done">
             <rect x="34" y="264" width="152" height="72" rx="6" class="pb"/>
-            <text x="44" y="294" class="pt-b">Browser Safeguards</text>
+            <text x="44" y="294" class="pt-b">Browser Guard</text>
             <text x="44" y="316" class="pt-s">CSP &amp; HITL card</text>
           </g>
 
@@ -4148,7 +4151,7 @@ orders_mcp_toolset = McpToolset(
           </g>
           <g class="p-done"><rect x="244" y="100" width="126" height="58" rx="6" class="pb"/><text x="307" y="125" class="pt-b pt-c">Who may invoke</text><text x="307" y="143" class="pt-s pt-c">IAP · Cloud Armor</text></g>
           <g class="p-new"><rect x="244" y="170" width="126" height="58" rx="6" class="pb"/><text x="307" y="195" class="pt-b pt-c">Model Armor</text><text x="307" y="213" class="pt-s pt-c">prompt and reply</text></g>
-          <g class="p-done"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
+          <g class="p-done"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Rate Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
 
           <!-- ADK 2.x AGENT (Stage 1, 4, 12) -->
           <g class="p-done">
@@ -4158,9 +4161,9 @@ orders_mcp_toolset = McpToolset(
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
-          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b">Workflow graph</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
+          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b" style="font-size:13px">Workflow &amp; Quarantine</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
           <g class="p-done"><rect x="412" y="206" width="222" height="60" rx="6" class="pb"/><text x="426" y="232" class="pt-b">Agent identity · SPIFFE</text><text x="426" y="252" class="pt-m">principal://…/AGENT_ID</text></g>
-          <g class="p-wait"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
+          <g class="p-done"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
           <g class="p-wait"><rect x="528" y="278" width="106" height="50" rx="6" class="pb"/><text x="538" y="300" class="pt-b">Code Sandbox</text><text x="538" y="318" class="pt-s">gVisor runtime</text></g>
 
           <!-- EGRESS GATEWAY (Stage 6, 8, 9) -->
@@ -4176,21 +4179,21 @@ orders_mcp_toolset = McpToolset(
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-done"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
-          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s">400-day BQ sink + ADKBQPlugin</text></g>
+          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
           <g class="p-wait">
             <rect x="64" y="520" width="220" height="122" rx="8" class="pb"/>
-            <text x="82" y="556" class="pt-b">PSC interface</text>
-            <text x="82" y="580" class="pt-m">10.10.9.2</text>
+            <text x="82" y="556" class="pt-b" style="font-size:13px">PSC Network Attachment</text>
+            <text x="82" y="580" class="pt-m">10.10.9.2 (/28)</text>
             <text x="82" y="604" class="pt-s">the gateway's network card</text>
             <text x="82" y="624" class="pt-s">into your private VPC</text>
           </g>
           <g class="p-wait">
             <rect x="314" y="520" width="236" height="122" rx="8" class="pb"/>
-            <text x="332" y="556" class="pt-b">PSC endpoint &amp; DNS</text>
+            <text x="332" y="556" class="pt-b" style="font-size:13px">PSC Endpoint &amp; DNS</text>
             <text x="332" y="580" class="pt-m">*.run.app · *.googleapis.com</text>
             <text x="332" y="604" class="pt-s">private routing inside VPC</text>
             <text x="332" y="624" class="pt-s">no external IPs or NAT</text>
@@ -4211,10 +4214,10 @@ orders_mcp_toolset = McpToolset(
           </g>
 
           <!-- CONTROL PLANE (Stage 13) -->
-          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM allow, deny, PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
-          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
-          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">Evaluation and red team</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
-          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">Kill switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
+          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM Allow, Deny &amp; PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
+          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy Constraints</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
+          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">ADK Eval &amp; Red Team CI</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
+          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">3-Step Kill Switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
 
           <!-- Edges -->
           <path d="M186 116 L230 116" class="p-edge" marker-end="url(#pah-9)"/>
@@ -4366,8 +4369,8 @@ B64_RUN_RE = re.compile(<span class="hl-s">r</span><span class="hl-s">"</span><s
     <div class="sheet-h">
       <div>
         <span class="sec-badge">Architecture Stage · Private Network Link &amp; Zero Internet Egress</span>
-        <h2>Close the Network Path: <code>YOUR VPC</code>, <code>PSC interface</code> &amp; <code>PSC endpoint &amp; DNS</code></h2>
-        <p>Adding four network boxes to Figure 4: <code>YOUR VPC · NO EXTERNAL IPS · NO ROUTE TO THE INTERNET</code>, <code>DATA TIER · PRIVATE NETWORK</code>, <code>PSC interface (10.10.9.2)</code>, and <code>PSC endpoint &amp; DNS (*.run.app · *.googleapis.com)</code>.</p>
+        <h2>Close the Network Path: <code>YOUR VPC</code>, <code>PSC Network Attachment</code> &amp; <code>PSC Endpoint &amp; DNS</code></h2>
+        <p>Adding four network boxes to Figure 4: <code>YOUR VPC · PRIVATE NETWORK PERIMETER</code>, <code>3. DATABASE TIER · PRIVATE IP</code>, <code>PSC Network Attachment (10.10.9.2/28)</code>, and <code>PSC Endpoint &amp; DNS (*.run.app · *.googleapis.com)</code>.</p>
       </div>
     </div>
     <div class="sheet-b">
@@ -4375,8 +4378,8 @@ B64_RUN_RE = re.compile(<span class="hl-s">r</span><span class="hl-s">"</span><s
       <div class="concept-map">
         <div class="cm-concept"><span class="cm-k">Concept · <a href="#fig-2b-defense-layers">Figure 3</a></span>Private Application Network · Private Network Link · Private Endpoint &amp; DNS</div>
         <div class="cm-oss"><span class="cm-k">Open-source implementation</span>Kubernetes NetworkPolicy · private subnets · WireGuard · Cilium ClusterMesh · Internal LB + CoreDNS</div>
-        <div class="cm-gcp"><span class="cm-k">Google Cloud guardrail</span>Your VPC (no external IPs / NAT) · PSC interface (network attachment) · PSC endpoint + Cloud DNS private zone</div>
-        <div class="cm-fig"><span class="cm-k">Box in <a href="#fig-hero">Figure 4</a></span><code>YOUR VPC</code> · <code>PSC interface</code> · <code>PSC endpoint &amp; DNS</code></div>
+        <div class="cm-gcp"><span class="cm-k">Google Cloud guardrail</span>Your VPC (no external IPs / NAT) · PSC Network Attachment · PSC Endpoint + Cloud DNS private zone</div>
+        <div class="cm-fig"><span class="cm-k">Box in <a href="#fig-hero">Figure 4</a></span><code>YOUR VPC</code> · <code>PSC Network Attachment</code> · <code>PSC Endpoint &amp; DNS</code></div>
       </div>
 <!-- /CONCEPT_STRIP_CH10 -->
 
@@ -4387,7 +4390,7 @@ B64_RUN_RE = re.compile(<span class="hl-s">r</span><span class="hl-s">"</span><s
       <div class="beat">Where we are in Figure 4</div>
       <div class="post-prose">
         <p>
-          In Figure 4, notice that the top zone (<code>GOOGLE-MANAGED · AGENT PLATFORM</code>) runs in Google's managed tenant network, whereas your <code>MCP Toolbox</code> and <code>Database</code> live inside your own private network (<code>YOUR VPC</code> and <code>DATA TIER</code>). How does traffic cross from the managed Egress gateway into your private VPC—and from your VPC to Cloud Run and the database—without a single public IP address, Cloud NAT gateway, or legacy VPC Network Peering? We now add the private VPC zones and the <strong>Private Service Connect (PSC)</strong> boxes to Figure 4.
+          In Figure 4, notice that the middle zone (<code>GOOGLE CLOUD · AGENT RUNTIME &amp; ENFORCEMENT GATES</code>) runs in Google's managed tenant network, whereas your <code>MCP Toolbox</code> and <code>Database</code> live inside your own private network (<code>YOUR VPC</code> and <code>3. DATABASE TIER</code>). How does traffic cross from the managed Egress gateway into your private VPC—and from your VPC to Cloud Run and the database—without a single public IP address, Cloud NAT gateway, or legacy VPC Network Peering? We now add the private VPC zones and the <strong>Private Service Connect (PSC)</strong> boxes to Figure 4.
         </p>
       </div>
 
@@ -4442,7 +4445,7 @@ B64_RUN_RE = re.compile(<span class="hl-s">r</span><span class="hl-s">"</span><s
           </g>
           <g class="p-done">
             <rect x="34" y="264" width="152" height="72" rx="6" class="pb"/>
-            <text x="44" y="294" class="pt-b">Browser Safeguards</text>
+            <text x="44" y="294" class="pt-b">Browser Guard</text>
             <text x="44" y="316" class="pt-s">CSP &amp; HITL card</text>
           </g>
 
@@ -4455,7 +4458,7 @@ B64_RUN_RE = re.compile(<span class="hl-s">r</span><span class="hl-s">"</span><s
           </g>
           <g class="p-done"><rect x="244" y="100" width="126" height="58" rx="6" class="pb"/><text x="307" y="125" class="pt-b pt-c">Who may invoke</text><text x="307" y="143" class="pt-s pt-c">IAP · Cloud Armor</text></g>
           <g class="p-done"><rect x="244" y="170" width="126" height="58" rx="6" class="pb"/><text x="307" y="195" class="pt-b pt-c">Model Armor</text><text x="307" y="213" class="pt-s pt-c">prompt and reply</text></g>
-          <g class="p-done"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
+          <g class="p-done"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Rate Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
 
           <!-- ADK 2.x AGENT (Stage 1, 4, 12) -->
           <g class="p-done">
@@ -4465,9 +4468,9 @@ B64_RUN_RE = re.compile(<span class="hl-s">r</span><span class="hl-s">"</span><s
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
-          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b">Workflow graph</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
+          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b" style="font-size:13px">Workflow &amp; Quarantine</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
           <g class="p-done"><rect x="412" y="206" width="222" height="60" rx="6" class="pb"/><text x="426" y="232" class="pt-b">Agent identity · SPIFFE</text><text x="426" y="252" class="pt-m">principal://…/AGENT_ID</text></g>
-          <g class="p-wait"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
+          <g class="p-done"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
           <g class="p-wait"><rect x="528" y="278" width="106" height="50" rx="6" class="pb"/><text x="538" y="300" class="pt-b">Code Sandbox</text><text x="538" y="318" class="pt-s">gVisor runtime</text></g>
 
           <!-- EGRESS GATEWAY (Stage 6, 8, 9) -->
@@ -4483,21 +4486,21 @@ B64_RUN_RE = re.compile(<span class="hl-s">r</span><span class="hl-s">"</span><s
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-done"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
-          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s">400-day BQ sink + ADKBQPlugin</text></g>
+          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
           <g class="p-new">
             <rect x="64" y="520" width="220" height="122" rx="8" class="pb"/>
-            <text x="82" y="556" class="pt-b">PSC interface</text>
-            <text x="82" y="580" class="pt-m">10.10.9.2</text>
+            <text x="82" y="556" class="pt-b" style="font-size:13px">PSC Network Attachment</text>
+            <text x="82" y="580" class="pt-m">10.10.9.2 (/28)</text>
             <text x="82" y="604" class="pt-s">the gateway's network card</text>
             <text x="82" y="624" class="pt-s">into your private VPC</text>
           </g>
           <g class="p-new">
             <rect x="314" y="520" width="236" height="122" rx="8" class="pb"/>
-            <text x="332" y="556" class="pt-b">PSC endpoint &amp; DNS</text>
+            <text x="332" y="556" class="pt-b" style="font-size:13px">PSC Endpoint &amp; DNS</text>
             <text x="332" y="580" class="pt-m">*.run.app · *.googleapis.com</text>
             <text x="332" y="604" class="pt-s">private routing inside VPC</text>
             <text x="332" y="624" class="pt-s">no external IPs or NAT</text>
@@ -4518,10 +4521,10 @@ B64_RUN_RE = re.compile(<span class="hl-s">r</span><span class="hl-s">"</span><s
           </g>
 
           <!-- CONTROL PLANE (Stage 13) -->
-          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM allow, deny, PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
-          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
-          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">Evaluation and red team</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
-          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">Kill switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
+          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM Allow, Deny &amp; PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
+          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy Constraints</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
+          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">ADK Eval &amp; Red Team CI</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
+          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">3-Step Kill Switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
 
           <!-- Edges -->
           <path d="M186 116 L230 116" class="p-edge" marker-end="url(#pah-10)"/>
@@ -4545,7 +4548,7 @@ B64_RUN_RE = re.compile(<span class="hl-s">r</span><span class="hl-s">"</span><s
           <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
-          <span>Figure 19 — Progressive Build of Figure 4 (Step 8 of 11): YOUR VPC, DATA TIER, PSC interface (10.10.9.2), and PSC endpoint & DNS added.</span>
+          <span>Figure 19 — Progressive Build of Figure 4 (Step 8 of 11): YOUR VPC, 3. DATABASE TIER, PSC Network Attachment (10.10.9.2/28), and PSC Endpoint &amp; DNS added.</span>
           <div class="legend-items">
             <span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good);border-width:2.5px"></i> <b>Added in This Stage</b></span>
             <span><i class="swatch-dot" style="background:var(--panel);border-color:var(--good)"></i> Added in Earlier Stages</span>
@@ -4644,7 +4647,7 @@ B64_RUN_RE = re.compile(<span class="hl-s">r</span><span class="hl-s">"</span><s
 
           <!-- Zone 3 -->
           <rect class="zone-box" x="905" y="65" width="265" height="345" rx="10"/>
-          <text class="t-zone" x="923" y="92">3. DATA TIER PRODUCER</text>
+          <text class="t-zone" x="923" y="92">3. DATABASE TIER PRODUCER</text>
 
           <rect class="node-card" x="925" y="115" width="225" height="110" rx="8"/>
           <text class="t-title" x="943" y="145">Google Data APIs</text>
@@ -4718,7 +4721,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
       <div>
         <span class="sec-badge">Architecture Stage · Cryptographic Data Perimeter</span>
         <h2>Draw a Data Perimeter Around the Data Project: <code>VPC SERVICE CONTROLS PERIMETER · DATA PROJECT</code></h2>
-        <p>Adding the dashed amber perimeter box around <code>YOUR VPC</code> and <code>DATA TIER</code> in Figure 4.</p>
+        <p>Enclosing <code>YOUR VPC</code> and <code>3. DATABASE TIER</code> inside the <code>VPC SERVICE CONTROLS PERIMETER · DATA PROJECT</code> in Figure 4.</p>
       </div>
     </div>
     <div class="sheet-b">
@@ -4793,7 +4796,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
           </g>
           <g class="p-done">
             <rect x="34" y="264" width="152" height="72" rx="6" class="pb"/>
-            <text x="44" y="294" class="pt-b">Browser Safeguards</text>
+            <text x="44" y="294" class="pt-b">Browser Guard</text>
             <text x="44" y="316" class="pt-s">CSP &amp; HITL card</text>
           </g>
 
@@ -4806,7 +4809,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
           </g>
           <g class="p-done"><rect x="244" y="100" width="126" height="58" rx="6" class="pb"/><text x="307" y="125" class="pt-b pt-c">Who may invoke</text><text x="307" y="143" class="pt-s pt-c">IAP · Cloud Armor</text></g>
           <g class="p-done"><rect x="244" y="170" width="126" height="58" rx="6" class="pb"/><text x="307" y="195" class="pt-b pt-c">Model Armor</text><text x="307" y="213" class="pt-s pt-c">prompt and reply</text></g>
-          <g class="p-done"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
+          <g class="p-done"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Rate Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
 
           <!-- ADK 2.x AGENT (Stage 1, 4, 12) -->
           <g class="p-done">
@@ -4816,9 +4819,9 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
-          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b">Workflow graph</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
+          <g class="p-wait"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b" style="font-size:13px">Workflow &amp; Quarantine</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
           <g class="p-done"><rect x="412" y="206" width="222" height="60" rx="6" class="pb"/><text x="426" y="232" class="pt-b">Agent identity · SPIFFE</text><text x="426" y="252" class="pt-m">principal://…/AGENT_ID</text></g>
-          <g class="p-wait"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
+          <g class="p-done"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
           <g class="p-wait"><rect x="528" y="278" width="106" height="50" rx="6" class="pb"/><text x="538" y="300" class="pt-b">Code Sandbox</text><text x="538" y="318" class="pt-s">gVisor runtime</text></g>
 
           <!-- EGRESS GATEWAY (Stage 6, 8, 9) -->
@@ -4834,21 +4837,21 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-done"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
-          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s">400-day BQ sink + ADKBQPlugin</text></g>
+          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
           <g class="p-done">
             <rect x="64" y="520" width="220" height="122" rx="8" class="pb"/>
-            <text x="82" y="556" class="pt-b">PSC interface</text>
-            <text x="82" y="580" class="pt-m">10.10.9.2</text>
+            <text x="82" y="556" class="pt-b" style="font-size:13px">PSC Network Attachment</text>
+            <text x="82" y="580" class="pt-m">10.10.9.2 (/28)</text>
             <text x="82" y="604" class="pt-s">the gateway's network card</text>
             <text x="82" y="624" class="pt-s">into your private VPC</text>
           </g>
           <g class="p-done">
             <rect x="314" y="520" width="236" height="122" rx="8" class="pb"/>
-            <text x="332" y="556" class="pt-b">PSC endpoint &amp; DNS</text>
+            <text x="332" y="556" class="pt-b" style="font-size:13px">PSC Endpoint &amp; DNS</text>
             <text x="332" y="580" class="pt-m">*.run.app · *.googleapis.com</text>
             <text x="332" y="604" class="pt-s">private routing inside VPC</text>
             <text x="332" y="624" class="pt-s">no external IPs or NAT</text>
@@ -4869,10 +4872,10 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
           </g>
 
           <!-- CONTROL PLANE (Stage 13) -->
-          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM allow, deny, PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
-          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
-          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">Evaluation and red team</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
-          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">Kill switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
+          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM Allow, Deny &amp; PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
+          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy Constraints</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
+          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">ADK Eval &amp; Red Team CI</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
+          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">3-Step Kill Switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
 
           <!-- Edges -->
           <path d="M186 116 L230 116" class="p-edge" marker-end="url(#pah-11)"/>
@@ -4896,7 +4899,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
           <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
-          <span>Figure 21 — Progressive Build of Figure 4 (Step 9 of 11): VPC SERVICE CONTROLS PERIMETER · DATA PROJECT added around YOUR VPC and DATA TIER.</span>
+          <span>Figure 21 — Progressive Build of Figure 4 (Step 9 of 11): VPC SERVICE CONTROLS PERIMETER · DATA PROJECT added around YOUR VPC and 3. DATABASE TIER.</span>
           <div class="legend-items">
             <span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good);border-width:2.5px"></i> <b>Added in This Stage</b></span>
             <span><i class="swatch-dot" style="background:var(--panel);border-color:var(--good)"></i> Added in Earlier Stages</span>
@@ -5028,7 +5031,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
           </g>
           <g class="p-done">
             <rect x="34" y="264" width="152" height="72" rx="6" class="pb"/>
-            <text x="44" y="294" class="pt-b">Browser Safeguards</text>
+            <text x="44" y="294" class="pt-b">Browser Guard</text>
             <text x="44" y="316" class="pt-s">CSP &amp; HITL card</text>
           </g>
 
@@ -5041,7 +5044,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
           </g>
           <g class="p-done"><rect x="244" y="100" width="126" height="58" rx="6" class="pb"/><text x="307" y="125" class="pt-b pt-c">Who may invoke</text><text x="307" y="143" class="pt-s pt-c">IAP · Cloud Armor</text></g>
           <g class="p-done"><rect x="244" y="170" width="126" height="58" rx="6" class="pb"/><text x="307" y="195" class="pt-b pt-c">Model Armor</text><text x="307" y="213" class="pt-s pt-c">prompt and reply</text></g>
-          <g class="p-done"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
+          <g class="p-done"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Rate Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
 
           <!-- ADK 2.x AGENT (Stage 1, 4, 12) -->
           <g class="p-done">
@@ -5051,9 +5054,9 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
-          <g class="p-new"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b">Workflow graph</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
+          <g class="p-new"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b" style="font-size:13px">Workflow &amp; Quarantine</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
           <g class="p-done"><rect x="412" y="206" width="222" height="60" rx="6" class="pb"/><text x="426" y="232" class="pt-b">Agent identity · SPIFFE</text><text x="426" y="252" class="pt-m">principal://…/AGENT_ID</text></g>
-          <g class="p-new"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
+          <g class="p-done"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
           <g class="p-new"><rect x="528" y="278" width="106" height="50" rx="6" class="pb"/><text x="538" y="300" class="pt-b">Code Sandbox</text><text x="538" y="318" class="pt-s">gVisor runtime</text></g>
 
           <!-- EGRESS GATEWAY (Stage 6, 8, 9) -->
@@ -5069,21 +5072,21 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-done"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
-          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s">400-day BQ sink + ADKBQPlugin</text></g>
+          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-wait"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
           <g class="p-done">
             <rect x="64" y="520" width="220" height="122" rx="8" class="pb"/>
-            <text x="82" y="556" class="pt-b">PSC interface</text>
-            <text x="82" y="580" class="pt-m">10.10.9.2</text>
+            <text x="82" y="556" class="pt-b" style="font-size:13px">PSC Network Attachment</text>
+            <text x="82" y="580" class="pt-m">10.10.9.2 (/28)</text>
             <text x="82" y="604" class="pt-s">the gateway's network card</text>
             <text x="82" y="624" class="pt-s">into your private VPC</text>
           </g>
           <g class="p-done">
             <rect x="314" y="520" width="236" height="122" rx="8" class="pb"/>
-            <text x="332" y="556" class="pt-b">PSC endpoint &amp; DNS</text>
+            <text x="332" y="556" class="pt-b" style="font-size:13px">PSC Endpoint &amp; DNS</text>
             <text x="332" y="580" class="pt-m">*.run.app · *.googleapis.com</text>
             <text x="332" y="604" class="pt-s">private routing inside VPC</text>
             <text x="332" y="624" class="pt-s">no external IPs or NAT</text>
@@ -5104,10 +5107,10 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
           </g>
 
           <!-- CONTROL PLANE (Stage 13) -->
-          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM allow, deny, PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
-          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
-          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">Evaluation and red team</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
-          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">Kill switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
+          <g class="p-wait"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM Allow, Deny &amp; PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
+          <g class="p-wait"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy Constraints</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
+          <g class="p-wait"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">ADK Eval &amp; Red Team CI</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
+          <g class="p-wait"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">3-Step Kill Switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
 
           <!-- Edges -->
           <path d="M186 116 L230 116" class="p-edge" marker-end="url(#pah-12)"/>
@@ -5131,7 +5134,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
           <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
-          <span>Figure 22 — Progressive Build of Figure 4 (Step 10 of 11): Workflow &amp; Quarantine LLM, OOB Session (SessionService), and Code Sandbox completed inside 2. AI Agent · ADK 2.x.</span>
+          <span>Figure 22 — Progressive Build of Figure 4 (Step 10 of 11): Workflow &amp; Quarantine and Code Sandbox completed inside 2. AI Agent · ADK 2.x.</span>
           <div class="legend-items">
             <span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good);border-width:2.5px"></i> <b>Added in This Stage</b></span>
             <span><i class="swatch-dot" style="background:var(--panel);border-color:var(--good)"></i> Added in Earlier Stages</span>
@@ -5335,6 +5338,7 @@ privileged_order_responder = LlmAgent(
       </div>
 
       <div class="closes"><span><b>Closes:</b> T7 unapproved writes &amp; retry storms · T2/ASI06 memory poisoning · ASI05 unsafe code execution · ASI09 human-trust deception</span><span><i>Still open:</i> T8 end-to-end audit correlation, org-wide policy guardrails &amp; emergency kill switch</span></div>
+      <p class="deeper">Go deeper: <a href="ref/agnostic-architecture.html">Platform-Agnostic Architecture &amp; Wire Protocols</a> and the <a href="#references">ADK Workflows, CaMeL &amp; OWASP Primary Sources</a>.</p>
       <div class="post-prose" style="margin-top:14px;"><p>Every box on the data path is now in place. One final group of boxes remains in Figure 4: how we correlate every database query back to the human and agent turn that caused it, enforce organization-wide ceilings, and stop a rogue agent in seconds.</p></div>
     </div>
   </section>
@@ -5420,7 +5424,7 @@ privileged_order_responder = LlmAgent(
           </g>
           <g class="p-done">
             <rect x="34" y="264" width="152" height="72" rx="6" class="pb"/>
-            <text x="44" y="294" class="pt-b">Browser Safeguards</text>
+            <text x="44" y="294" class="pt-b">Browser Guard</text>
             <text x="44" y="316" class="pt-s">CSP &amp; HITL card</text>
           </g>
 
@@ -5433,7 +5437,7 @@ privileged_order_responder = LlmAgent(
           </g>
           <g class="p-done"><rect x="244" y="100" width="126" height="58" rx="6" class="pb"/><text x="307" y="125" class="pt-b pt-c">Who may invoke</text><text x="307" y="143" class="pt-s pt-c">IAP · Cloud Armor</text></g>
           <g class="p-done"><rect x="244" y="170" width="126" height="58" rx="6" class="pb"/><text x="307" y="195" class="pt-b pt-c">Model Armor</text><text x="307" y="213" class="pt-s pt-c">prompt and reply</text></g>
-          <g class="p-done"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
+          <g class="p-done"><rect x="244" y="240" width="126" height="58" rx="6" class="pb"/><text x="307" y="265" class="pt-b pt-c">Rate Quotas</text><text x="307" y="283" class="pt-s pt-c">Apigee / Quotas</text></g>
 
           <!-- ADK 2.x AGENT (Stage 1, 4, 12) -->
           <g class="p-done">
@@ -5443,7 +5447,7 @@ privileged_order_responder = LlmAgent(
             <text x="414" y="352" class="pt-s">No database credentials here.</text>
             <text x="414" y="370" class="pt-s">Every call leaves through the gateway.</text>
           </g>
-          <g class="p-done"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b">Workflow graph</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
+          <g class="p-done"><rect x="412" y="120" width="222" height="74" rx="6" class="pb"/><text x="426" y="143" class="pt-b" style="font-size:13px">Workflow &amp; Quarantine</text><text x="426" y="162" class="pt-s">code nodes + one model node</text><text x="426" y="180" class="pt-s">validate · plan · check · approve</text></g>
           <g class="p-done"><rect x="412" y="206" width="222" height="60" rx="6" class="pb"/><text x="426" y="232" class="pt-b">Agent identity · SPIFFE</text><text x="426" y="252" class="pt-m">principal://…/AGENT_ID</text></g>
           <g class="p-done"><rect x="412" y="278" width="106" height="50" rx="6" class="pb"/><text x="422" y="300" class="pt-b">OOB Session</text><text x="422" y="318" class="pt-s">SessionService</text></g>
           <g class="p-done"><rect x="528" y="278" width="106" height="50" rx="6" class="pb"/><text x="538" y="300" class="pt-b">Code Sandbox</text><text x="538" y="318" class="pt-s">gVisor runtime</text></g>
@@ -5461,21 +5465,21 @@ privileged_order_responder = LlmAgent(
 
           <!-- GOOGLE APIS AND PEERS (Stage 6, 8, 13) -->
           <g class="p-done"><rect x="866" y="66" width="298" height="66" rx="6" class="pb"/><text x="882" y="94" class="pt-b">Gemini on Vertex AI</text><text x="882" y="116" class="pt-s">Model Armor via floor settings</text></g>
-          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
-          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
-          <g class="p-new"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s">400-day BQ sink + ADKBQPlugin</text></g>
+          <g class="p-done"><rect x="866" y="148" width="298" height="66" rx="6" class="pb"/><text x="882" y="176" class="pt-b">Vertex AI Agent Registry</text><text x="882" y="198" class="pt-s">approved agents, MCP servers, skills</text></g>
+          <g class="p-done"><rect x="866" y="230" width="298" height="66" rx="6" class="pb"/><text x="882" y="258" class="pt-b">Auth Manager / IAM STS</text><text x="882" y="280" class="pt-s">user OAuth tokens, per agent</text></g>
+          <g class="p-new"><rect x="866" y="312" width="298" height="66" rx="6" class="pb"/><text x="882" y="340" class="pt-b">Audit Logs · BQ Analytics · SCC</text><text x="882" y="362" class="pt-s" style="font-size:11px">400-day BQ sink + BigQueryAgentAnalyticsPlugin</text></g>
 
           <!-- YOUR VPC & DATA PROJECT (Stage 3, 5, 10) -->
           <g class="p-done">
             <rect x="64" y="520" width="220" height="122" rx="8" class="pb"/>
-            <text x="82" y="556" class="pt-b">PSC interface</text>
-            <text x="82" y="580" class="pt-m">10.10.9.2</text>
+            <text x="82" y="556" class="pt-b" style="font-size:13px">PSC Network Attachment</text>
+            <text x="82" y="580" class="pt-m">10.10.9.2 (/28)</text>
             <text x="82" y="604" class="pt-s">the gateway's network card</text>
             <text x="82" y="624" class="pt-s">into your private VPC</text>
           </g>
           <g class="p-done">
             <rect x="314" y="520" width="236" height="122" rx="8" class="pb"/>
-            <text x="332" y="556" class="pt-b">PSC endpoint &amp; DNS</text>
+            <text x="332" y="556" class="pt-b" style="font-size:13px">PSC Endpoint &amp; DNS</text>
             <text x="332" y="580" class="pt-m">*.run.app · *.googleapis.com</text>
             <text x="332" y="604" class="pt-s">private routing inside VPC</text>
             <text x="332" y="624" class="pt-s">no external IPs or NAT</text>
@@ -5496,10 +5500,10 @@ privileged_order_responder = LlmAgent(
           </g>
 
           <!-- CONTROL PLANE (Stage 13) -->
-          <g class="p-new"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM allow, deny, PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
-          <g class="p-new"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
-          <g class="p-new"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">Evaluation and red team</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
-          <g class="p-new"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">Kill switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
+          <g class="p-new"><rect x="34" y="746" width="270" height="52" rx="6" class="pb"/><text x="48" y="768" class="pt-b">IAM Allow, Deny &amp; PAB</text><text x="48" y="786" class="pt-s">least privilege with a ceiling</text></g>
+          <g class="p-new"><rect x="318" y="746" width="270" height="52" rx="6" class="pb"/><text x="332" y="768" class="pt-b">Org Policy Constraints</text><text x="332" y="786" class="pt-s">guardrails no project can skip</text></g>
+          <g class="p-new"><rect x="602" y="746" width="270" height="52" rx="6" class="pb"/><text x="616" y="768" class="pt-b">ADK Eval &amp; Red Team CI</text><text x="616" y="786" class="pt-s">attack cases gate every deploy</text></g>
+          <g class="p-new"><rect x="886" y="746" width="278" height="52" rx="6" class="pb"/><text x="900" y="768" class="pt-b">3-Step Kill Switch</text><text x="900" y="786" class="pt-s">deny, revoke, keep evidence</text></g>
 
           <!-- Edges -->
           <path d="M186 116 L230 116" class="p-edge" marker-end="url(#pah-13)"/>
@@ -5553,10 +5557,10 @@ privileged_order_responder = LlmAgent(
               <li><em>ADK <code>BigQueryAgentAnalyticsPlugin</code> + 400-Day Audit Sink:</em> Enable <code>DATA_READ</code> and <code>DATA_WRITE</code> audit logs on Cloud SQL / AlloyDB / Spanner, route them from <code>_Default</code> to a partitioned BigQuery sink with 400-day retention, and attach ADK's <code>BigQueryAgentAnalyticsPlugin</code> to stream every prompt, tool call, latency milestone, and token count into BigQuery alongside <strong>Security Command Center (SCC)</strong> threat detection.</li>
             </ul>
           </li>
-          <li><strong>2. <code>IAM allow, deny, PAB (least privilege with a ceiling)</code>:</strong> Combine narrow IAM allow grants with <strong>IAM Deny policies</strong> and a <strong>Principal Access Boundary (PAB)</strong> bound to the agent's SPIFFE identity so the agent principal is mathematically incapable of accessing resources outside its designated Data Project—even if someone accidentally grants it a broad role elsewhere.</li>
-          <li><strong>3. <code>Org Policy (guardrails no project can skip)</code>:</strong> Enforce organization-wide constraints across every agent and data project: <code>constraints/sql.restrictPublicIp</code> (zero public DB IPs), <code>constraints/iam.disableServiceAccountKeyCreation</code> (zero static JSON keys), <code>constraints/run.allowedIngress</code> (internal/LB ingress only), and Vertex AI Model Armor floor settings.</li>
-          <li><strong>4. <code>Evaluation and red team (attack cases gate every deploy)</code>:</strong> Run automated CI/CD evaluation suites (<code>adk eval</code>) before every rollout, testing the agent against adversarial direct/indirect prompt injections (<code>T1</code>/<code>T2</code>), cross-tenant BOLA tool-argument spoofing (<code>T4</code>), and tool-trajectory compliance.</li>
-          <li><strong>5. <code>Kill switch (deny, revoke, keep evidence)</code>:</strong> A single pre-scripted runbook that stops an agent in seconds while preserving forensic evidence: (a) attach an immediate IAM Deny / PAB block on the agent's SPIFFE principal and revoke <code>roles/iap.egressor</code> at the Egress gateway; (b) revoke active OAuth refresh/OBO tokens in Auth Manager; and (c) keep the Cloud Run / Vertex AI Agent Engine revision, memory state, and audit log sinks intact for investigation.</li>
+          <li><strong>2. <code>IAM Allow, Deny &amp; PAB (least privilege + identity ceiling)</code>:</strong> Combine narrow IAM allow grants with <strong>IAM Deny policies</strong> and a <strong>Principal Access Boundary (PAB)</strong> bound to the agent's SPIFFE identity so the agent principal is mathematically incapable of accessing resources outside its designated Data Project—even if someone accidentally grants it a broad role elsewhere.</li>
+          <li><strong>3. <code>Org Policy Constraints (restrictPublicIp · no SA keys)</code>:</strong> Enforce organization-wide constraints across every agent and data project: <code>constraints/sql.restrictPublicIp</code> (zero public DB IPs), <code>constraints/iam.disableServiceAccountKeyCreation</code> (zero static JSON keys), <code>constraints/run.allowedIngress</code> (internal/LB ingress only), and Vertex AI Model Armor floor settings.</li>
+          <li><strong>4. <code>ADK Eval &amp; Red Team CI (injection &amp; BOLA tests gate deploy)</code>:</strong> Run automated CI/CD evaluation suites (<code>adk eval</code>) before every rollout, testing the agent against adversarial direct/indirect prompt injections (<code>T1</code>/<code>T2</code>), cross-tenant BOLA tool-argument spoofing (<code>T4</code>), and tool-trajectory compliance.</li>
+          <li><strong>5. <code>3-Step Kill Switch (deny PAB · revoke OBO · keep logs)</code>:</strong> A single pre-scripted runbook that stops an agent in seconds while preserving forensic evidence: (a) attach an immediate IAM Deny / PAB block on the agent's SPIFFE principal and revoke <code>roles/iap.egressor</code> at the Egress gateway; (b) revoke active OAuth refresh/OBO tokens in Auth Manager; and (c) keep the Cloud Run / Vertex AI Agent Engine revision, memory state, and audit log sinks intact for investigation.</li>
         </ul>
       </div>
 
@@ -5808,7 +5812,7 @@ def get_orders(user_id: str, order_id: str): ...</div>
               <div class="p-code"># In-Band (LLM tool schema):
 get_order(order_id: str)  # Zero user_id parameter!
 # Out-of-Band (ADK header_provider + SPIFFE identity):
-Authorization: Bearer &lt;OBO_T2_or_KMS_Context_JWT&gt;
+Authorization: Bearer &lt;Token_obo_or_KMS_Context_JWT&gt;
 # Writes pause at Workflow RequestInput HITL node showing server-bound params.</div>
               <div>The model chooses <em>what</em> tool to call, never <em>as whom</em>. Sessions/Memory Bank are partitioned by tenant.</div>
             </div>
