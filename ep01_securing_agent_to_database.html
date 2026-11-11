@@ -5139,7 +5139,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
 <pre><span class="hl-k">import</span> uuid
 <span class="hl-k">from</span> pydantic <span class="hl-k">import</span> BaseModel, Field
 <span class="hl-k">from</span> google.adk <span class="hl-k">import</span> LlmAgent, Workflow
-<span class="hl-k">from</span> google.adk.nodes <span class="hl-k">import</span> RequestInput
+<span class="hl-k">from</span> google.adk.events <span class="hl-k">import</span> RequestInput
 <span class="hl-k">from</span> google.genai.types <span class="hl-k">import</span> ThinkingConfig
 
 <span class="hl-k">class</span> <span class="hl-f">RefundProposal</span>(BaseModel):
