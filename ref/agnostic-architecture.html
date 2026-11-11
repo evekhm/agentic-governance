@@ -675,7 +675,7 @@
 <text x="978" y="135" class="t-b">Caller Proof</text>
 <rect x="1196" y="121" width="38" height="17" rx="8" class="chb"/><text x="1215" y="133" class="chbt">Ch 6</text>
 <text x="978" y="153" class="t-s">mTLS workload cert + sender-bound token</text>
-<text x="978" y="174" class="t-oss">OSS  SPIFFE mTLS + DPoP</text><text x="978" y="191" class="t-gcp">GCP  mTLS + DPoP</text>
+<text x="978" y="174" class="t-oss">OSS  SPIFFE mTLS + DPoP</text><text x="978" y="191" class="t-gcp">GCP  SPIFFE mTLS</text>
 
 </g>
 <g class="k-gbox" data-concept="eg_authz">
@@ -699,7 +699,7 @@
 <text x="1314" y="83" class="t-b">LLM Inference API</text>
 <rect x="1640" y="69" width="38" height="17" rx="8" class="chb"/><text x="1659" y="81" class="chbt">Ch 8</text>
 <text x="1314" y="101" class="t-s">Model endpoint reached only via egress proxy</text>
-<text x="1314" y="122" class="t-oss">OSS  vLLM · any hosted model</text><text x="1314" y="139" class="t-gcp">GCP  Gemini on Vertex AI</text>
+<text x="1314" y="122" class="t-oss">OSS  vLLM · any hosted model</text><text x="1314" y="139" class="t-gcp">GCP  Gemini on Agent Platform</text>
 
 </g>
 <g class="k" data-concept="registry">
@@ -969,7 +969,7 @@
   <td><strong>Code Sandbox</strong></td>
   <td>Generated code · no network · ephemeral</td>
   <td><span class="cm-pill oss">OSS</span>gVisor · Firecracker</td>
-  <td><span class="cm-pill gcp">GCP</span>Agent Runtime Code Execution</td>
+  <td><span class="cm-pill gcp">GCP</span>Agent Platform Code Execution</td>
   <td><code>Code Sandbox</code></td>
   <td><a href="../ep01_securing_agent_to_database.html#part-12">Ch. 12</a></td>
 </tr><tr>
@@ -983,7 +983,7 @@
   <td><strong>Caller Proof</strong></td>
   <td>mTLS workload cert + sender-bound token</td>
   <td><span class="cm-pill oss">OSS</span>SPIFFE mTLS + DPoP (RFC 9449)</td>
-  <td><span class="cm-pill gcp">GCP</span>mTLS + DPoP</td>
+  <td><span class="cm-pill gcp">GCP</span>SPIFFE mTLS at Agent Gateway (DPoP on the exchanged token needs IdP support and an Envoy verifier)</td>
   <td><code>Who is calling</code></td>
   <td><a href="../ep01_securing_agent_to_database.html#part-06">Ch. 6</a></td>
 </tr><tr>
@@ -1004,8 +1004,8 @@
   <td><strong>LLM Inference API</strong></td>
   <td>Model endpoint reached only via egress proxy</td>
   <td><span class="cm-pill oss">OSS</span>vLLM · Ollama · any hosted model</td>
-  <td><span class="cm-pill gcp">GCP</span>Gemini on Vertex AI</td>
-  <td><code>Gemini on Vertex AI</code></td>
+  <td><span class="cm-pill gcp">GCP</span>Gemini on Agent Platform</td>
+  <td><code>Gemini on Agent Platform</code></td>
   <td><a href="../ep01_securing_agent_to_database.html#part-08">Ch. 8</a></td>
 </tr><tr>
   <td><strong>Tool &amp; Agent Registry</strong></td>
