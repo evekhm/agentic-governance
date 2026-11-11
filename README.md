@@ -4,11 +4,11 @@ Architecture blueprints, threat models, and step-by-step zero-trust engineering 
 
 ## Introduction
 
-I decided to start a series dedicated to **Agentic Governance** to help engineers and architects fit all the scattered pieces of this puzzle into a single, structured picture. My goal is to make it clear at the top level what kinds of **threats** are possible when we connect AI agents to real systems, which **guardrails** prevent them, and how all of those controls fit together end-to-end.
+I started this series to bring the different pieces of agentic governance into one structured picture. I want to understand, at the top level, what kinds of threats are possible when an AI agent is connected to real systems, which guardrails prevent them, and how it all fits together.
 
-This series is not meant to promise a silver-bullet, 100% foolproof security guarantee—no architecture can. Instead, it is meant to serve as a practical foundation: walking through the known failure modes of agentic systems and bringing the architectural defenses together into one coherent mental model.
+The series does not give a bulletproof, guaranteed-safe solution. It is meant as a foundation: the known problems, the controls that address them, and a way to see the whole picture at once.
 
-When I began researching Agentic Governance, I struggled to find material that explained the end-to-end mechanics in a clear, approachable way. So I started compiling my own architectural notes and diagrams, and I will be sharing them across this series as I work through each topic.
+I could not find much material on this topic that was easy to follow, so I began compiling my own notes. I am sharing them here as I go through each topic.
 
 ## Episodes
 
@@ -16,4 +16,4 @@ When I began researching Agentic Governance, I struggled to find material that e
 
 Walks bottom-up from a naive three-box prototype (user chat UI, LLM agent, and internal customer database) to a production Zero-Trust architecture. Maps eight threat vectors (`T1`–`T8`) across the wire and layers nine defense-in-depth controls (`L1`–`L9`)—including parameterized MCP tool boundaries, SPIFFE workload identity and RFC 8693 OBO token exchange, database Row/Column-Level Security, Envoy ingress/egress gateways, inline Model Armor and Cloud SDP tokenization, Private Service Connect and VPC Service Controls, tool-less Quarantine LLMs with HITL write gates, and end-to-end W3C trace auditing with kill-switch containment—aligned to the OWASP Agentic Top 10 (2026) and OWASP LLM Top 10 (2025).
 
-**Hands-on lab (in preparation):** a companion lab will run the same architecture in three tracks (local Docker sandbox, Cloud Run with self-managed Envoy sidecars, and the managed multi-project setup) and replay the `T1`–`T8` attacks against the prototype and the governed build. See the [implementation plan](ep01_securing_agent_to_database-lab/IMPLEMENTATION_PLAN.md); the lab code is not yet available.
+**Hands-on lab (in preparation):** a companion lab will run the same architecture in two tracks (Cloud Run with self-managed Envoy sidecars, and the managed Agent Runtime) and replay the `T1`–`T8` attacks against the prototype and the governed build. See the [implementation plan](ep01_securing_agent_to_database-lab/IMPLEMENTATION_PLAN.md); the lab code is not yet available.

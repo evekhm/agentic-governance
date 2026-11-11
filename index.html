@@ -1,164 +1,278 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="author" content="Eva Khmelinskaya">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agentic Governance Series — Architecture &amp; Zero-Trust Engineering</title>
+<title>Agentic Governance — Threat Models and Reference Architectures for AI Agents</title>
+<meta name="description" content="A series on securing AI agents that read and change production data. Episode 01 takes an agent-to-database connection from a three-box prototype to a zero-trust reference architecture, one control at a time.">
+<meta property="og:title" content="Agentic Governance">
+<meta property="og:description" content="Threat models and reference architectures for AI agents that read and change production data, built up one control at a time.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://evekhm.github.io/agentic-governance/">
 <style>
   :root {
     --bg: #f6f8fb;
     --panel: #ffffff;
-    --panel-2: #f8fafc;
+    --panel-2: #f1f5f9;
     --ink: #0f172a;
     --muted: #475569;
+    --dim: #64748b;
     --line: #cbd5e1;
     --line-2: #e2e8f0;
-    --cyan: #0369a1;
-    --cyan-soft: rgba(3, 105, 161, 0.09);
-    --good: #15803d;
-    --good-soft: rgba(21, 128, 61, 0.09);
+    --accent: #0369a1;
+    --accent-ink: #ffffff;
+    --accent-hover: #075985;
+    --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 28px rgba(15, 23, 42, 0.06);
     --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
   }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #09131c;
+      --panel: #0e1c2a;
+      --panel-2: #132536;
+      --ink: #ecf3fb;
+      --muted: #b5c9de;
+      --dim: #7f9ab5;
+      --line: #21405c;
+      --line-2: #183149;
+      --accent: #5fd4ff;
+      --accent-ink: #06202e;
+      --accent-hover: #8be0ff;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    }
+  }
   * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
     background: var(--bg);
     color: var(--ink);
     font-family: var(--sans);
-    line-height: 1.6;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 1020px; margin: 0 auto; padding: 44px 24px 72px; }
-  .card {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 28px 32px;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+  a { color: var(--accent); text-underline-offset: 3px; }
+  a:hover { color: var(--accent-hover); }
+  a:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+  /* Series header */
+  .masthead { padding: 72px 0 40px; }
+  .masthead h1 {
+    margin: 0 0 14px;
+    font-size: clamp(34px, 6vw, 48px);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
   }
-  .badge {
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--cyan);
-    background: var(--cyan-soft);
-    padding: 4px 10px;
-    border-radius: 5px;
-    display: inline-block;
-    margin-bottom: 10px;
+  .lede {
+    margin: 0 0 18px;
+    max-width: 640px;
+    font-size: clamp(18px, 2.6vw, 21px);
+    line-height: 1.5;
+    color: var(--muted);
   }
-  h1 { margin: 0 0 10px; font-size: 28px; letter-spacing: -0.02em; }
-  h2 { margin: 0 0 12px; font-size: 20px; }
-  p { margin: 0 0 16px; color: var(--muted); }
-  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
-  .btn {
-    font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 600;
-    text-decoration: none;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border: 1.5px solid var(--cyan);
-    background: var(--cyan);
-    color: #fff;
-  }
-  .btn.alt {
-    background: var(--panel-2);
-    color: var(--cyan);
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-    gap: 14px;
-    margin-top: 16px;
-  }
-  .ref-item {
-    border: 1px solid var(--line-2);
-    border-radius: 10px;
-    padding: 14px 16px;
-    background: var(--panel-2);
-  }
-  .ref-item h3 { margin: 0 0 6px; font-size: 15px; }
-  .ref-item p { margin: 0 0 10px; font-size: 13px; }
-  .ref-links a {
+  .byline { margin: 0; font-family: var(--mono); font-size: 13px; color: var(--dim); }
+
+  .about { padding: 8px 0 44px; max-width: 700px; }
+  .about p { margin: 0 0 16px; color: var(--muted); }
+  .about p:last-child { margin-bottom: 0; }
+
+  .section-label {
+    margin: 0 0 16px;
     font-family: var(--mono);
     font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  /* Episode card */
+  .episode {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 36px 40px 34px;
+    box-shadow: var(--shadow);
+  }
+  .ep-num { margin: 0 0 8px; font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--accent); }
+  .episode h2 {
+    margin: 0 0 8px;
+    font-size: clamp(24px, 4vw, 30px);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .episode h2 a { color: var(--ink); text-decoration: none; }
+  .episode h2 a:hover { color: var(--accent); }
+  .ep-meta { margin: 0 0 20px; font-family: var(--mono); font-size: 13px; color: var(--dim); }
+  .ep-summary { margin: 0 0 26px; color: var(--muted); }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin: 0 0 28px;
+    padding: 18px 0;
+    border-top: 1px solid var(--line-2);
+    border-bottom: 1px solid var(--line-2);
+  }
+  .facts div { padding: 0 16px; border-left: 1px solid var(--line-2); }
+  .facts div:first-child { padding-left: 0; border-left: 0; }
+  .facts dt { font-size: 30px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
+  .facts dd { margin: 6px 0 0; font-size: 14px; line-height: 1.35; color: var(--dim); }
+
+  .episode h3 { margin: 0 0 12px; font-size: 16px; }
+  .stages {
+    margin: 0 0 26px;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 32px;
+    font-size: 15.5px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .stages b { color: var(--ink); font-weight: 600; }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 22px; }
+  .btn {
+    display: inline-block;
+    padding: 12px 20px;
+    border: 1.5px solid var(--accent);
+    border-radius: 9px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: 15.5px;
     font-weight: 600;
-    color: var(--cyan);
     text-decoration: none;
-    margin-right: 12px;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  }
+  .btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--accent-ink); transform: translateY(-1px); }
+  .btn.secondary { background: transparent; color: var(--accent); }
+  .btn.secondary:hover { background: var(--panel-2); color: var(--accent-hover); }
+
+  .ep-note { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--dim); }
+
+  /* Planned episodes */
+  .planned { padding: 48px 0 0; }
+  .planned ul { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line-2); }
+  .planned li {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line-2);
+    color: var(--muted);
+    font-size: 16px;
+  }
+  .planned li span { font-family: var(--mono); font-size: 13px; color: var(--dim); padding-top: 3px; }
+  .planned li b { color: var(--ink); font-weight: 600; }
+
+  footer {
+    margin-top: 64px;
+    padding: 24px 0 56px;
+    border-top: 1px solid var(--line-2);
+    font-size: 14px;
+    color: var(--dim);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 24px;
+  }
+
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .masthead { padding: 48px 0 32px; }
+    .episode { padding: 26px 22px 24px; border-radius: 14px; }
+    .facts { grid-template-columns: 1fr 1fr; row-gap: 18px; }
+    .facts div:nth-child(3) { padding-left: 0; border-left: 0; }
+    .stages { grid-template-columns: 1fr; }
+    .btn { width: 100%; text-align: center; }
+    .planned li { grid-template-columns: 1fr; gap: 2px; }
   }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="card">
-      <span class="badge">Agentic Governance Publication Series</span>
-      <h1>Episode 01: Securing the Agent-to-Database Connection</h1>
-      <p>
-        From a naive 3-box prototype to a production Zero-Trust architecture: platform-agnostic Envoy Proxy enforcement (<code>ext_authz</code> + <code>ext_proc</code>), SPIFFE mTLS &amp; OAuth 2.0 On-Behalf-Of token exchange, L4 Private Service Connect, VPC Service Controls, Parameterized MCP Toolbox, and Row/Column-Level Database Security.
-      </p>
-      <div class="btn-row">
-        <a class="btn" href="ep01_securing_agent_to_database.html">Read Episode 01 (Interactive HTML) →</a>
-        <a class="btn alt" href="ep01_securing_agent_to_database.pdf">Download Episode 01 (PDF)</a>
-        <a class="btn alt" href="ref/agnostic-architecture.html">Platform-Agnostic Architecture Blueprint</a>
-      </div>
-    </div>
+    <header class="masthead">
+      <h1>Agentic Governance</h1>
+      <p class="lede">Threat models and reference architectures for AI agents that read and change production data, built up one control at a time.</p>
+      <p class="byline">A series by Eva Khmelinskaya</p>
+    </header>
 
-    <div class="card">
-      <span class="badge">Companion Reference Deep Dives</span>
-      <h2>Technical Reference Pages (<code>ref/</code>)</h2>
-      <div class="grid">
-        <div class="ref-item">
-          <h3>0. Platform-Agnostic Architecture</h3>
-          <p>16 vendor-agnostic boxes, Hops 1–9 wire protocols, Envoy <code>ext_proc</code> guardrail, and GCP/AWS/Azure/K8s mappings.</p>
-          <div class="ref-links"><a href="ref/agnostic-architecture.html">HTML →</a><a href="ref/agnostic-architecture.pdf">PDF</a></div>
-        </div>
-        <div class="ref-item">
-          <h3>1. MCP Tool Server Options</h3>
-          <p>Custom FastMCP vs. MCP Toolbox for Databases (<code>tools.yaml</code>) vs. Google-Managed Remote MCP (<code>execute_sql</code>).</p>
-          <div class="ref-links"><a href="ref/mcp-tool-server-options.html">HTML →</a><a href="ref/mcp-tool-server-options.pdf">PDF</a></div>
-        </div>
-        <div class="ref-item">
-          <h3>2. Row- &amp; Column-Level Security</h3>
-          <p>BigQuery stateless HTTP per-query OAuth vs. Cloud SQL stateful pooled TCP sockets, Parameterized Secure Views, and PG RLS.</p>
-          <div class="ref-links"><a href="ref/rls-cls.html">HTML →</a><a href="ref/rls-cls.pdf">PDF</a></div>
-        </div>
-        <div class="ref-item">
-          <h3>3. mTLS, SPIFFE &amp; Token Exchange</h3>
-          <p>One-Way TLS vs. mTLS, Bearer vs. RFC 9449 DPoP, PKCE, and RFC 8693 OBO vs. KMS-Signed Context JWTs.</p>
-          <div class="ref-links"><a href="ref/mtls-and-tokens.html">HTML →</a><a href="ref/mtls-and-tokens.pdf">PDF</a></div>
-        </div>
-        <div class="ref-item">
-          <h3>4. Envoy Proxy at Ingress &amp; Egress</h3>
-          <p>Managed Agent Gateway vs. self-managed 3-container Cloud Run pod (<code>agent</code> + <code>envoy</code> + <code>tokenx</code>).</p>
-          <div class="ref-links"><a href="ref/envoy-proxy.html">HTML →</a><a href="ref/envoy-proxy.pdf">PDF</a></div>
-        </div>
-        <div class="ref-item">
-          <h3>5. Model Armor &amp; Cloud SDP</h3>
-          <p>Inline <code>ext_proc</code> screening, canonical <code>normalize()</code>, fail-closed handling, and reversible PII tokenization.</p>
-          <div class="ref-links"><a href="ref/model-armor.html">HTML →</a><a href="ref/model-armor.pdf">PDF</a></div>
-        </div>
-        <div class="ref-item">
-          <h3>6. PSC (3 Doors) &amp; VPC-SC</h3>
-          <p>PSC Network Attachment (<code>10.10.9.2/26</code>), PSC Endpoint for Google APIs (<code>vpc-sc</code>), and VPC-SC ingress rules.</p>
-          <div class="ref-links"><a href="ref/psc-and-vpc-sc.html">HTML →</a><a href="ref/psc-and-vpc-sc.pdf">PDF</a></div>
-        </div>
-        <div class="ref-item">
-          <h3>7. Audit, Trace &amp; Kill Switch</h3>
-          <p>W3C <code>traceparent</code> correlation, 400-day WORM audit sink, Principal Access Boundary, and 3-step emergency containment.</p>
-          <div class="ref-links"><a href="ref/audit-and-containment.html">HTML →</a><a href="ref/audit-and-containment.pdf">PDF</a></div>
-        </div>
-        <div class="ref-item">
-          <h3>8. 22-Row OWASP Top 10 Matrix</h3>
-          <p>Complete mapping across OWASP Agentic Top 10 2026 (<code>ASI01–ASI10</code>), LLM Top 10 2025 (<code>LLM01–LLM10</code>), and BOLA/SQLi.</p>
-          <div class="ref-links"><a href="ref/owasp-mapping.html">HTML →</a><a href="ref/owasp-mapping.pdf">PDF</a></div>
-        </div>
-      </div>
-    </div>
+    <main>
+      <section class="about" aria-label="About the series">
+        <p>
+          I started this series to bring the different pieces of agentic governance into one structured picture. I want to understand, at the top level, what kinds of threats are possible when an AI agent is connected to real systems, which guardrails prevent them, and how it all fits together.
+        </p>
+        <p>
+          The series does not give a bulletproof, guaranteed-safe solution. It is meant as a foundation: the known problems, the controls that address them, and a way to see the whole picture at once.
+        </p>
+        <p>
+          I could not find much material on this topic that was easy to follow, so I began compiling my own notes. I am sharing them here as I go through each topic.
+        </p>
+      </section>
+
+      <section aria-labelledby="episodes-label">
+        <p class="section-label" id="episodes-label">Episodes</p>
+
+        <article class="episode">
+          <p class="ep-num">Episode 01</p>
+          <h2><a id="ep01-title-link" href="ep01_securing_agent_to_database.html">Securing the Agent-to-Database Connection</a></h2>
+          <p class="ep-meta">November 2026 · about 90 minutes in full</p>
+
+          <p class="ep-summary">
+            A customer asks an agent, “What is the status of my order #104?” The first design that answers the question has three boxes: a chat interface, an agent and a database. This episode shows how that design leaks other customers’ data and performs writes nobody approved, then adds one control per stage until it becomes a zero-trust reference architecture. Every stage states which threats it closes and which remain open.
+          </p>
+
+          <dl class="facts">
+            <div><dt>8</dt><dd>threats, <code>T1</code>–<code>T8</code></dd></div>
+            <div><dt>9</dt><dd>defense layers, <code>L1</code>–<code>L9</code></dd></div>
+            <div><dt>11</dt><dd>build stages</dd></div>
+            <div><dt>2</dt><dd>OWASP Top 10 lists mapped</dd></div>
+          </dl>
+
+          <h3>What the stages add</h3>
+          <ul class="stages">
+            <li><b>Tool boundary.</b> Fixed, parameterized queries replace model-written SQL.</li>
+            <li><b>Identity.</b> The agent gets its own workload identity and exchanges the user’s token for a short-lived, narrowly scoped one.</li>
+            <li><b>Database.</b> The engine enforces row- and column-level security on every query.</li>
+            <li><b>Gateways.</b> Ingress and egress proxies authorize each call and screen content in both directions.</li>
+            <li><b>Network.</b> Private connectivity and a data perimeter remove the routes out.</li>
+            <li><b>Writes.</b> A human approves each change, and stored procedures make it idempotent.</li>
+            <li><b>Audit.</b> One trace follows a request across every hop, backed by a kill switch.</li>
+            <li><b>Mapping.</b> Each control is mapped to the OWASP Agentic Top 10 (2026) and LLM Top 10 (2025).</li>
+          </ul>
+
+          <div class="actions">
+            <a class="btn" id="ep01-read-btn" href="ep01_securing_agent_to_database.html">Read Episode 01</a>
+            <a class="btn secondary" id="ep01-pdf-btn" href="ep01_securing_agent_to_database.pdf">Download PDF</a>
+          </div>
+
+          <p class="ep-note">
+            Each stage links to a companion reference page with full configuration. A hands-on lab is in preparation; its <a id="ep01-lab-plan-link" href="https://github.com/evekhm/agentic-governance/blob/main/ep01_securing_agent_to_database-lab/IMPLEMENTATION_PLAN.md">implementation plan</a> is published.
+          </p>
+        </article>
+      </section>
+
+      <section class="planned" aria-labelledby="planned-label">
+        <p class="section-label" id="planned-label">Planned</p>
+        <ul>
+          <li><span>Episode 02</span><div><b>Identity across multi-agent systems.</b> Delegation from one agent to another, and tokens that cross more than one hop.</div></li>
+          <li><span>Later</span><div>Event-driven and webhook trust chains, enterprise RAG and connector ACLs, and fleet governance.</div></li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <span>© 2026 Eva Khmelinskaya</span>
+      <a id="repo-link" href="https://github.com/evekhm/agentic-governance">Source on GitHub</a>
+    </footer>
   </div>
 </body>
 </html>

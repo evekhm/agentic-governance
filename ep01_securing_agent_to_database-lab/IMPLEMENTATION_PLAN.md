@@ -30,7 +30,7 @@ Create a dedicated Google Cloud folder (e.g. `ep01-agentic-governance`) containi
 ```text
 Google Cloud Folder: ep01-agentic-governance
 ├── 1. ep01-net-host        (Shared VPC Host — NetOps)
-│      • Custom VPC (10.10.0.0/16), avoiding reserved 10.0.0.0/24–10.0.2.0/24
+│      • Custom VPC (10.10.0.0/16)
 │      • PSC-I Subnet: /26 (documented minimum /28; e.g. 10.10.1.0/26, purpose=PRIVATE, Private Google Access ON)
 │      • Proxy-Only Subnet (/26) for Internal ALB / SWP + Cloud NAT (ENDPOINT_TYPE_VM,ENDPOINT_TYPE_SWG)
 │      • Private Cloud DNS (*.run.app, *.googleapis.com, internal.corp)
@@ -55,8 +55,8 @@ Google Cloud Folder: ep01-agentic-governance
 ```
 
 ### 2.2 Critical Google Cloud Platform Design Invariants (Validated Upfront)
-1. **PSC-I Subnet Sizing:** The documented minimum for the PSC-I network attachment subnet is `/28`; `/26` or `/24` is recommended when several gateways share it. This lab allocates `/26` (`10.10.1.0/26`, `purpose=PRIVATE`) and avoids `10.0.0.0/24` through `10.0.2.0/24` (reserved by Agent Gateway).
-2. **Cloud NAT Endpoint Types:** Even when using direct Cloud NAT instead of Secure Web Proxy (SWP), configure `--endpoint-types=ENDPOINT_TYPE_VM,ENDPOINT_TYPE_SWG` on the PSC-I subnet NAT (validated by Agent Gateway). If adding Next-Hop SWP + PBR later, exclude the PSC-I subnet from manual Cloud NAT so `swg-autogen-nat` handles SNAT cleanly.
+1. **PSC-I Subnet Sizing:** The documented minimum for the PSC-I network attachment subnet is `/28`; `/26` or `/24` is recommended when several gateways share it. This lab allocates `/26` (`10.10.1.0/26`, `purpose=PRIVATE`).
+2. **Cloud NAT Endpoint Types:** Even when using direct Cloud NAT instead of Secure Web Proxy (SWP), configure `--endpoint-types=ENDPOINT_TYPE_VM,ENDPOINT_TYPE_SWG` on the PSC-I subnet NAT. If adding Next-Hop SWP + PBR later, exclude the PSC-I subnet from manual Cloud NAT so `swg-autogen-nat` handles SNAT cleanly.
 3. **Single Core Codebase & Layer Switches (`STAGE` / `L1..L9`):**
    - Naive baseline uses a separate explicitly-labeled `naive_agent.py` + `naive_db_role` (or `PROFILE=naive` feature toggle in Track A) so live demos can contrast **Vulnerable** vs **Governed** side-by-side without weakening production Track B policies.
    - Track B keeps deterministic boundaries **always enforced** (VPC-SC, `ALL_TRAFFIC` ACT, `FORCE RLS`, parameterized `tools.yaml`).
