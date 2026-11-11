@@ -538,7 +538,17 @@
   @media print { .concept-map { break-inside: avoid; } }
 
   main a:not(.b-pill) { color: var(--cyan); }
-</style>
+    /* Page numbers in the PDF export */
+    @page {
+      margin: 10mm 10mm 14mm 10mm;
+      @bottom-center {
+        content: counter(page) " / " counter(pages);
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        font-size: 9pt;
+        color: #64748b;
+      }
+    }
+  </style>
 </head>
 <body>
 <nav class="topbar">
@@ -665,7 +675,7 @@
 <rect x="761" y="352" width="163" height="100" rx="7" class="b"/>
 <text x="773" y="375" class="t-b">Code Sandbox</text>
 <rect x="874" y="361" width="38" height="17" rx="8" class="chb"/><text x="893" y="373" class="chbt">Ch 12</text>
-<text x="773" y="396" class="t-oss">OSS  gVisor · Firecracker</text><text x="773" y="413" class="t-gcp">GCP  Code Execution</text>
+<text x="773" y="396" class="t-oss">OSS  gVisor ·</text><text x="806" y="411" class="t-oss">Firecracker</text><text x="773" y="428" class="t-gcp">GCP  Code Execution</text>
 
 </g>
 <text x="586" y="516" class="t-bad">No DB credentials here · every call exits via the forward proxy</text>
@@ -815,7 +825,7 @@
 <circle cx="598" cy="727" r="10" class="bd"/><text x="598" y="731" class="bd-t">8</text>
 <circle cx="1289" cy="727" r="10" class="bd"/><text x="1289" y="731" class="bd-t">9</text>
 <text x="30" y="192" class="t-wire">1  HTTPS · user JWT (OAuth 2.1 PKCE)</text>
-<text x="30" y="490" class="t-wire">2  HTTPS · HMAC-signed event · nonce + TTL</text>
+<text x="30" y="490" class="t-wire">2  HTTPS · HMAC event · nonce + TTL</text>
 <text x="572" y="548" class="t-wire">3–4  mTLS · SPIFFE cert + DPoP</text>
 <text x="1120" y="548" class="t-wire">6  mTLS tunnel into the private VPC (L4)</text>
 <text x="1302" y="536" class="t-wire">5  HTTPS/gRPC · Token_in → Token_obo · registry lookup</text>
@@ -843,40 +853,51 @@
       </div>
       
       <div class="diagram-frame" id="fig-agnostic-guardrail">
-        <svg viewBox="0 0 1160 300" role="img" aria-label="Inline Content Guardrail expressed as an Envoy ext_proc service">
+        <svg viewBox="0 0 880 448" role="img" aria-label="Inline Content Guardrail expressed as an Envoy ext_proc service">
           <defs><marker id="ep-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--ink)"/></marker></defs>
-          <rect x="16" y="16" width="1128" height="268" rx="10" class="zone-box"/>
-          <text x="32" y="40" class="t-zone">INLINE CONTENT GUARDRAIL · THE CONCEPT BEHIND "MODEL ARMOR" · ENVOY EXTERNAL PROCESSOR (ext_proc) OVER gRPC</text>
-          <rect x="32" y="64" width="200" height="196" rx="8" class="node-cyan"/>
-          <text x="48" y="92" class="t-title">Envoy Proxy</text>
-          <text x="48" y="112" class="t-sub">Ingress or Egress Reverse Proxy</text>
-          <text x="48" y="136" class="t-mono">envoy.filters.http.ext_proc</text>
-          <text x="48" y="160" class="t-sub">buffers the body, streams it</text>
-          <text x="48" y="178" class="t-sub">to the guardrail, waits for a</text>
-          <text x="48" y="196" class="t-sub">verdict before forwarding</text>
-          <text x="48" y="226" class="t-mono" style="fill:var(--stop)">failure_mode_allow: false</text>
-          <text x="48" y="244" class="t-sub">GCP: Model Armor + Cloud SDP</text>
-          <path d="M232 120 L298 120" class="edge-line" marker-end="url(#ep-ah)"/>
-          <path d="M298 200 L232 200" class="edge-line" marker-end="url(#ep-ah)"/>
-          <text x="265" y="110" class="t-mono" text-anchor="middle">gRPC</text>
-          <text x="265" y="220" class="t-mono" text-anchor="middle">verdict</text>
-          <rect x="300" y="56" width="826" height="212" rx="10" class="node-bad"/>
-          <text x="320" y="82" class="t-title">Guardrail service · OSS: Llama Guard / NeMo Guardrails + Presidio · GCP: Model Armor + Sensitive Data Protection</text>
-          <rect x="320" y="100" width="188" height="150" rx="6" class="node-card"/>
-          <text x="332" y="122" class="t-mono" style="fill:var(--cyan)">1 · CANONICALIZE</text>
-          <text x="332" y="144" class="t-sub">NFKC normalize</text><text x="332" y="162" class="t-sub">strip Unicode tag chars</text><text x="332" y="180" class="t-sub">decode Base64 / hex wrappers</text><text x="332" y="198" class="t-sub">flatten Markdown / HTML</text>
-          <path d="M508 170 L526 170" class="edge-line" marker-end="url(#ep-ah)"/>
-          <rect x="528" y="100" width="194" height="150" rx="6" class="node-card"/>
-          <text x="540" y="122" class="t-mono" style="fill:var(--stop)">2 · CLASSIFY</text>
-          <text x="540" y="144" class="t-sub">direct prompt injection</text><text x="540" y="162" class="t-sub">indirect injection in tool rows</text><text x="540" y="180" class="t-sub">malicious URL / image exfil</text><text x="540" y="198" class="t-sub">jailbreak · harmful content</text>
-          <path d="M722 170 L740 170" class="edge-line" marker-end="url(#ep-ah)"/>
-          <rect x="742" y="100" width="194" height="150" rx="6" class="node-card"/>
-          <text x="754" y="122" class="t-mono" style="fill:var(--violet)">3 · DE-IDENTIFY</text>
-          <text x="754" y="144" class="t-sub">detect PII (regex + ML)</text><text x="754" y="162" class="t-sub">replace with deterministic</text><text x="754" y="180" class="t-sub">surrogate tokens</text><text x="754" y="200" class="t-mono">[EMAIL_8f9a]</text>
-          <path d="M936 170 L954 170" class="edge-line" marker-end="url(#ep-ah)"/>
-          <rect x="956" y="100" width="154" height="150" rx="6" class="node-card"/>
-          <text x="968" y="122" class="t-mono" style="fill:var(--good)">4 · VERDICT</text>
-          <text x="968" y="144" class="t-sub">clean → forward the</text><text x="968" y="162" class="t-sub">rewritten body</text><text x="968" y="186" class="t-sub">threat or timeout →</text><text x="968" y="204" class="t-mono" style="fill:var(--stop)">403 · fail closed</text>
+          <rect class="zone-box" x="16" y="16" width="848" height="416" rx="10"/>
+          <text class="t-zone" x="32" y="40">INLINE CONTENT GUARDRAIL PIPELINE · ENVOY EXTERNAL PROCESSOR (ext_proc) OVER gRPC</text>
+          <rect class="node-cyan" x="32" y="56" width="816" height="96" rx="8"/>
+          <text class="t-title" x="48" y="84">Ingress / Egress Proxy</text>
+          <text class="t-sub" x="48" y="104">Envoy / Agent Gateway</text>
+          <text class="t-sub" x="48" y="124">GCP: Model Armor + SDP</text>
+          <text class="t-mono" x="280" y="88">envoy.filters.http.ext_proc</text>
+          <text class="t-mono" x="280" y="112" style="fill:var(--stop)">failure_mode_allow: false</text>
+          <text class="t-sub" x="530" y="88">Buffers payload, streams to guardrail,</text>
+          <text class="t-sub" x="530" y="106" style="fill:var(--ink)">waits for verdict before forwarding</text>
+          <path d="M330 152 L330 202" class="edge-line" marker-end="url(#ep-ah)"/>
+          <path d="M550 206 L550 156" class="edge-line" marker-end="url(#ep-ah)"/>
+          <text class="t-mono" x="342" y="184">gRPC</text>
+          <text class="t-mono" x="562" y="184">verdict</text>
+          <rect class="node-bad" x="32" y="206" width="816" height="212" rx="10"/>
+          <text class="t-title" x="50" y="232">Guardrail Processor · OSS: Llama Guard + Presidio · GCP: Model Armor + Cloud SDP</text>
+          <rect class="node-card" x="50" y="250" width="180" height="150" rx="6"/>
+          <text class="t-mono" x="62" y="272" style="fill:var(--cyan)">1 · CANONICALIZE</text>
+          <text class="t-sub" x="62" y="294">NFKC normalize</text>
+          <text class="t-sub" x="62" y="312">Strip Unicode tag chars</text>
+          <text class="t-sub" x="62" y="330">Decode Base64 / hex runs</text>
+          <text class="t-sub" x="62" y="348">Flatten Markdown / HTML</text>
+          <path d="M230 320 L248 320" class="edge-line" marker-end="url(#ep-ah)"/>
+          <rect class="node-card" x="250" y="250" width="196" height="150" rx="6"/>
+          <text class="t-mono" x="262" y="272" style="fill:var(--stop)">2 · CLASSIFY</text>
+          <text class="t-sub" x="262" y="294">Direct prompt injection</text>
+          <text class="t-sub" x="262" y="312">Indirect injection in DB rows</text>
+          <text class="t-sub" x="262" y="330">Malicious URL / image exfil</text>
+          <text class="t-sub" x="262" y="348">Jailbreak &amp; policy filters</text>
+          <path d="M446 320 L464 320" class="edge-line" marker-end="url(#ep-ah)"/>
+          <rect class="node-card" x="466" y="250" width="192" height="150" rx="6"/>
+          <text class="t-mono" x="478" y="272" style="fill:var(--violet)">3 · DE-IDENTIFY</text>
+          <text class="t-sub" x="478" y="294">Detect PII (regex + ML)</text>
+          <text class="t-sub" x="478" y="312">Replace with deterministic</text>
+          <text class="t-sub" x="478" y="330">surrogate tokens</text>
+          <text class="t-mono" x="478" y="350">[EMAIL_8f9a]</text>
+          <path d="M658 320 L676 320" class="edge-line" marker-end="url(#ep-ah)"/>
+          <rect class="node-card" x="678" y="250" width="152" height="150" rx="6"/>
+          <text class="t-mono" x="690" y="272" style="fill:var(--good)">4 · VERDICT</text>
+          <text class="t-sub" x="690" y="294">Clean → forward</text>
+          <text class="t-sub" x="690" y="312">rewritten payload</text>
+          <text class="t-sub" x="690" y="336">Match or timeout →</text>
+          <text class="t-mono" x="690" y="354" style="fill:var(--stop)">403 · fail closed</text>
         </svg>
         <div class="fig-caption"><span>Figure 0A-2 — The Inline Content Guardrail is an out-of-process service the proxy consults on every request and response. On Google Cloud that service is Model Armor (with Cloud SDP for de-identification); in the open-source stack it is an Envoy <code>ext_proc</code> callout to a classifier.</span></div>
       </div>
@@ -1112,7 +1133,7 @@
       <div class="post-prose" id="xcloud"><h3>The same map for other platforms</h3><p>Because the concepts are stable, the substitution is mechanical. Google Cloud is the reference used in the episode; the other columns show that nothing in the design depends on it.</p></div>
       <div class="tbl-wrap"><table>
 <thead><tr><th>Concept (Figure 0A)</th><th>Open-source / self-hosted</th><th>Google Cloud (Figure 4, Episode 01)</th><th>AWS</th><th>Azure</th></tr></thead>
-<tbody><tr><td><strong>Ingress Reverse Proxy + Caller Authentication + Limiter</strong></td><td>Envoy + OPA ext_authz + Redis ratelimit</td><td><strong>Agent Gateway (CLIENT_TO_AGENT) + IAP + Cloud Armor</strong></td><td>Envoy on EKS + WAF + ALB OIDC</td><td>Envoy on AKS + App Gateway WAF + Entra EasyAuth</td></tr><tr><td><strong>Inline Content Guardrail (both proxies)</strong></td><td>Envoy ext_proc → Llama Guard / NeMo Guardrails + Presidio</td><td><strong>Model Armor + Cloud SDP</strong></td><td>Envoy ext_proc → Bedrock Guardrails + Macie</td><td>Envoy ext_proc → Azure AI Content Safety + Purview</td></tr><tr><td><strong>Agent Runtime + Workload Identity + Sandbox</strong></td><td>Kubernetes + SPIRE + gVisor</td><td><strong>ADK 2.x on Agent Runtime + Agent Identity + Code Execution</strong></td><td>Bedrock AgentCore / EKS + IRSA + Firecracker</td><td>Container Apps / AKS + Workload Identity + Dynamic Sessions</td></tr><tr><td><strong>Egress Forward Proxy + Caller Proof + Destination AuthZ</strong></td><td>Envoy sidecar + SPIFFE mTLS + DPoP + OPA</td><td><strong>Agent Gateway (AGENT_TO_MCP) + IAP CEL, or Cloud Run Envoy sidecar</strong></td><td>Envoy sidecar + VPC Lattice + Verified Permissions</td><td>Envoy sidecar + APIM self-hosted gateway + NSG</td></tr><tr><td><strong>Tool & Agent Registry</strong></td><td>Signed Git catalogue + OPA bundles / Backstage</td><td><strong>Agent Registry</strong></td><td>Service Catalog + Parameter Store</td><td>Azure API Center</td></tr><tr><td><strong>Token Exchange Service</strong></td><td>Keycloak / Ory Hydra (RFC 8693) + Vault Transit</td><td><strong>IdP token endpoint (RFC 8693) + Google Cloud STS + Cloud KMS</strong></td><td>AWS STS / Cognito + KMS Sign</td><td>Entra OBO flow + Key Vault HSM</td></tr><tr><td><strong>Private Network Link + Private Endpoint & DNS</strong></td><td>WireGuard / Cilium ClusterMesh + CoreDNS</td><td><strong>PSC interface + PSC endpoint + Cloud DNS private zone</strong></td><td>PrivateLink interface endpoint + Route 53 private zone</td><td>Private Link service + Private Endpoint + Private DNS zone</td></tr><tr><td><strong>Data Perimeter</strong></td><td>SPIFFE federation + Cilium identity-aware policy</td><td><strong>VPC Service Controls</strong></td><td>AWS data perimeter (SCP + VPC endpoint policies)</td><td>Network Security Perimeter + Conditional Access</td></tr><tr><td><strong>Parameterized Tool Server</strong></td><td>MCP Toolbox for Databases (OSS) / FastMCP</td><td><strong>MCP Toolbox on Cloud Run (internal ingress)</strong></td><td>MCP Toolbox on Fargate + RDS Proxy IAM auth</td><td>MCP Toolbox on Container Apps + Managed Identity</td></tr><tr><td><strong>Database with RLS / CLS</strong></td><td>PostgreSQL 16 FORCE RLS + column GRANTs + SECURITY DEFINER</td><td><strong>BigQuery (policy tags, row access policies) · Cloud SQL / AlloyDB (parameterized secure views, PG RLS)</strong></td><td>Redshift RLS/CLS · Aurora PostgreSQL RLS</td><td>Fabric / Synapse RLS + DDM · Azure PostgreSQL RLS</td></tr><tr><td><strong>Governance Control Plane</strong></td><td>OPA Gatekeeper / Kyverno + promptfoo / garak CI</td><td><strong>IAM allow/deny/PAB + Org Policy + adk eval + kill switch</strong></td><td>SCPs + Config + Bedrock evaluations</td><td>Azure Policy + Defender + AI Foundry evaluations</td></tr></tbody></table></div>
+<tbody><tr><td><strong>Ingress Reverse Proxy + Caller Authentication + Limiter</strong></td><td>Envoy + OPA ext_authz + Redis ratelimit</td><td><strong>Agent Gateway (CLIENT_TO_AGENT) + IAP + Cloud Armor</strong></td><td>Envoy on EKS + WAF + ALB OIDC</td><td>Envoy on AKS + App Gateway WAF + Entra EasyAuth</td></tr><tr><td><strong>Inline Content Guardrail (both proxies)</strong></td><td>Envoy ext_proc → Llama Guard / NeMo Guardrails + Presidio</td><td><strong>Model Armor + Cloud SDP</strong></td><td>Envoy ext_proc → Bedrock Guardrails + Macie</td><td>Envoy ext_proc → Azure AI Content Safety + Purview</td></tr><tr><td><strong>Agent Runtime + Workload Identity + Sandbox</strong></td><td>Kubernetes + SPIRE + gVisor</td><td><strong>ADK 2.x on Agent Runtime + Agent Identity + Code Execution</strong></td><td>Bedrock AgentCore / EKS + IRSA + Firecracker</td><td>Container Apps / AKS + Workload Identity + Dynamic Sessions</td></tr><tr><td><strong>Egress Forward Proxy + Caller Proof + Destination AuthZ</strong></td><td>Envoy sidecar + SPIFFE mTLS + DPoP + OPA</td><td><strong>Agent Gateway (AGENT_TO_MCP) + IAM access policies (CEL), or Cloud Run Envoy sidecar</strong></td><td>Envoy sidecar + VPC Lattice + Verified Permissions</td><td>Envoy sidecar + APIM self-hosted gateway + NSG</td></tr><tr><td><strong>Tool & Agent Registry</strong></td><td>Signed Git catalogue + OPA bundles / Backstage</td><td><strong>Agent Registry</strong></td><td>Service Catalog + Parameter Store</td><td>Azure API Center</td></tr><tr><td><strong>Token Exchange Service</strong></td><td>Keycloak / Ory Hydra (RFC 8693) + Vault Transit</td><td><strong>IdP token endpoint (RFC 8693) + Google Cloud STS + Cloud KMS</strong></td><td>AWS STS / Cognito + KMS Sign</td><td>Entra OBO flow + Key Vault HSM</td></tr><tr><td><strong>Private Network Link + Private Endpoint & DNS</strong></td><td>WireGuard / Cilium ClusterMesh + CoreDNS</td><td><strong>PSC interface + PSC endpoint + Cloud DNS private zone</strong></td><td>PrivateLink interface endpoint + Route 53 private zone</td><td>Private Link service + Private Endpoint + Private DNS zone</td></tr><tr><td><strong>Data Perimeter</strong></td><td>SPIFFE federation + Cilium identity-aware policy</td><td><strong>VPC Service Controls</strong></td><td>AWS data perimeter (SCP + VPC endpoint policies)</td><td>Network Security Perimeter + Conditional Access</td></tr><tr><td><strong>Parameterized Tool Server</strong></td><td>MCP Toolbox for Databases (OSS) / FastMCP</td><td><strong>MCP Toolbox on Cloud Run (internal ingress)</strong></td><td>MCP Toolbox on Fargate + RDS Proxy IAM auth</td><td>MCP Toolbox on Container Apps + Managed Identity</td></tr><tr><td><strong>Database with RLS / CLS</strong></td><td>PostgreSQL 16 FORCE RLS + column GRANTs + SECURITY DEFINER</td><td><strong>BigQuery (policy tags, row access policies) · Cloud SQL / AlloyDB (parameterized secure views, PG RLS)</strong></td><td>Redshift RLS/CLS · Aurora PostgreSQL RLS</td><td>Fabric / Synapse RLS + DDM · Azure PostgreSQL RLS</td></tr><tr><td><strong>Governance Control Plane</strong></td><td>OPA Gatekeeper / Kyverno + promptfoo / garak CI</td><td><strong>IAM allow/deny/PAB + Org Policy + adk eval + kill switch</strong></td><td>SCPs + Config + Bedrock evaluations</td><td>Azure Policy + Defender + AI Foundry evaluations</td></tr></tbody></table></div>
       <div class="post-prose"><h3>Back to the episode</h3><p>Return to <a href="../ep01_securing_agent_to_database.html#fig-hero">Figure 4 of Episode 01</a>, where the Google Cloud column is switched on and built one box at a time from Chapter 3 to Chapter 13.</p></div>
     </div>
   </section>

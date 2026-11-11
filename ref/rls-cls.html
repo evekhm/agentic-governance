@@ -343,7 +343,17 @@
     .code-pre { font-size: 10px; }
   }
   main a:not(.b-pill) { color: var(--cyan); }
-</style>
+    /* Page numbers in the PDF export */
+    @page {
+      margin: 10mm 10mm 14mm 10mm;
+      @bottom-center {
+        content: counter(page) " / " counter(pages);
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        font-size: 9pt;
+        color: #64748b;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -504,7 +514,7 @@
     </div>
     <div class="sheet-b">
       <div class="diagram-frame" id="fig-rls-cls">
-        <svg viewBox="0 0 1220 555" role="img" aria-label="Row-Level Security and Column-Level Security Architecture — BigQuery vs. Cloud SQL and AlloyDB">
+        <svg viewBox="0 0 832 555" role="img" aria-label="Figure 1A: Row-Level Security and Column-Level Security Architecture — BigQuery">
           <defs>
             <marker id="rc-arr-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
               <path d="M0 0 L10 5 L0 10 z" style="fill:var(--prussian)"/>
@@ -518,10 +528,10 @@
           </defs>
 
           <!-- LEFT HALF: BIGQUERY -->
-          <rect class="zone-box" x="14" y="14" width="586" height="527" rx="10"/>
-          <text class="t-zone" x="32" y="38" style="fill:var(--prussian)">LEFT · BIGQUERY (OLAP · STATELESS HTTP API · PER-USER PRINCIPAL REACHES DB)</text>
+          <rect class="zone-box" x="14" y="14" width="804" height="527" rx="10"/>
+          <text class="t-zone" x="32" y="38" style="fill:var(--prussian)">BIGQUERY (OLAP · STATELESS HTTP API · PER-USER PRINCIPAL REACHES DB)</text>
 
-          <rect class="node-blue" x="32" y="54" width="550" height="106" rx="8"/>
+          <rect class="node-blue" x="32" y="54" width="768" height="106" rx="8"/>
           <circle cx="54" cy="80" r="13" fill="var(--prussian)"/>
           <text class="t-mono" x="54" y="84" text-anchor="middle" style="fill:#fff;font-weight:700">1</text>
           <text class="t-title" x="75" y="84">Per-User Credential Propagation (useClientOAuth / OBO / STS)</text>
@@ -529,7 +539,7 @@
           <text class="t-mono" x="48" y="124" style="fill:var(--prussian)">bigquery.Client(project="app-prod", credentials=Credentials(token=user_obo_token))</text>
           <text class="t-sub" x="48" y="144">• Okta/Entra SSO? Swap IdP JWT at Google STS (sts.googleapis.com/v1/token, RFC 8693) -&gt; SESSION_USER() = 'alice@corp.com'</text>
 
-          <rect class="node-good" x="32" y="178" width="550" height="162" rx="8"/>
+          <rect class="node-good" x="32" y="178" width="768" height="162" rx="8"/>
           <circle cx="54" cy="204" r="13" fill="var(--good)"/>
           <text class="t-mono" x="54" y="208" text-anchor="middle" style="fill:#fff;font-weight:700">2</text>
           <text class="t-title" x="75" y="208">BigQuery Row-Level Security (CREATE ROW ACCESS POLICY)</text>
@@ -540,61 +550,81 @@
           <text class="t-sub" x="48" y="304">• Side doors closed: filtered users cannot bq extract / copy table. Aggregate views enforce</text>
           <text class="t-mono" x="48" y="322" style="fill:var(--good)">HAVING COUNT(DISTINCT customer_email) &gt;= 5  -- k-anonymity floor against difference attacks</text>
 
-          <rect class="node-teal" x="32" y="358" width="550" height="166" rx="8"/>
+          <rect class="node-teal" x="32" y="358" width="768" height="166" rx="8"/>
           <circle cx="54" cy="384" r="13" fill="var(--teal)"/>
           <text class="t-mono" x="54" y="388" text-anchor="middle" style="fill:#fff;font-weight:700">3</text>
           <text class="t-title" x="75" y="388">BigQuery Column-Level Security (Dataplex Policy Tags + Masking)</text>
           <text class="t-sub" x="48" y="408">Attach Dataplex taxonomy tags (PII.SSN, Financial.CardNumber) to columns. One table, 3 experiences:</text>
-          <rect class="node-card" x="48" y="420" width="518" height="28" rx="4"/>
+          <rect class="node-card" x="48" y="420" width="736" height="28" rx="4"/>
           <text class="t-mono" x="58" y="438">1. Fine-Grained Reader (roles/datacatalog.categoryFineGrainedReader) -&gt; 4111-1111-1111-1234</text>
-          <rect class="node-card" x="48" y="454" width="518" height="28" rx="4"/>
+          <rect class="node-card" x="48" y="454" width="736" height="28" rx="4"/>
           <text class="t-mono" x="58" y="472" style="fill:var(--teal)">2. Masked Reader (roles/bigquerydatapolicy.maskedReader · Agent SA)  -&gt; XXXX-XXXX-XXXX-1234</text>
-          <rect class="node-card" x="48" y="488" width="518" height="26" rx="4"/>
+          <rect class="node-card" x="48" y="488" width="736" height="26" rx="4"/>
           <text class="t-mono" x="58" y="505" style="fill:var(--stop)">3. Neither Role -&gt; 403 Access Denied on column (must SELECT * EXCEPT(card_number, ssn))</text>
 
-          <!-- RIGHT HALF: CLOUD SQL & ALLOYDB -->
-          <rect class="zone-vpc" x="620" y="14" width="586" height="527" rx="10"/>
-          <text class="t-zone" x="638" y="38" style="fill:var(--violet)">RIGHT · CLOUD SQL &amp; ALLOYDB (POSTGRESQL / MYSQL · SHARED TCP POOL · 1 IAM DB ROLE)</text>
-
-          <rect class="node-violet" x="638" y="54" width="550" height="106" rx="8"/>
-          <circle cx="660" cy="80" r="13" fill="var(--violet)"/>
-          <text class="t-mono" x="660" y="84" text-anchor="middle" style="fill:#fff;font-weight:700">1</text>
-          <text class="t-title" x="681" y="84">Why SESSION_USER Fails on Cloud SQL &amp; How Identity Arrives</text>
-          <text class="t-sub" x="654" y="106">Cloud SQL uses stateful TCP pools (max_connections ~ 100–1,000) signed in as ONE shared IAM role</text>
-          <text class="t-mono" x="654" y="124" style="fill:var(--violet)">SESSION_USER is ALWAYS "toolbox-sa@app-prod.iam" (never alice@corp.com!)</text>
-          <text class="t-sub" x="654" y="144">• Fix: Bind verified user_id via MCP Toolbox authServices ($1), Parameterized Secure Views (@local_customer_id), or SET LOCAL</text>
-
-          <rect class="node-good" x="638" y="178" width="550" height="162" rx="8"/>
-          <circle cx="660" cy="204" r="13" fill="var(--good)"/>
-          <text class="t-mono" x="660" y="208" text-anchor="middle" style="fill:#fff;font-weight:700">2</text>
-          <text class="t-title" x="681" y="208">Cloud SQL / AlloyDB Row-Level Security (SET LOCAL + FORCE RLS / Secure Views)</text>
-          <text class="t-mono" x="654" y="230" style="fill:var(--good)">SELECT set_config('app.current_user_id', $1, true); -- is_local=true (SET LOCAL)</text>
-          <text class="t-sub" x="654" y="250">• Must use is_local=true (SET LOCAL): automatically wipes on COMMIT/ROLLBACK before connection returns to pool!</text>
-          <text class="t-sub" x="654" y="268">• Or use Parameterized Secure Views (WHERE customer_id = @local_customer_id) for open-ended NL2SQL analytics</text>
-          <text class="t-mono" x="654" y="288">ALTER TABLE sales.orders ENABLE ROW LEVEL SECURITY;</text>
-          <text class="t-mono" x="654" y="304">ALTER TABLE sales.orders FORCE ROW LEVEL SECURITY;  -- applies even to table owner!</text>
-          <text class="t-mono" x="654" y="322" style="fill:var(--good)">USING (user_id = NULLIF(current_setting('app.current_user_id', true), ''))</text>
-
-          <rect class="node-teal" x="638" y="358" width="550" height="166" rx="8"/>
-          <circle cx="660" cy="384" r="13" fill="var(--teal)"/>
-          <text class="t-mono" x="660" y="388" text-anchor="middle" style="fill:#fff;font-weight:700">3</text>
-          <text class="t-title" x="681" y="388">Cloud SQL / AlloyDB Column-Level Security (4 Layers)</text>
-          <rect class="node-card" x="654" y="400" width="518" height="27" rx="4"/>
-          <text class="t-mono" x="664" y="418">1. Column Grants: REVOKE SELECT ON orders; GRANT SELECT (order_id, status, total) TO role;</text>
-          <rect class="node-card" x="654" y="431" width="518" height="27" rx="4"/>
-          <text class="t-mono" x="664" y="449" style="fill:var(--teal)">2. PG 15+ Security-Invoker View: CREATE VIEW agent_orders_v WITH (security_invoker = true)</text>
-          <rect class="node-card" x="654" y="462" width="518" height="27" rx="4"/>
-          <text class="t-mono" x="664" y="480">3. Cloud SDP Tokenization: CryptoDeterministicConfig surrogate tokens for free-text PII</text>
-          <rect class="node-card" x="654" y="493" width="518" height="25" rx="4"/>
-          <text class="t-mono" x="664" y="510" style="fill:var(--violet)">4. Write Column Lock: Zero UPDATE grant; EXECUTE only on SECURITY DEFINER stored proc</text>
-
-          <path class="edge-line" style="stroke:var(--prussian)" d="M307 160 V174" marker-end="url(#rc-arr-blue)"/>
-          <path class="edge-teal" d="M307 340 V354" marker-end="url(#rc-arr-teal)"/>
-          <path class="edge-violet" d="M913 160 V174" marker-end="url(#rc-arr-violet)"/>
-          <path class="edge-teal" d="M913 340 V354" marker-end="url(#rc-arr-teal)"/>
+          <path class="edge-line" style="stroke:var(--prussian)" d="M416 160 V174" marker-end="url(#rc-arr-blue)"/>
+          <path class="edge-teal" d="M416 340 V354" marker-end="url(#rc-arr-teal)"/>
         </svg>
         <div class="fig-caption">
-          <span>Figure 1 — Row-Level Security (RLS) and Column-Level Security (CLS) Architecture: BigQuery (<code>SESSION_USER()</code> + Dataplex Policy Tags) vs. Cloud SQL / AlloyDB (<code>set_config(..., true)</code> <code>SET LOCAL</code> + <code>FORCE RLS</code> + Parameterized Secure Views + Column Grants).</span>
+          <span>Figure 1A — Row-Level Security (RLS) and Column-Level Security (CLS) Architecture, BigQuery: <code>SESSION_USER()</code> + Dataplex Policy Tags.</span>
+        </div>
+      </div>
+
+      <div class="diagram-frame" id="fig-rls-cls-b">
+        <svg viewBox="0 0 832 555" role="img" aria-label="Figure 1B: Row-Level Security and Column-Level Security Architecture — Cloud SQL and AlloyDB">
+          <defs>
+            <marker id="rd-arr-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" style="fill:var(--prussian)"/>
+            </marker>
+            <marker id="rd-arr-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" style="fill:var(--teal)"/>
+            </marker>
+            <marker id="rd-arr-violet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" style="fill:var(--violet)"/>
+            </marker>
+          </defs>
+
+          <!-- RIGHT HALF: CLOUD SQL & ALLOYDB -->
+          <rect class="zone-vpc" x="14" y="14" width="804" height="527" rx="10"/>
+          <text class="t-zone" x="32" y="38" style="fill:var(--violet)">CLOUD SQL &amp; ALLOYDB (POSTGRESQL / MYSQL · SHARED TCP POOL · 1 IAM DB ROLE)</text>
+
+          <rect class="node-violet" x="32" y="54" width="768" height="106" rx="8"/>
+          <circle cx="54" cy="80" r="13" fill="var(--violet)"/>
+          <text class="t-mono" x="54" y="84" text-anchor="middle" style="fill:#fff;font-weight:700">1</text>
+          <text class="t-title" x="75" y="84">Why SESSION_USER Fails on Cloud SQL &amp; How Identity Arrives</text>
+          <text class="t-sub" x="48" y="106">Cloud SQL uses stateful TCP pools (max_connections ~ 100–1,000) signed in as ONE shared IAM role</text>
+          <text class="t-mono" x="48" y="124" style="fill:var(--violet)">SESSION_USER is ALWAYS "toolbox-sa@app-prod.iam" (never alice@corp.com!)</text>
+          <text class="t-sub" x="48" y="144">• Fix: Bind verified user_id via MCP Toolbox authServices ($1), Parameterized Secure Views (@local_customer_id), or SET LOCAL</text>
+
+          <rect class="node-good" x="32" y="178" width="768" height="162" rx="8"/>
+          <circle cx="54" cy="204" r="13" fill="var(--good)"/>
+          <text class="t-mono" x="54" y="208" text-anchor="middle" style="fill:#fff;font-weight:700">2</text>
+          <text class="t-title" x="75" y="208">Cloud SQL / AlloyDB Row-Level Security (SET LOCAL + FORCE RLS / Secure Views)</text>
+          <text class="t-mono" x="48" y="230" style="fill:var(--good)">SELECT set_config('app.current_user_id', $1, true); -- is_local=true (SET LOCAL)</text>
+          <text class="t-sub" x="48" y="250">• Must use is_local=true (SET LOCAL): automatically wipes on COMMIT/ROLLBACK before connection returns to pool!</text>
+          <text class="t-sub" x="48" y="268">• Or use Parameterized Secure Views (WHERE customer_id = @local_customer_id) for open-ended NL2SQL analytics</text>
+          <text class="t-mono" x="48" y="288">ALTER TABLE sales.orders ENABLE ROW LEVEL SECURITY;</text>
+          <text class="t-mono" x="48" y="304">ALTER TABLE sales.orders FORCE ROW LEVEL SECURITY;  -- applies even to table owner!</text>
+          <text class="t-mono" x="48" y="322" style="fill:var(--good)">USING (user_id = NULLIF(current_setting('app.current_user_id', true), ''))</text>
+
+          <rect class="node-teal" x="32" y="358" width="768" height="166" rx="8"/>
+          <circle cx="54" cy="384" r="13" fill="var(--teal)"/>
+          <text class="t-mono" x="54" y="388" text-anchor="middle" style="fill:#fff;font-weight:700">3</text>
+          <text class="t-title" x="75" y="388">Cloud SQL / AlloyDB Column-Level Security (4 Layers)</text>
+          <rect class="node-card" x="48" y="400" width="736" height="27" rx="4"/>
+          <text class="t-mono" x="58" y="418">1. Column Grants: REVOKE SELECT ON orders; GRANT SELECT (order_id, status, total) TO role;</text>
+          <rect class="node-card" x="48" y="431" width="736" height="27" rx="4"/>
+          <text class="t-mono" x="58" y="449" style="fill:var(--teal)">2. PG 15+ Security-Invoker View: CREATE VIEW agent_orders_v WITH (security_invoker = true)</text>
+          <rect class="node-card" x="48" y="462" width="736" height="27" rx="4"/>
+          <text class="t-mono" x="58" y="480">3. Cloud SDP Tokenization: CryptoDeterministicConfig surrogate tokens for free-text PII</text>
+          <rect class="node-card" x="48" y="493" width="736" height="25" rx="4"/>
+          <text class="t-mono" x="58" y="510" style="fill:var(--violet)">4. Write Column Lock: Zero UPDATE grant; EXECUTE only on SECURITY DEFINER stored proc</text>
+
+          <path class="edge-violet" d="M416 160 V174" marker-end="url(#rd-arr-violet)"/>
+          <path class="edge-teal" d="M416 340 V354" marker-end="url(#rd-arr-teal)"/>
+        </svg>
+        <div class="fig-caption">
+          <span>Figure 1B — Row-Level Security (RLS) and Column-Level Security (CLS) Architecture, Cloud SQL / AlloyDB: <code>set_config(..., true)</code> <code>SET LOCAL</code> + <code>FORCE RLS</code> + Parameterized Secure Views + Column Grants.</span>
         </div>
       </div>
 
