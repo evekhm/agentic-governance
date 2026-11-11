@@ -327,6 +327,13 @@
     white-space: pre;
     color: #f1f5f9;
   }
+  .code-card pre .hl-c { color: #94a3b8; font-style: italic; }
+  .code-card pre .hl-k { color: #38bdf8; font-weight: 600; }
+  .code-card pre .hl-b { color: #c084fc; }
+  .code-card pre .hl-f { color: #fde047; font-weight: 600; }
+  .code-card pre .hl-s { color: #4ade80; }
+  .code-card pre .hl-n { color: #fb923c; }
+  .code-card pre .hl-v { color: #93c5fd; }
 
   @media print {
     .topbar { display: none; }
@@ -476,8 +483,8 @@
             </tr>
             <tr>
               <td><b>3. Transaction-Local PostgreSQL <code>set_config</code> + <code>FORCE ROW LEVEL SECURITY</code></b></td>
-              <td>Inside each transaction on the shared pool (`BEGIN ... COMMIT`), the tool server stamps the verified user ID via <code>SELECT set_config('app.current_user_id', $1, true)</code> (`is_local = true` / `SET LOCAL`). A `RESTRICTIVE` policy with `FORCE ROW LEVEL SECURITY` filters every query against `current_setting('app.current_user_id', true)`, and the setting automatically resets when the transaction ends before the socket returns to the pool.</td>
-              <td>Best as an engine-level defense-in-depth safety net in Cloud SQL / AlloyDB for PostgreSQL so even a newly added tool that forgets a `WHERE` clause cannot leak rows across tenants.</td>
+              <td>Inside each transaction on the shared pool (<code>BEGIN ... COMMIT</code>), the tool server stamps the verified user ID via <code>SELECT set_config('app.current_user_id', $1, true)</code> (<code>is_local = true</code> / <code>SET LOCAL</code>). A <code>RESTRICTIVE</code> policy with <code>FORCE ROW LEVEL SECURITY</code> filters every query against <code>current_setting('app.current_user_id', true)</code>, and the setting automatically resets when the transaction ends before the socket returns to the pool.</td>
+              <td>Best as an engine-level defense-in-depth safety net in Cloud SQL / AlloyDB for PostgreSQL so even a newly added tool that forgets a <code>WHERE</code> clause cannot leak rows across tenants.</td>
             </tr>
           </tbody>
         </table>
@@ -490,7 +497,7 @@
     <div class="sheet-h">
       <div>
         <span class="sec-badge">Visual Architecture Map</span>
-        <h2>Side-by-Side Architecture: BigQuery (`SESSION_USER()`) vs. Cloud SQL / AlloyDB (`SET LOCAL` + `FORCE RLS`)</h2>
+        <h2>Side-by-Side Architecture: BigQuery (<code>SESSION_USER()</code>) vs. Cloud SQL / AlloyDB (<code>SET LOCAL</code> + <code>FORCE RLS</code>)</h2>
         <p>How identity propagation, Row-Level Security, and Column-Level Security execute step by step in both engines.</p>
       </div>
     </div>
@@ -586,7 +593,7 @@
           <path class="edge-teal" d="M913 340 V354" marker-end="url(#rc-arr-teal)"/>
         </svg>
         <div class="fig-caption">
-          <span>Figure 1 — Row-Level Security (RLS) and Column-Level Security (CLS) Architecture: BigQuery (`SESSION_USER()` + Dataplex Policy Tags) vs. Cloud SQL / AlloyDB (`set_config(..., true)` `SET LOCAL` + `FORCE RLS` + Parameterized Secure Views + Column Grants).</span>
+          <span>Figure 1 — Row-Level Security (RLS) and Column-Level Security (CLS) Architecture: BigQuery (<code>SESSION_USER()</code> + Dataplex Policy Tags) vs. Cloud SQL / AlloyDB (<code>set_config(..., true)</code> <code>SET LOCAL</code> + <code>FORCE RLS</code> + Parameterized Secure Views + Column Grants).</span>
         </div>
       </div>
 
@@ -657,7 +664,7 @@
     <div class="sheet-b">
       <div class="post-prose">
         <p>
-          Designing RLS only for an interactive browser user (`Mode 1`) leaves a gap when an autonomous agent wakes up at 3:00 AM from a webhook, email, or schedule (`Modes 2 & 3`) with no live browser JWT. Across all three modes, the rule is the same: <strong>resolve and verify the identity envelope before the LLM runs, lock it into out-of-band state, and remove `user_id` from the LLM's tool schema.</strong>
+          Designing RLS only for an interactive browser user (<code>Mode 1</code>) leaves a gap when an autonomous agent wakes up at 3:00 AM from a webhook, email, or schedule (<code>Modes 2 &amp; 3</code>) with no live browser JWT. Across all three modes, the rule is the same: <strong>resolve and verify the identity envelope before the LLM runs, lock it into out-of-band state, and remove <code>user_id</code> from the LLM's tool schema.</strong>
         </p>
       </div>
 
@@ -701,103 +708,103 @@
           <div class="code-head">
             <span>bigquery_rls_cls_setup.sql · BigQuery Row Access Policies, Policy Tag CLS &amp; k-Anonymity</span>
           </div>
-          <pre class="code-pre">-- 1. Per-User Row Access Policy (ONE policy covers 100k+ users via SESSION_USER())
-CREATE ROW ACCESS POLICY customer_own_orders
-ON `app-prod.sales.orders`
-GRANT TO ("domain:corp.com", "group:customers@corp.com")
-FILTER USING (customer_email = SESSION_USER());
+          <pre class="code-pre"><span class="hl-c">-- 1. Per-User Row Access Policy (ONE policy covers 100k+ users via SESSION_USER())</span>
+<span class="hl-k">CREATE</span> <span class="hl-k">ROW</span> <span class="hl-k">ACCESS</span> <span class="hl-k">POLICY</span> customer_own_orders
+<span class="hl-k">ON</span> <span class="hl-v">`app-prod.sales.orders`</span>
+<span class="hl-k">GRANT</span> <span class="hl-k">TO</span> (<span class="hl-s">"domain:corp.com"</span>, <span class="hl-s">"group:customers@corp.com"</span>)
+<span class="hl-k">FILTER</span> <span class="hl-k">USING</span> (customer_email = SESSION_USER());
 
--- 2. Mapping-Table Subquery Policy (when table stores opaque user_id instead of email)
-CREATE ROW ACCESS POLICY orders_by_uid_lookup
-ON `app-prod.sales.orders`
-GRANT TO ("allAuthenticatedUsers")
-FILTER USING (
-  user_id IN (
-    SELECT u.user_id FROM `app-prod.sales.users` AS u
-    WHERE u.email = SESSION_USER()
+<span class="hl-c">-- 2. Mapping-Table Subquery Policy (when table stores opaque user_id instead of email)</span>
+<span class="hl-k">CREATE</span> <span class="hl-k">ROW</span> <span class="hl-k">ACCESS</span> <span class="hl-k">POLICY</span> orders_by_uid_lookup
+<span class="hl-k">ON</span> <span class="hl-v">`app-prod.sales.orders`</span>
+<span class="hl-k">GRANT</span> <span class="hl-k">TO</span> (<span class="hl-s">"allAuthenticatedUsers"</span>)
+<span class="hl-k">FILTER</span> <span class="hl-k">USING</span> (
+  user_id <span class="hl-k">IN</span> (
+    <span class="hl-k">SELECT</span> u.user_id <span class="hl-k">FROM</span> <span class="hl-v">`app-prod.sales.users`</span> <span class="hl-k">AS</span> u
+    <span class="hl-k">WHERE</span> u.email = SESSION_USER()
   )
 );
 
--- 3. Explicit Pipeline SA Policy (REQUIRED: once any policy exists, unmatched SAs see 0 rows!)
-CREATE ROW ACCESS POLICY etl_pipeline_full_read
-ON `app-prod.sales.orders`
-GRANT TO ("serviceAccount:analytics-etl@app-prod.iam.gserviceaccount.com")
-FILTER USING (TRUE);
+<span class="hl-c">-- 3. Explicit Pipeline SA Policy (REQUIRED: once any policy exists, unmatched SAs see 0 rows!)</span>
+<span class="hl-k">CREATE</span> <span class="hl-k">ROW</span> <span class="hl-k">ACCESS</span> <span class="hl-k">POLICY</span> etl_pipeline_full_read
+<span class="hl-k">ON</span> <span class="hl-v">`app-prod.sales.orders`</span>
+<span class="hl-k">GRANT</span> <span class="hl-k">TO</span> (<span class="hl-s">"serviceAccount:analytics-etl@app-prod.iam.gserviceaccount.com"</span>)
+<span class="hl-k">FILTER</span> <span class="hl-k">USING</span> (<span class="hl-k">TRUE</span>);
 
--- 4. Column-Level Security (CLS) via Dataplex Policy Tags + Dynamic Masking:
---    Attach policyTag "projects/app-prod/locations/us/taxonomies/1/policyTags/card_num"
---    Grant Agent SA: roles/bigquerydatapolicy.maskedReader (sees XXXX-XXXX-XXXX-1234, never raw PAN!)
-SELECT order_id, customer_email, card_number, total
-FROM `app-prod.sales.orders`
-LIMIT 20;
+<span class="hl-c">-- 4. Column-Level Security (CLS) via Dataplex Policy Tags + Dynamic Masking:</span>
+<span class="hl-c">--    Attach policyTag "projects/app-prod/locations/us/taxonomies/1/policyTags/card_num"</span>
+<span class="hl-c">--    Grant Agent SA: roles/bigquerydatapolicy.maskedReader (sees XXXX-XXXX-XXXX-1234, never raw PAN!)</span>
+<span class="hl-k">SELECT</span> order_id, customer_email, card_number, total
+<span class="hl-k">FROM</span> <span class="hl-v">`app-prod.sales.orders`</span>
+<span class="hl-k">LIMIT</span> <span class="hl-n">20</span>;
 
--- 5. Aggregate View with k-Anonymity Floor (k >= 5 distinct users blocks difference attacks)
-CREATE OR REPLACE VIEW `app-prod.agent_views.regional_order_stats_v` AS
-SELECT
+<span class="hl-c">-- 5. Aggregate View with k-Anonymity Floor (k >= 5 distinct users blocks difference attacks)</span>
+<span class="hl-k">CREATE</span> <span class="hl-k">OR</span> <span class="hl-k">REPLACE</span> <span class="hl-k">VIEW</span> <span class="hl-v">`app-prod.agent_views.regional_order_stats_v`</span> <span class="hl-k">AS</span>
+<span class="hl-k">SELECT</span>
   region,
   status,
-  COUNT(*) AS order_count,
-  ROUND(AVG(total), 2) AS avg_order_total
-FROM `app-prod.sales.orders`
-GROUP BY region, status
-HAVING COUNT(DISTINCT customer_email) >= 5;</pre>
+  <span class="hl-k">COUNT</span>(*) <span class="hl-k">AS</span> order_count,
+  <span class="hl-k">ROUND</span>(<span class="hl-k">AVG</span>(total), <span class="hl-n">2</span>) <span class="hl-k">AS</span> avg_order_total
+<span class="hl-k">FROM</span> <span class="hl-v">`app-prod.sales.orders`</span>
+<span class="hl-k">GROUP</span> <span class="hl-k">BY</span> region, status
+<span class="hl-k">HAVING</span> <span class="hl-k">COUNT</span>(<span class="hl-k">DISTINCT</span> customer_email) >= <span class="hl-n">5</span>;</pre>
         </div>
 
         <div class="code-card">
           <div class="code-head">
             <span>bigquery_obo_sts_agent.py · Verifying JWT + RFC 8693 STS Exchange for BigQuery RLS/CLS</span>
           </div>
-          <pre class="code-pre">import requests
-from google.auth.transport import requests as google_requests
-from google.cloud import bigquery
-from google.oauth2 import id_token
-from google.oauth2.credentials import Credentials
+          <pre class="code-pre"><span class="hl-k">import</span> requests
+<span class="hl-k">from</span> google.auth.transport <span class="hl-k">import</span> requests <span class="hl-k">as</span> google_requests
+<span class="hl-k">from</span> google.cloud <span class="hl-k">import</span> bigquery
+<span class="hl-k">from</span> google.oauth2 <span class="hl-k">import</span> id_token
+<span class="hl-k">from</span> google.oauth2.credentials <span class="hl-k">import</span> Credentials
 
-SERVICE_URL = "https://orders-agent-uc.a.run.app"
-STS_URL = "https://sts.googleapis.com/v1/token"
-WORKFORCE_AUD = "//iam.googleapis.com/locations/global/workforcePools/corp-pool/providers/entra-oidc"
+SERVICE_URL = <span class="hl-s">"https://orders-agent-uc.a.run.app"</span>
+STS_URL = <span class="hl-s">"https://sts.googleapis.com/v1/token"</span>
+WORKFORCE_AUD = <span class="hl-s">"//iam.googleapis.com/locations/global/workforcePools/corp-pool/providers/entra-oidc"</span>
 
-def verify_caller_jwt(auth_header: str) -> dict:
-    """Verifies signature, expiry &amp; audience; extracts immutable 'sub' and 'email'."""
-    raw_jwt = auth_header.removeprefix("Bearer ").strip()
-    return id_token.verify_oauth2_token(raw_jwt, google_requests.Request(), audience=SERVICE_URL)
+<span class="hl-k">def</span> <span class="hl-f">verify_caller_jwt</span>(auth_header: str) -> dict:
+    <span class="hl-s">"""Verifies signature, expiry &amp; audience; extracts immutable 'sub' and 'email'."""</span>
+    raw_jwt = auth_header.removeprefix(<span class="hl-s">"Bearer "</span>).strip()
+    <span class="hl-k">return</span> id_token.verify_oauth2_token(raw_jwt, google_requests.Request(), audience=SERVICE_URL)
 
-def exchange_idp_jwt_for_bq_creds(incoming_idp_jwt: str) -> Credentials:
-    """RFC 8693 OBO Token Exchange via Google STS so SESSION_USER() = human caller."""
+<span class="hl-k">def</span> <span class="hl-f">exchange_idp_jwt_for_bq_creds</span>(incoming_idp_jwt: str) -> Credentials:
+    <span class="hl-s">"""RFC 8693 OBO Token Exchange via Google STS so SESSION_USER() = human caller."""</span>
     resp = requests.post(
         STS_URL,
         json={
-            "grantType": "urn:ietf:params:oauth:grant-type:token-exchange",
-            "audience": WORKFORCE_AUD,
-            "scope": "https://www.googleapis.com/auth/bigquery.readonly",
-            "requestedTokenType": "urn:ietf:params:oauth:token-type:access_token",
-            "subjectToken": incoming_idp_jwt,
-            "subjectTokenType": "urn:ietf:params:oauth:token-type:jwt",
+            <span class="hl-s">"grantType"</span>: <span class="hl-s">"urn:ietf:params:oauth:grant-type:token-exchange"</span>,
+            <span class="hl-s">"audience"</span>: WORKFORCE_AUD,
+            <span class="hl-s">"scope"</span>: <span class="hl-s">"https://www.googleapis.com/auth/bigquery.readonly"</span>,
+            <span class="hl-s">"requestedTokenType"</span>: <span class="hl-s">"urn:ietf:params:oauth:token-type:access_token"</span>,
+            <span class="hl-s">"subjectToken"</span>: incoming_idp_jwt,
+            <span class="hl-s">"subjectTokenType"</span>: <span class="hl-s">"urn:ietf:params:oauth:token-type:jwt"</span>,
         },
-        timeout=(2, 5),
+        timeout=(<span class="hl-n">2</span>, <span class="hl-n">5</span>),
     )
     resp.raise_for_status()
-    return Credentials(token=resp.json()["access_token"])
+    <span class="hl-k">return</span> Credentials(token=resp.json()[<span class="hl-s">"access_token"</span>])
 
-def query_orders_with_bq_rls_and_cls(auth_header: str) -> list[dict]:
+<span class="hl-k">def</span> <span class="hl-f">query_orders_with_bq_rls_and_cls</span>(auth_header: str) -> list[dict]:
     claims = verify_caller_jwt(auth_header)
-    raw_jwt = auth_header.removeprefix("Bearer ").strip()
+    raw_jwt = auth_header.removeprefix(<span class="hl-s">"Bearer "</span>).strip()
     user_creds = exchange_idp_jwt_for_bq_creds(raw_jwt)
 
-    # Query runs as Alice: BigQuery enforces Row Access Policy + Policy Tag CLS masking!
-    user_bq = bigquery.Client(project="app-prod", credentials=user_creds)
+    <span class="hl-c"># Query runs as Alice: BigQuery enforces Row Access Policy + Policy Tag CLS masking!</span>
+    user_bq = bigquery.Client(project=<span class="hl-s">"app-prod"</span>, credentials=user_creds)
     job_cfg = bigquery.QueryJobConfig(
-        maximum_bytes_billed=100 * 1024 * 1024,  # 100 MB FinOps / LLM10 guardrail
-        query_parameters=[bigquery.ScalarQueryParameter("email", "STRING", claims["email"])],
-        labels={"acting_agent": "orders-agent", "caller": claims["sub"][:40]},
+        maximum_bytes_billed=<span class="hl-n">100</span> * <span class="hl-n">1024</span> * <span class="hl-n">1024</span>,  <span class="hl-c"># 100 MB FinOps / LLM10 guardrail</span>
+        query_parameters=[bigquery.ScalarQueryParameter(<span class="hl-s">"email"</span>, <span class="hl-s">"STRING"</span>, claims[<span class="hl-s">"email"</span>])],
+        labels={<span class="hl-s">"acting_agent"</span>: <span class="hl-s">"orders-agent"</span>, <span class="hl-s">"caller"</span>: claims[<span class="hl-s">"sub"</span>][:<span class="hl-n">40</span>]},
     )
-    sql = """
+    sql = <span class="hl-s">"""
       SELECT order_id, status, total, card_number
       FROM `app-prod.sales.orders`
       WHERE customer_email = @email
       ORDER BY created_at DESC LIMIT 50
-    """
-    return [dict(r) for r in user_bq.query(sql, job_config=job_cfg).result(timeout=20)]</pre>
+    """</span>
+    <span class="hl-k">return</span> [dict(r) <span class="hl-k">for</span> r <span class="hl-k">in</span> user_bq.query(sql, job_config=job_cfg).result(timeout=<span class="hl-n">20</span>)]</pre>
         </div>
       </div>
 
@@ -806,136 +813,136 @@ def query_orders_with_bq_rls_and_cls(auth_header: str) -> list[dict]:
           <div class="code-head">
             <span>cloudsql_rls_cls_setup.sql · Cloud SQL Column Grants, Secure Views, FORCE RLS &amp; Stored Proc</span>
           </div>
-          <pre class="code-pre">-- 1. Column-Level Security (Layer 1): Revoke broad SELECT; grant ONLY safe columns
-REVOKE ALL ON TABLE sales.orders FROM PUBLIC, "toolbox-sa@app-prod.iam";
-GRANT SELECT (order_id, user_id, owner_email, status, total, updated_at)
-  ON TABLE sales.orders TO "toolbox-sa@app-prod.iam";
+          <pre class="code-pre"><span class="hl-c">-- 1. Column-Level Security (Layer 1): Revoke broad SELECT; grant ONLY safe columns</span>
+<span class="hl-k">REVOKE</span> <span class="hl-k">ALL</span> <span class="hl-k">ON</span> <span class="hl-k">TABLE</span> sales.orders <span class="hl-k">FROM</span> PUBLIC, <span class="hl-s">"toolbox-sa@app-prod.iam"</span>;
+<span class="hl-k">GRANT</span> <span class="hl-k">SELECT</span> (order_id, user_id, owner_email, status, total, updated_at)
+  <span class="hl-k">ON</span> <span class="hl-k">TABLE</span> sales.orders <span class="hl-k">TO</span> <span class="hl-s">"toolbox-sa@app-prod.iam"</span>;
 
--- 2a. Security-Invoker View with inline masking (PG 15+)
-CREATE OR REPLACE VIEW sales.agent_orders_v WITH (security_invoker = true) AS
-SELECT
+<span class="hl-c">-- 2a. Security-Invoker View with inline masking (PG 15+)</span>
+<span class="hl-k">CREATE</span> <span class="hl-k">OR</span> <span class="hl-k">REPLACE</span> <span class="hl-k">VIEW</span> sales.agent_orders_v <span class="hl-k">WITH</span> (security_invoker = true) <span class="hl-k">AS</span>
+<span class="hl-k">SELECT</span>
   order_id,
   user_id,
   owner_email,
   status,
   total,
-  '***-***-' || right(contact_phone, 4) AS contact_phone_masked,
+  <span class="hl-s">'***-***-'</span> || right(contact_phone, <span class="hl-n">4</span>) <span class="hl-k">AS</span> contact_phone_masked,
   updated_at
-FROM sales.orders;
-GRANT SELECT ON sales.agent_orders_v TO "toolbox-sa@app-prod.iam";
+<span class="hl-k">FROM</span> sales.orders;
+<span class="hl-k">GRANT</span> <span class="hl-k">SELECT</span> <span class="hl-k">ON</span> sales.agent_orders_v <span class="hl-k">TO</span> <span class="hl-s">"toolbox-sa@app-prod.iam"</span>;
 
--- 2b. Cloud SQL Parameterized Secure View (for Conversational Analytics / NL2SQL)
--- Requires flag: cloudsql.enable_parameterized_views = on
-CREATE VIEW sales.v_customer_orders WITH (security_invoker = true) AS
-SELECT order_id, status, total, updated_at
-FROM sales.orders
-WHERE user_id = @local_customer_id;
+<span class="hl-c">-- 2b. Cloud SQL Parameterized Secure View (for Conversational Analytics / NL2SQL)</span>
+<span class="hl-c">-- Requires flag: cloudsql.enable_parameterized_views = on</span>
+<span class="hl-k">CREATE</span> <span class="hl-k">VIEW</span> sales.v_customer_orders <span class="hl-k">WITH</span> (security_invoker = true) <span class="hl-k">AS</span>
+<span class="hl-k">SELECT</span> order_id, status, total, updated_at
+<span class="hl-k">FROM</span> sales.orders
+<span class="hl-k">WHERE</span> user_id = @local_customer_id;
 
--- 3. Row-Level Security (RLS): ENABLE + FORCE ROW LEVEL SECURITY on shared pool role
-ALTER TABLE sales.orders ENABLE ROW LEVEL SECURITY;
-ALTER TABLE sales.orders FORCE ROW LEVEL SECURITY;
+<span class="hl-c">-- 3. Row-Level Security (RLS): ENABLE + FORCE ROW LEVEL SECURITY on shared pool role</span>
+<span class="hl-k">ALTER</span> <span class="hl-k">TABLE</span> sales.orders <span class="hl-k">ENABLE</span> <span class="hl-k">ROW</span> <span class="hl-k">LEVEL</span> <span class="hl-k">SECURITY</span>;
+<span class="hl-k">ALTER</span> <span class="hl-k">TABLE</span> sales.orders <span class="hl-k">FORCE</span> <span class="hl-k">ROW</span> <span class="hl-k">LEVEL</span> <span class="hl-k">SECURITY</span>;
 
-CREATE POLICY agent_user_isolation ON sales.orders
-  AS RESTRICTIVE
-  FOR SELECT TO "toolbox-sa@app-prod.iam"
-  USING (
-    status &lt;&gt; 'DELETED'
-    AND user_id = NULLIF(current_setting('app.current_user_id', true), '')
+<span class="hl-k">CREATE</span> <span class="hl-k">POLICY</span> agent_user_isolation <span class="hl-k">ON</span> sales.orders
+  <span class="hl-k">AS</span> <span class="hl-k">RESTRICTIVE</span>
+  <span class="hl-k">FOR</span> <span class="hl-k">SELECT</span> <span class="hl-k">TO</span> <span class="hl-s">"toolbox-sa@app-prod.iam"</span>
+  <span class="hl-k">USING</span> (
+    status &lt;&gt; <span class="hl-s">'DELETED'</span>
+    <span class="hl-k">AND</span> user_id = <span class="hl-k">NULLIF</span>(current_setting(<span class="hl-s">'app.current_user_id'</span>, true), <span class="hl-s">''</span>)
   );
 
--- 4. Write Column &amp; Row Lock: Zero UPDATE/DELETE grants; mutate ONLY via SECURITY DEFINER proc
-CREATE OR REPLACE FUNCTION sales.request_or_issue_refund(
+<span class="hl-c">-- 4. Write Column &amp; Row Lock: Zero UPDATE/DELETE grants; mutate ONLY via SECURITY DEFINER proc</span>
+<span class="hl-k">CREATE</span> <span class="hl-k">OR</span> <span class="hl-k">REPLACE</span> <span class="hl-k">FUNCTION</span> sales.request_or_issue_refund(
   p_order_id TEXT,
   p_amount   NUMERIC,
   p_idem_key TEXT
-) RETURNS JSONB
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = sales, pg_temp
-AS $$
-DECLARE
-  v_uid   TEXT := NULLIF(current_setting('app.current_user_id', true), '');
+) <span class="hl-k">RETURNS</span> JSONB
+<span class="hl-k">LANGUAGE</span> plpgsql
+<span class="hl-k">SECURITY</span> <span class="hl-k">DEFINER</span>
+<span class="hl-k">SET</span> search_path = sales, pg_temp
+<span class="hl-k">AS</span> $$
+<span class="hl-k">DECLARE</span>
+  v_uid   TEXT := <span class="hl-k">NULLIF</span>(current_setting(<span class="hl-s">'app.current_user_id'</span>, true), <span class="hl-s">''</span>);
   v_total NUMERIC;
-BEGIN
-  IF v_uid IS NULL THEN
-    RAISE EXCEPTION 'Missing transaction user context (app.current_user_id)';
-  END IF;
-  IF EXISTS (SELECT 1 FROM sales.refund_ledger WHERE idempotency_key = p_idem_key) THEN
-    RETURN jsonb_build_object('status', 'already_processed', 'idempotency_key', p_idem_key);
-  END IF;
-  SELECT total INTO v_total FROM sales.orders WHERE order_id = p_order_id AND user_id = v_uid FOR UPDATE;
-  IF NOT FOUND THEN
-    RAISE EXCEPTION 'Order % not found or not owned by %', p_order_id, v_uid;
-  END IF;
-  IF p_amount &gt; 100.00 THEN
-    INSERT INTO sales.refund_approval_queue (idempotency_key, order_id, user_id, amount, status)
-    VALUES (p_idem_key, p_order_id, v_uid, p_amount, 'PENDING_HUMAN_APPROVAL');
-    RETURN jsonb_build_object('status', 'queued_for_human_approval', 'order_id', p_order_id);
-  END IF;
-  INSERT INTO sales.refund_ledger (idempotency_key, order_id, user_id, amount)
-  VALUES (p_idem_key, p_order_id, v_uid, p_amount);
-  UPDATE sales.orders SET status = 'REFUNDED', updated_at = now()
-  WHERE order_id = p_order_id AND user_id = v_uid;
-  RETURN jsonb_build_object('status', 'refunded', 'order_id', p_order_id, 'amount', p_amount);
-END;
+<span class="hl-k">BEGIN</span>
+  <span class="hl-k">IF</span> v_uid <span class="hl-k">IS</span> <span class="hl-k">NULL</span> <span class="hl-k">THEN</span>
+    <span class="hl-k">RAISE</span> <span class="hl-k">EXCEPTION</span> <span class="hl-s">'Missing transaction user context (app.current_user_id)'</span>;
+  <span class="hl-k">END</span> <span class="hl-k">IF</span>;
+  <span class="hl-k">IF</span> <span class="hl-k">EXISTS</span> (<span class="hl-k">SELECT</span> <span class="hl-n">1</span> <span class="hl-k">FROM</span> sales.refund_ledger <span class="hl-k">WHERE</span> idempotency_key = p_idem_key) <span class="hl-k">THEN</span>
+    <span class="hl-k">RETURN</span> jsonb_build_object(<span class="hl-s">'status'</span>, <span class="hl-s">'already_processed'</span>, <span class="hl-s">'idempotency_key'</span>, p_idem_key);
+  <span class="hl-k">END</span> <span class="hl-k">IF</span>;
+  <span class="hl-k">SELECT</span> total <span class="hl-k">INTO</span> v_total <span class="hl-k">FROM</span> sales.orders <span class="hl-k">WHERE</span> order_id = p_order_id <span class="hl-k">AND</span> user_id = v_uid <span class="hl-k">FOR</span> <span class="hl-k">UPDATE</span>;
+  <span class="hl-k">IF</span> <span class="hl-k">NOT</span> FOUND <span class="hl-k">THEN</span>
+    <span class="hl-k">RAISE</span> <span class="hl-k">EXCEPTION</span> <span class="hl-s">'Order % not found or not owned by %'</span>, p_order_id, v_uid;
+  <span class="hl-k">END</span> <span class="hl-k">IF</span>;
+  <span class="hl-k">IF</span> p_amount &gt; <span class="hl-n">100.00</span> <span class="hl-k">THEN</span>
+    <span class="hl-k">INSERT</span> <span class="hl-k">INTO</span> sales.refund_approval_queue (idempotency_key, order_id, user_id, amount, status)
+    <span class="hl-k">VALUES</span> (p_idem_key, p_order_id, v_uid, p_amount, <span class="hl-s">'PENDING_HUMAN_APPROVAL'</span>);
+    <span class="hl-k">RETURN</span> jsonb_build_object(<span class="hl-s">'status'</span>, <span class="hl-s">'queued_for_human_approval'</span>, <span class="hl-s">'order_id'</span>, p_order_id);
+  <span class="hl-k">END</span> <span class="hl-k">IF</span>;
+  <span class="hl-k">INSERT</span> <span class="hl-k">INTO</span> sales.refund_ledger (idempotency_key, order_id, user_id, amount)
+  <span class="hl-k">VALUES</span> (p_idem_key, p_order_id, v_uid, p_amount);
+  <span class="hl-k">UPDATE</span> sales.orders <span class="hl-k">SET</span> status = <span class="hl-s">'REFUNDED'</span>, updated_at = now()
+  <span class="hl-k">WHERE</span> order_id = p_order_id <span class="hl-k">AND</span> user_id = v_uid;
+  <span class="hl-k">RETURN</span> jsonb_build_object(<span class="hl-s">'status'</span>, <span class="hl-s">'refunded'</span>, <span class="hl-s">'order_id'</span>, p_order_id, <span class="hl-s">'amount'</span>, p_amount);
+<span class="hl-k">END</span>;
 $$;
-REVOKE ALL ON FUNCTION sales.request_or_issue_refund(TEXT, NUMERIC, TEXT) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION sales.request_or_issue_refund(TEXT, NUMERIC, TEXT) TO "toolbox-writer-sa@app-prod.iam";</pre>
+<span class="hl-k">REVOKE</span> <span class="hl-k">ALL</span> <span class="hl-k">ON</span> <span class="hl-k">FUNCTION</span> sales.request_or_issue_refund(TEXT, NUMERIC, TEXT) <span class="hl-k">FROM</span> PUBLIC;
+<span class="hl-k">GRANT</span> EXECUTE <span class="hl-k">ON</span> <span class="hl-k">FUNCTION</span> sales.request_or_issue_refund(TEXT, NUMERIC, TEXT) <span class="hl-k">TO</span> <span class="hl-s">"toolbox-writer-sa@app-prod.iam"</span>;</pre>
         </div>
 
         <div class="code-card">
           <div class="code-head">
             <span>cloudsql_adk_rls_worker.py · Out-of-Band ToolContext + Transaction-Local SET LOCAL</span>
           </div>
-          <pre class="code-pre">from typing import Literal
-from google.adk import Agent
-from google.adk.tools import ToolContext
-from google.genai import types
-from sqlalchemy import create_engine, text
+          <pre class="code-pre"><span class="hl-k">from</span> typing <span class="hl-k">import</span> Literal
+<span class="hl-k">from</span> google.adk <span class="hl-k">import</span> Agent
+<span class="hl-k">from</span> google.adk.tools <span class="hl-k">import</span> ToolContext
+<span class="hl-k">from</span> google.genai <span class="hl-k">import</span> types
+<span class="hl-k">from</span> sqlalchemy <span class="hl-k">import</span> create_engine, text
 
-# Shared Cloud SQL / AlloyDB pool signed in as least-privilege IAM role
+<span class="hl-c"># Shared Cloud SQL / AlloyDB pool signed in as least-privilege IAM role</span>
 db_engine = create_engine(
-    "postgresql+pg8000://toolbox-sa%40app-prod.iam@10.10.2.50:5432/prod_db",
-    pool_size=10,
+    <span class="hl-s">"postgresql+pg8000://toolbox-sa%40app-prod.iam@10.10.2.50:5432/prod_db"</span>,
+    pool_size=<span class="hl-n">10</span>,
 )
 
-# Notice: NO user_id parameter in the function signature! The LLM cannot see or spoof it.
-def get_my_orders(
-    status: Literal["OPEN", "SHIPPED", "REFUNDED"],
+<span class="hl-c"># Notice: NO user_id parameter in the function signature! The LLM cannot see or spoof it.</span>
+<span class="hl-k">def</span> <span class="hl-f">get_my_orders</span>(
+    status: Literal[<span class="hl-s">"OPEN"</span>, <span class="hl-s">"SHIPPED"</span>, <span class="hl-s">"REFUNDED"</span>],
     tool_context: ToolContext,
 ) -> dict:
-    """Fetch the authenticated caller's orders filtered by status."""
-    # 1. Read verified user_id locked into ADK session state by the HTTP/PubSub entrypoint:
-    verified_uid = tool_context.state.get("user:id")
-    if not verified_uid:
-        raise PermissionError("Missing verified user:id in session state")
+    <span class="hl-s">"""Fetch the authenticated caller's orders filtered by status."""</span>
+    <span class="hl-c"># 1. Read verified user_id locked into ADK session state by the HTTP/PubSub entrypoint:</span>
+    verified_uid = tool_context.state.get(<span class="hl-s">"user:id"</span>)
+    <span class="hl-k">if</span> <span class="hl-k">not</span> verified_uid:
+        <span class="hl-k">raise</span> PermissionError(<span class="hl-s">"Missing verified user:id in session state"</span>)
 
-    # 2. Borrow a pooled connection inside a transaction (BEGIN ... COMMIT):
-    with db_engine.begin() as conn:
-        # 3. Stamp verified_uid onto THIS transaction only (is_local=true -> SET LOCAL):
+    <span class="hl-c"># 2. Borrow a pooled connection inside a transaction (BEGIN ... COMMIT):</span>
+    <span class="hl-k">with</span> db_engine.begin() <span class="hl-k">as</span> conn:
+        <span class="hl-c"># 3. Stamp verified_uid onto THIS transaction only (is_local=true -> SET LOCAL):</span>
         conn.execute(
-            text("SELECT set_config('app.current_user_id', :uid, true)"),
-            {"uid": verified_uid},
+            text(<span class="hl-s">"SELECT set_config('app.current_user_id', :uid, true)"</span>),
+            {<span class="hl-s">"uid"</span>: verified_uid},
         )
-        # 4. Query the security_invoker view; Postgres FORCE RLS also enforces user_id match!
+        <span class="hl-c"># 4. Query the security_invoker view; Postgres FORCE RLS also enforces user_id match!</span>
         rows = conn.execute(
-            text("""
+            text(<span class="hl-s">"""
                 SELECT order_id, status, total, contact_phone_masked, updated_at
                 FROM sales.agent_orders_v
                 WHERE status = :st
                 ORDER BY updated_at DESC LIMIT 50
-            """),
-            {"st": status},
+            """</span>),
+            {<span class="hl-s">"st"</span>: status},
         ).mappings().all()
-    # <-- Transaction ends here; app.current_user_id is wiped before returning to the pool!
-    return {"orders": [dict(r) for r in rows]}
+    <span class="hl-c"># <-- Transaction ends here; app.current_user_id is wiped before returning to the pool!</span>
+    <span class="hl-k">return</span> {<span class="hl-s">"orders"</span>: [dict(r) <span class="hl-k">for</span> r <span class="hl-k">in</span> rows]}
 
 orders_agent = Agent(
-    name="orders_agent",
-    model="gemini-3.8-flash",
-    mode="single_turn",
+    name=<span class="hl-s">"orders_agent"</span>,
+    model=<span class="hl-s">"gemini-3.8-flash"</span>,
+    mode=<span class="hl-s">"single_turn"</span>,
     generate_content_config=types.GenerateContentConfig(
-        thinking_config=types.ThinkingConfig(thinking_level="LOW")
+        thinking_config=types.ThinkingConfig(thinking_level=<span class="hl-s">"LOW"</span>)
     ),
     tools=[get_my_orders],
 )</pre>

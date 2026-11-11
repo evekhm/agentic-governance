@@ -613,7 +613,6 @@
     <span>Agentic Governance Series · Episode 1</span>
   </div>
   <div class="navlinks">
-    <a href="#part-00">Intro</a>
     <a href="#part-01">Prototype</a>
     <a href="#part-02">Threats &amp; Layers</a>
     <a href="#part-02b">Reference Architecture</a>
@@ -636,35 +635,13 @@
 
 <main class="app">
 
-  <!-- ==================== PART 01: INTRODUCTION & INITIAL DIAGRAM ==================== -->
-  <section class="sheet" id="part-00">
-    <div class="sheet-h">
-      <div>
-        <span class="sec-badge">Agentic Governance Series · Episode 01</span>
-        <h1>Securing the Agent-to-Database Connection</h1>
-      </div>
-    </div>
-    <div class="sheet-b">
-      <div class="post-prose">
-        <p>
-          I decided to start a series dedicated to <strong>Agentic Governance</strong> to help engineers and architects fit all the scattered pieces of this puzzle into a single, structured picture. My goal is to make it clear at the top level what kinds of <strong>threats</strong> are possible when we connect AI agents to real systems, which <strong>guardrails</strong> prevent them, and how all of those controls fit together end-to-end.
-        </p>
-        <p>
-          This series is not meant to promise a silver-bullet, 100% foolproof security guarantee—no architecture can. Instead, it is meant to serve as a practical foundation: walking through the known failure modes of agentic systems and bringing the architectural defenses together into one coherent mental model.
-        </p>
-        <p>
-          When I began researching Agentic Governance, I struggled to find material that explained the end-to-end mechanics in a clear, approachable way. So I started compiling my own architectural notes and diagrams, and I will be sharing them across this series as I work through each topic.
-        </p>
-      </div>
-    </div>
-  </section>
-
   <!-- ==================== PART 01: INITIAL DIAGRAM ==================== -->
   <section class="sheet" id="part-01">
     <div class="sheet-h">
       <div>
-        <span class="sec-badge">Initial Architecture · Functional Prototype &amp; Risk Preconditions</span>
-        <h2>Connecting an AI Agent to an Internal Customer Database</h2>
+        <span class="sec-badge">Agentic Governance Series · Episode 01 · Functional Prototype &amp; Risk Preconditions</span>
+        <h1>Securing the Agent-to-Database Connection</h1>
+        <p>Initial bottom-up architecture: connecting an AI agent to an internal customer database and mapping what can go wrong.</p>
       </div>
     </div>
     <div class="sheet-b">
@@ -1776,7 +1753,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           #fig-hero .xbg { fill: var(--panel); stroke: var(--stop); stroke-width: 1.5; }
           #fig-hero .xm { stroke: var(--stop); stroke-width: 2.6; stroke-linecap: round; }
           #fig-hero .t-bad { fill: var(--stop); font-weight: 600; font-size: 12.5px; }
-          #fig-hero .t-tls { fill: var(--good); font: 600 11px/1 var(--mono); }
+          #fig-hero .t-tls { fill: var(--good); font: 600 10px/1 var(--mono); }
           #fig-hero .bd { fill: var(--ink); }
           #fig-hero .bd-t { fill: #ffffff !important; font-family: var(--mono); font-size: 10.5px; font-weight: 700; text-anchor: middle; }
           #fig-hero .l-dot { fill: var(--good); stroke: var(--panel); stroke-width: 1.4; }
@@ -2047,7 +2024,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
           <text x="442" y="419" class="t-bad" text-anchor="end">No direct route from the agent to the database</text>
 
           <!-- TLS label -->
-          <text x="478" y="402" class="t-tls">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
+          <text x="472" y="402" class="t-tls">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
           <span>Figure 4 — The reference architecture on Google Cloud, mapping the enforcement gates, data perimeters, and defense layers (<code>L1</code>–<code>L9</code>) of Figure 3 to managed services.</span>
@@ -2378,7 +2355,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
             <circle cx="460" cy="414" r="10" style="fill:var(--panel);stroke:var(--stop);stroke-width:1.5"/>
             <text x="442" y="419" style="fill:var(--stop);font-weight:600;font-size:12.5px" text-anchor="end">No direct route from the agent to the database</text>
           </g>
-          <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:0.25">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
+          <text x="472" y="402" style="fill:var(--good);font:600 10px/1 var(--mono);opacity:0.25">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
           <span>Figure 6 — Progressive Build of Figure 4 (Step 1 of 11): MCP Toolbox added in the Data Project.</span>
@@ -2659,7 +2636,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
             <circle cx="460" cy="414" r="10" style="fill:var(--panel);stroke:var(--stop);stroke-width:1.5"/>
             <text x="442" y="419" style="fill:var(--stop);font-weight:600;font-size:12.5px" text-anchor="end">No direct route from the agent to the database</text>
           </g>
-          <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:0.25">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
+          <text x="472" y="402" style="fill:var(--good);font:600 10px/1 var(--mono);opacity:0.25">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
           <span>Figure 8 — Progressive Build of Figure 4 (Step 2 of 11): Agent identity · SPIFFE added inside ADK 2.x agent.</span>
@@ -2964,7 +2941,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
             <circle cx="460" cy="414" r="10" style="fill:var(--panel);stroke:var(--stop);stroke-width:1.5"/>
             <text x="442" y="419" style="fill:var(--stop);font-weight:600;font-size:12.5px" text-anchor="end">No direct route from the agent to the database</text>
           </g>
-          <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:0.25">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
+          <text x="472" y="402" style="fill:var(--good);font:600 10px/1 var(--mono);opacity:0.25">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
           <span>Figure 10 — Progressive Build of Figure 4 (Step 3 of 11): Database engine controls (Row- & Column-Level Security + stored-procedure writes) added inside Database.</span>
@@ -3251,7 +3228,7 @@ Security team sees toolbox-sa ran <span class="hl-k">SELECT</span> on orders at 
             <circle cx="460" cy="414" r="10" style="fill:var(--panel);stroke:var(--stop);stroke-width:1.5"/>
             <text x="442" y="419" style="fill:var(--stop);font-weight:600;font-size:12.5px" text-anchor="end">No direct route from the agent to the database</text>
           </g>
-          <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
+          <text x="472" y="402" style="fill:var(--good);font:600 10px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
           <span>Figure 11 — Progressive Build of Figure 4 (Step 4 of 11): Corporate sign-in, Who is calling (mTLS + DPoP), Auth Manager / IAM STS, and OOB Session (SessionService) added.</span>
@@ -3637,7 +3614,7 @@ orders_mcp_toolset = McpToolset(
             <circle cx="460" cy="414" r="10" style="fill:var(--panel);stroke:var(--stop);stroke-width:1.5"/>
             <text x="442" y="419" style="fill:var(--stop);font-weight:600;font-size:12.5px" text-anchor="end">No direct route from the agent to the database</text>
           </g>
-          <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
+          <text x="472" y="402" style="fill:var(--good);font:600 10px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
           <span>Figure 14 — Progressive Build of Figure 4 (Step 5 of 11): Ingress Gate (Who may invoke, Rate Quotas) and Browser Guard added.</span>
@@ -3864,7 +3841,7 @@ orders_mcp_toolset = McpToolset(
             <circle cx="460" cy="414" r="10" style="fill:var(--panel);stroke:var(--stop);stroke-width:1.5"/>
             <text x="442" y="419" style="fill:var(--stop);font-weight:600;font-size:12.5px" text-anchor="end">No direct route from the agent to the database</text>
           </g>
-          <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
+          <text x="472" y="402" style="fill:var(--good);font:600 10px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
           <span>Figure 15 — Progressive Build of Figure 4 (Step 6 of 11): Egress gateway (default deny, May it call this), Vertex AI Agent Registry, Gemini on Vertex AI, and blocked direct DB route added.</span>
@@ -4238,7 +4215,7 @@ orders_mcp_toolset = McpToolset(
             <circle cx="460" cy="414" r="10" style="fill:var(--panel);stroke:var(--stop);stroke-width:1.5"/>
             <text x="442" y="419" style="fill:var(--stop);font-weight:600;font-size:12.5px" text-anchor="end">No direct route from the agent to the database</text>
           </g>
-          <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
+          <text x="472" y="402" style="fill:var(--good);font:600 10px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
           <span>Figure 17 — Progressive Build of Figure 4 (Step 7 of 11): Model Armor (prompt and reply) in Ingress gateway and Model Armor (MCP and A2A) in Egress gateway added.</span>
@@ -4545,7 +4522,7 @@ B64_RUN_RE = re.compile(<span class="hl-s">r</span><span class="hl-s">"</span><s
             <circle cx="460" cy="414" r="10" style="fill:var(--panel);stroke:var(--stop);stroke-width:1.5"/>
             <text x="442" y="419" style="fill:var(--stop);font-weight:600;font-size:12.5px" text-anchor="end">No direct route from the agent to the database</text>
           </g>
-          <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
+          <text x="472" y="402" style="fill:var(--good);font:600 10px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
           <span>Figure 19 — Progressive Build of Figure 4 (Step 8 of 11): YOUR VPC, 3. DATABASE TIER, PSC Network Attachment (10.10.9.2/28), and PSC Endpoint &amp; DNS added.</span>
@@ -4896,7 +4873,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
             <circle cx="460" cy="414" r="10" style="fill:var(--panel);stroke:var(--stop);stroke-width:1.5"/>
             <text x="442" y="419" style="fill:var(--stop);font-weight:600;font-size:12.5px" text-anchor="end">No direct route from the agent to the database</text>
           </g>
-          <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
+          <text x="472" y="402" style="fill:var(--good);font:600 10px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
           <span>Figure 21 — Progressive Build of Figure 4 (Step 9 of 11): VPC SERVICE CONTROLS PERIMETER · DATA PROJECT added around YOUR VPC and 3. DATABASE TIER.</span>
@@ -5131,7 +5108,7 @@ gcloud dns record-sets create <span class="hl-s">"*.run.app."</span> <span class
             <circle cx="460" cy="414" r="10" style="fill:var(--panel);stroke:var(--stop);stroke-width:1.5"/>
             <text x="442" y="419" style="fill:var(--stop);font-weight:600;font-size:12.5px" text-anchor="end">No direct route from the agent to the database</text>
           </g>
-          <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
+          <text x="472" y="402" style="fill:var(--good);font:600 10px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
           <span>Figure 22 — Progressive Build of Figure 4 (Step 10 of 11): Workflow &amp; Quarantine and Code Sandbox completed inside 2. AI Agent · ADK 2.x.</span>
@@ -5524,10 +5501,10 @@ privileged_order_responder = LlmAgent(
             <circle cx="460" cy="414" r="10" style="fill:var(--panel);stroke:var(--stop);stroke-width:1.5"/>
             <text x="442" y="419" style="fill:var(--stop);font-weight:600;font-size:12.5px" text-anchor="end">No direct route from the agent to the database</text>
           </g>
-          <text x="478" y="402" style="fill:var(--good);font:600 11px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
+          <text x="472" y="402" style="fill:var(--good);font:600 10px/1 var(--mono);opacity:1.0">agent → gateway: mTLS, SPIFFE cert + DPoP</text>
         </svg>
         <div class="fig-caption">
-          <span>Figure 24 — Progressive Build of Figure 4 (Step 11 of 11 — Complete!): Audit Logs · Trace · SCC and the four Control Plane boxes added.</span>
+          <span>Figure 24 — Progressive Build of Figure 4 (Step 11 of 11 — Complete!): Audit Logs · BQ Analytics · SCC and the four Control Plane boxes added.</span>
           <div class="legend-items">
             <span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good);border-width:2.5px"></i> <b>Added in This Stage</b></span>
             <span><i class="swatch-dot" style="background:var(--panel);border-color:var(--good)"></i> Added in Earlier Stages</span>
@@ -6064,6 +6041,11 @@ Authorization: Bearer &lt;Token_obo_or_KMS_Context_JWT&gt;
         <div class="nine-q-head">Companion Deep-Dive Reference Pages in This Repository (<code>ref/</code>) &amp; Series Roadmap</div>
         <div class="nine-q-grid">
           <div class="nine-q-card">
+            <span class="lq-id">Reference Page 00 · Cloud-Agnostic Blueprint</span>
+            <b><a href="ref/agnostic-architecture.html" style="color:var(--cyan)">ref/agnostic-architecture.html</a></b>
+            <span>Complete 16-box reference model, 9 security boundaries, and Hops 1–9 wire contracts (vendor-neutral patterns).</span>
+          </div>
+          <div class="nine-q-card">
             <span class="lq-id">Reference Page 01 · Tool Server Options</span>
             <b><a href="ref/mcp-tool-server-options.html" style="color:var(--cyan)">ref/mcp-tool-server-options.html</a></b>
             <span>Managed Remote MCP vs. MCP Toolbox on Cloud Run vs. Custom MCP — full <code>tools.yaml</code> &amp; the <code>execute_sql</code> decision rule.</span>
@@ -6103,7 +6085,7 @@ Authorization: Bearer &lt;Token_obo_or_KMS_Context_JWT&gt;
             <b><a href="ref/owasp-mapping.html" style="color:var(--cyan)">ref/owasp-mapping.html</a></b>
             <span>Standalone 22-Row OWASP Agentic Top 10 (2026) &amp; OWASP LLM Top 10 (2025) Matrix.</span>
           </div>
-          <div class="nine-q-card">
+          <div class="nine-q-card" style="grid-column: 1 / -1;">
             <span class="lq-id">Upcoming Episodes · 02–05</span>
             <b>Series Roadmap</b>
             <span>Ep. 2: Multi-Agent (A2A) Token Hops · Ep. 3: Event-Driven &amp; Webhook Trust Chains · Ep. 4: Enterprise RAG &amp; Connector ACLs · Ep. 5: Fleet Governance &amp; FinOps Leases.</span>

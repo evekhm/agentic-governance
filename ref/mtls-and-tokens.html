@@ -327,6 +327,13 @@
     white-space: pre;
     color: #f1f5f9;
   }
+  .code-card pre .hl-c { color: #94a3b8; font-style: italic; }
+  .code-card pre .hl-k { color: #38bdf8; font-weight: 600; }
+  .code-card pre .hl-b { color: #c084fc; }
+  .code-card pre .hl-f { color: #fde047; font-weight: 600; }
+  .code-card pre .hl-s { color: #4ade80; }
+  .code-card pre .hl-n { color: #fb923c; }
+  .code-card pre .hl-v { color: #93c5fd; }
 
   @media print {
     .topbar { display: none; }
@@ -384,40 +391,40 @@
       </div>
       <div class="code-card">
         <div class="code-title">obo_token_exchange_and_verify.py — RFC 8693 Token Exchange &amp; Downstream MCP Verification</div>
-<pre>import requests
-from google.auth.transport import requests as google_requests
-from google.oauth2 import id_token
+<pre><span class="hl-k">import</span> requests
+<span class="hl-k">from</span> google.auth.transport <span class="hl-k">import</span> requests <span class="hl-k">as</span> google_requests
+<span class="hl-k">from</span> google.oauth2 <span class="hl-k">import</span> id_token
 
-STS_URL = "https://sts.googleapis.com/v1/token"
-EXPECTED_MCP_AUD = "https://orders-mcp-xyz-uc.a.run.app"
-ALLOWED_AGENT_ACTORS = {"spiffe://agents.global.org-123.system.id.goog/resources/aiplatform/projects/111/locations/us-central1/reasoningEngines/orders-agent"}
+STS_URL = <span class="hl-s">"https://sts.googleapis.com/v1/token"</span>
+EXPECTED_MCP_AUD = <span class="hl-s">"https://orders-mcp-xyz-uc.a.run.app"</span>
+ALLOWED_AGENT_ACTORS = {<span class="hl-s">"spiffe://agents.global.org-123.system.id.goog/resources/aiplatform/projects/111/locations/us-central1/reasoningEngines/orders-agent"</span>}
 
-def exchange_user_token_for_mcp_target(subject_jwt: str, target_aud: str, scope: str) -> str:
-    # Exchanges inbound T1 (aud=orders-agent) for downscoped 5-min T2 (aud=orders-mcp)
+<span class="hl-k">def</span> <span class="hl-f">exchange_user_token_for_mcp_target</span>(subject_jwt: str, target_aud: str, scope: str) -> str:
+    <span class="hl-c"># Exchanges inbound T1 (aud=orders-agent) for downscoped 5-min T2 (aud=orders-mcp)</span>
     resp = requests.post(
         STS_URL,
         json={
-            "grantType": "urn:ietf:params:oauth:grant-type:token-exchange",
-            "resource": target_aud,
-            "audience": target_aud,
-            "scope": scope,
-            "requestedTokenType": "urn:ietf:params:oauth:token-type:access_token",
-            "subjectToken": subject_jwt,
-            "subjectTokenType": "urn:ietf:params:oauth:token-type:jwt",
+            <span class="hl-s">"grantType"</span>: <span class="hl-s">"urn:ietf:params:oauth:grant-type:token-exchange"</span>,
+            <span class="hl-s">"resource"</span>: target_aud,
+            <span class="hl-s">"audience"</span>: target_aud,
+            <span class="hl-s">"scope"</span>: scope,
+            <span class="hl-s">"requestedTokenType"</span>: <span class="hl-s">"urn:ietf:params:oauth:token-type:access_token"</span>,
+            <span class="hl-s">"subjectToken"</span>: subject_jwt,
+            <span class="hl-s">"subjectTokenType"</span>: <span class="hl-s">"urn:ietf:params:oauth:token-type:jwt"</span>,
         },
-        timeout=(2, 5),
+        timeout=(<span class="hl-n">2</span>, <span class="hl-n">5</span>),
     )
     resp.raise_for_status()
-    return resp.json()["access_token"]
+    <span class="hl-k">return</span> resp.json()[<span class="hl-s">"access_token"</span>]
 
-def verify_obo_token_on_mcp_server(auth_header: str) -> dict:
-    # Verifies T2 signature, expiry, exact audience (rejects T1!), and acting agent claim
-    raw_jwt = auth_header.removeprefix("Bearer ").strip()
+<span class="hl-k">def</span> <span class="hl-f">verify_obo_token_on_mcp_server</span>(auth_header: str) -> dict:
+    <span class="hl-c"># Verifies T2 signature, expiry, exact audience (rejects T1!), and acting agent claim</span>
+    raw_jwt = auth_header.removeprefix(<span class="hl-s">"Bearer "</span>).strip()
     claims = id_token.verify_oauth2_token(raw_jwt, google_requests.Request(), audience=EXPECTED_MCP_AUD)
-    actor = claims.get("act", {}).get("sub")
-    if actor not in ALLOWED_AGENT_ACTORS:
-        raise PermissionError(f"Unauthorized acting agent: {actor}")
-    return {"user_sub": claims["sub"], "user_email": claims["email"], "actor": actor}</pre>
+    actor = claims.get(<span class="hl-s">"act"</span>, {}).get(<span class="hl-s">"sub"</span>)
+    <span class="hl-k">if</span> actor <span class="hl-k">not</span> <span class="hl-k">in</span> ALLOWED_AGENT_ACTORS:
+        <span class="hl-k">raise</span> PermissionError(f<span class="hl-s">"Unauthorized acting agent: {actor}"</span>)
+    <span class="hl-k">return</span> {<span class="hl-s">"user_sub"</span>: claims[<span class="hl-s">"sub"</span>], <span class="hl-s">"user_email"</span>: claims[<span class="hl-s">"email"</span>], <span class="hl-s">"actor"</span>: actor}</pre>
       </div>
     
     </div>

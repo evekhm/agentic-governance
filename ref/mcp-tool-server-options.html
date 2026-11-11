@@ -295,6 +295,13 @@
   .code-card { background: #0f172a; color: #f1f5f9; border-radius: 10px; padding: 14px 16px; margin: 12px 0 18px; overflow-x: auto; }
   .code-card .code-title { font-family: var(--mono); font-size: 11px; color: #94a3b8; margin-bottom: 8px; letter-spacing: 0.06em; }
   .code-card pre { margin: 0; font-family: var(--mono); font-size: 12.5px; line-height: 1.55; white-space: pre; }
+  .code-card pre .hl-c { color: #94a3b8; font-style: italic; }
+  .code-card pre .hl-k { color: #38bdf8; font-weight: 600; }
+  .code-card pre .hl-b { color: #c084fc; }
+  .code-card pre .hl-f { color: #fde047; font-weight: 600; }
+  .code-card pre .hl-s { color: #4ade80; }
+  .code-card pre .hl-n { color: #fb923c; }
+  .code-card pre .hl-v { color: #93c5fd; }
 
   @media print {
     table { font-size: 11px; }
@@ -394,7 +401,7 @@
 
           <!-- Hop labels + threats closed callouts -->
           <text class="t-sub" x="30" y="246">① user prompt   ② named tool call, caller token out-of-band   ③ fixed SQL, server identity</text>
-          <text class="t-mono" x="30" y="270" style="fill:var(--good)">Closes: T1 (no model-written SQL) · T4 (identity bound server-side) · T13 (LIMIT, timeouts)</text>
+          <text class="t-mono" x="30" y="270" style="fill:var(--good)">Closes: T1 (no model-written SQL) · T4 (identity bound server-side) · LLM10 (LIMIT, timeouts)</text>
           <text class="t-mono" x="30" y="288" style="fill:var(--stop)">Opens: T5 (a second hop now carries a token) · Still open: T3 (RLS/CLS must live in the database)</text>
 
           <!-- Three option chips -->
@@ -442,45 +449,45 @@
         </p>
         <div class="code-card">
           <div class="code-title">tools.yaml — the controls that matter, shown together</div>
-<pre>sources:
-  orders-db:
-    kind: cloud-sql-postgres
-    project: app-prod
-    region: us-central1
-    instance: orders-primary
-    database: orders
-    ipType: private            # no public IP path
-    user: toolbox-sa@app-prod.iam   # IAM DB auth, no password
+<pre><span class="hl-k">sources</span>:
+  <span class="hl-k">orders-db</span>:
+    <span class="hl-k">kind</span>: cloud-sql-postgres
+    <span class="hl-k">project</span>: app-prod
+    <span class="hl-k">region</span>: us-central1
+    <span class="hl-k">instance</span>: orders-primary
+    <span class="hl-k">database</span>: orders
+    <span class="hl-k">ipType</span>: private            <span class="hl-c"># no public IP path</span>
+    <span class="hl-k">user</span>: toolbox-sa@app-prod.iam   <span class="hl-c"># IAM DB auth, no password</span>
 
-authServices:
-  app_jwt:
-    kind: google
-    clientId: 1234567890-abc.apps.googleusercontent.com   # audience the token must carry
+<span class="hl-k">authServices</span>:
+  <span class="hl-k">app_jwt</span>:
+    <span class="hl-k">kind</span>: google
+    <span class="hl-k">clientId</span>: 1234567890-abc.apps.googleusercontent.com   <span class="hl-c"># audience the token must carry</span>
 
-tools:
-  get_order:
-    kind: postgres-sql
-    source: orders-db
-    description: Return the status of one order that belongs to the signed-in customer.
-    parameters:
-      - name: owner_email
-        type: string
-        authServices:            # filled from the verified token, hidden from the model
-          - name: app_jwt
-            field: email
-      - name: order_id
-        type: string
-    statement: |
-      SELECT order_id, status, shipped_at
-      FROM app.orders_v            -- a view without PII columns
-      WHERE owner_email = $1 AND order_id = $2
-      LIMIT 1;
+<span class="hl-k">tools</span>:
+  <span class="hl-k">get_order</span>:
+    <span class="hl-k">kind</span>: postgres-sql
+    <span class="hl-k">source</span>: orders-db
+    <span class="hl-k">description</span>: Return the status of one order that belongs to the signed-in customer.
+    <span class="hl-k">parameters</span>:
+      - <span class="hl-k">name</span>: owner_email
+        <span class="hl-k">type</span>: string
+        <span class="hl-k">authServices</span>:            <span class="hl-c"># filled from the verified token, hidden from the model</span>
+          - <span class="hl-k">name</span>: app_jwt
+            <span class="hl-k">field</span>: email
+      - <span class="hl-k">name</span>: order_id
+        <span class="hl-k">type</span>: string
+    <span class="hl-k">statement</span>: <span class="hl-b">|</span>
+      <span class="hl-k">SELECT</span> order_id, status, shipped_at
+      <span class="hl-k">FROM</span> app.orders_v            -- a view without PII columns
+      <span class="hl-k">WHERE</span> owner_email = <span class="hl-n">$1</span> <span class="hl-k">AND</span> order_id = <span class="hl-n">$2</span>
+      <span class="hl-k">LIMIT</span> <span class="hl-n">1</span>;
 
-toolsets:
-  customer_support: [get_order]   # the agent is given this set, nothing else</pre>
+<span class="hl-k">toolsets</span>:
+  <span class="hl-k">customer_support</span>: [get_order]   <span class="hl-c"># the agent is given this set, nothing else</span></pre>
         </div>
         <p>
-          With this configuration the agent sees one tool, <code>get_order(order_id)</code>. Its SQL cannot be changed from the prompt (closes <code>T1</code>), the owner is bound server-side from the token (closes <code>T4</code>), the view hides PII columns (part of <code>T2</code>), and the <code>LIMIT</code> bounds the result size (<code>T13</code>). What Toolbox does not do by itself is make the database enforce the filter: the <code>WHERE owner_email = $1</code> is still a clause in a statement, not an engine policy. If a second tool is added later without that clause, the protection is gone. That is why Part 06 moves the filter into the database with Row-Level Security, keyed to the same bound identity.
+          With this configuration the agent sees one tool, <code>get_order(order_id)</code>. Its SQL cannot be changed from the prompt (closes <code>T1</code>), the owner is bound server-side from the token (closes <code>T4</code>), the view hides PII columns (part of <code>T2</code>), and the <code>LIMIT</code> bounds the result size (<code>LLM10</code>). What Toolbox does not do by itself is make the database enforce the filter: the <code>WHERE owner_email = $1</code> is still a clause in a statement, not an engine policy. If a second tool is added later without that clause, the protection is gone. That is why Part 06 moves the filter into the database with Row-Level Security, keyed to the same bound identity.
         </p>
 
         <h3>Option C · Google-Managed MCP Endpoints</h3>
@@ -526,15 +533,15 @@ toolsets:
             </tr>
             <tr>
               <td><b>Threats closed by the layer itself</b></td>
-              <td><span class="b-pill t">T1</span> <span class="b-pill t">T4</span> <span class="b-pill t">T13</span> — only if implemented</td>
-              <td><span class="b-pill t">T1</span> <span class="b-pill t">T4</span> <span class="b-pill t">T13</span> by configuration</td>
+              <td><span class="b-pill t">T1</span> <span class="b-pill t">T4</span> <span class="b-pill llm">LLM10</span> — only if implemented</td>
+              <td><span class="b-pill t">T1</span> <span class="b-pill t">T4</span> <span class="b-pill llm">LLM10</span> by configuration</td>
               <td>None directly; relies on <span class="b-pill t">T3</span> controls in the DB</td>
             </tr>
             <tr>
               <td><b>Threats that remain</b></td>
               <td><span class="b-pill t">T2</span> <span class="b-pill t">T3</span> <span class="b-pill t">T5</span> <span class="b-pill t">T6</span> <span class="b-pill t">T7</span> <span class="b-pill t">T8</span></td>
               <td><span class="b-pill t">T2</span> <span class="b-pill t">T3</span> <span class="b-pill t">T5</span> <span class="b-pill t">T6</span> <span class="b-pill t">T7</span> <span class="b-pill t">T8</span></td>
-              <td><span class="b-pill t">T1</span> <span class="b-pill t">T2</span> <span class="b-pill t">T3</span> <span class="b-pill t">T5</span> <span class="b-pill t">T6</span> <span class="b-pill t">T7</span> <span class="b-pill t">T8</span> <span class="b-pill t">T13</span></td>
+              <td><span class="b-pill t">T1</span> <span class="b-pill t">T2</span> <span class="b-pill t">T3</span> <span class="b-pill t">T5</span> <span class="b-pill t">T6</span> <span class="b-pill t">T7</span> <span class="b-pill t">T8</span> <span class="b-pill llm">LLM10</span></td>
             </tr>
             <tr>
               <td><b>Best fit</b></td>

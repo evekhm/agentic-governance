@@ -3,3 +3,4 @@
 *.iml
 __pycache__/
 *.pyc
+ep01_securing_agent_to_database_notes.md
