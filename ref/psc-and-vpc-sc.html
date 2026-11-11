@@ -335,6 +335,7 @@
     table { font-size: 11px; }
     .code-pre { font-size: 10px; }
   }
+  main a:not(.b-pill) { color: var(--cyan); }
 </style>
 </head>
 <body>
@@ -375,7 +376,7 @@
         <table>
           <thead><tr><th>PSC Construct</th><th>Direction</th><th>Subnet / IP</th><th>Role in the Architecture</th></tr></thead>
           <tbody>
-            <tr><td><b>1. PSC Network Attachment (<code>PSC interface</code>)</b></td><td>Google-Managed Agent / Egress Gateway → Your VPC</td><td><code>10.10.9.0/28</code> (e.g. <code>10.10.9.2</code>)</td><td>Drops a virtual network card into your VPC so outbound traffic from the managed Egress Gateway enters your VPC with a predictable local source IP.</td></tr>
+            <tr><td><b>1. PSC Network Attachment (<code>PSC interface</code>)</b></td><td>Google-Managed Agent / Egress Gateway → Your VPC</td><td><code>10.10.9.0/26</code> (e.g. <code>10.10.9.2</code>)</td><td>Drops a virtual network card into your VPC so outbound traffic from the managed Egress Gateway enters your VPC with a predictable local source IP.</td></tr>
             <tr><td><b>2. PSC Endpoint for Google APIs (<code>vpc-sc</code> bundle)</b></td><td>Your VPC → Internal Cloud Run / BigQuery / Spanner</td><td><code>10.255.0.10</code> + Private Cloud DNS (<code>*.run.app</code>, <code>*.googleapis.com</code>)</td><td>Routes calls from the PSC interface to internal Cloud Run (<code>MCP Toolbox</code>) and Google APIs strictly inside the VPC-SC perimeter without public routing.</td></tr>
             <tr><td><b>3. PSC Endpoint for Database Producer</b></td><td>Your VPC (<code>tools-subnet</code>) → Database Service Attachment</td><td><code>10.10.2.50:5432</code></td><td>Connects <code>MCP Toolbox</code> to the managed database instance over a one-way Andromeda NAT tunnel with zero public IP and zero VPC peering.</td></tr>
           </tbody>

@@ -10,18 +10,8 @@ This series is not meant to promise a silver-bullet, 100% foolproof security gua
 
 When I began researching Agentic Governance, I struggled to find material that explained the end-to-end mechanics in a clear, approachable way. So I started compiling my own architectural notes and diagrams, and I will be sharing them across this series as I work through each topic.
 
-## Episode 01 — Securing the Agent-to-Database Connection
+## Episodes
 
-- **Main Episode 01 Post:** [`ep01_securing_agent_to_database.html`](ep01_securing_agent_to_database.html) ([PDF](ep01_securing_agent_to_database.pdf))
+### [Episode 01 — Securing the Agent-to-Database Connection](https://evekhm.github.io/agentic-governance/ep01_securing_agent_to_database.html) ([PDF](ep01_securing_agent_to_database.pdf))
 
-### Companion Reference Deep Dives (`ref/`)
-
-1. **Platform-Agnostic Zero-Trust Reference Architecture:** [`ref/agnostic-architecture.html`](ref/agnostic-architecture.html) ([PDF](ref/agnostic-architecture.pdf))
-2. **MCP Tool Server Options (`FastMCP` vs. `MCP Toolbox` vs. Managed MCP):** [`ref/mcp-tool-server-options.html`](ref/mcp-tool-server-options.html) ([PDF](ref/mcp-tool-server-options.pdf))
-3. **Row- & Column-Level Security (BigQuery Stateless HTTP vs. Cloud SQL Pooled TCP):** [`ref/rls-cls.html`](ref/rls-cls.html) ([PDF](ref/rls-cls.pdf))
-4. **mTLS, SPIFFE SVIDs, DPoP & OAuth 2.0 RFC 8693 OBO Token Exchange:** [`ref/mtls-and-tokens.html`](ref/mtls-and-tokens.html) ([PDF](ref/mtls-and-tokens.pdf))
-5. **Envoy Proxy at Ingress & Egress (`ext_authz` + `ext_proc`):** [`ref/envoy-proxy.html`](ref/envoy-proxy.html) ([PDF](ref/envoy-proxy.pdf))
-6. **Model Armor Inline Screening & Cloud SDP Deterministic Tokenization:** [`ref/model-armor.html`](ref/model-armor.html) ([PDF](ref/model-armor.pdf))
-7. **Private Service Connect (3 PSC Doors) & VPC Service Controls:** [`ref/psc-and-vpc-sc.html`](ref/psc-and-vpc-sc.html) ([PDF](ref/psc-and-vpc-sc.pdf))
-8. **Immutable Audit Logging, Distributed Trace (`W3C traceparent`) & Kill Switch:** [`ref/audit-and-containment.html`](ref/audit-and-containment.html) ([PDF](ref/audit-and-containment.pdf))
-9. **Complete 22-Row OWASP Top 10 Mapping (`ASI01–ASI10`, `LLM01–LLM10`, `API1:2023`, `A03:2021`):** [`ref/owasp-mapping.html`](ref/owasp-mapping.html) ([PDF](ref/owasp-mapping.pdf))
+Walks bottom-up from a naive three-box prototype (user chat UI, LLM agent, and internal customer database) to a production Zero-Trust architecture. Maps eight threat vectors (`T1`–`T8`) across the wire and layers nine defense-in-depth controls (`L1`–`L9`)—including parameterized MCP tool boundaries, SPIFFE workload identity and RFC 8693 OBO token exchange, database Row/Column-Level Security, Envoy ingress/egress gateways, inline Model Armor and Cloud SDP tokenization, Private Service Connect and VPC Service Controls, tool-less Quarantine LLMs with HITL write gates, and end-to-end W3C trace auditing with kill-switch containment—aligned to the OWASP Agentic Top 10 (2026) and OWASP LLM Top 10 (2025).
