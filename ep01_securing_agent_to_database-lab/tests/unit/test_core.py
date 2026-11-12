@@ -11,7 +11,7 @@ import jsonschema
 from attacks.export_traces import assert_no_leftover_secrets, redact_trace_event
 from attacks.mock_hijacked_llm import MockHijackedLlm
 from attacks.payloads import ATTACK_SCENARIOS
-from services.agent.app import build_trace_event, new_traceparent
+from services.agent.app import build_trace_event, new_traceparent, write_session_state
 from services.agent.callbacks import (
     normalize_for_screening,
     screen_tool_output_fail_closed,
@@ -176,3 +176,15 @@ async def test_mock_hijacked_llm_produces_hostile_calls() -> None:
     responses = [r async for r in llm.generate_content_async(LlmRequest())]
     assert responses[0].content.parts[0].function_call.name == "execute_sql"
     assert len(ATTACK_SCENARIOS) == 8
+
+
+def test_single_writer_session_state_blocks_non_control_plane() -> None:
+    state: dict = {}
+    write_session_state(state, "auth:subject_token", "tok-1", writer="control_plane")
+    write_session_state(state, "temp:tax_ref_ORD-101", {"ok": True}, writer="tool")
+    assert state["auth:subject_token"] == "tok-1"
+
+    with pytest.raises(PermissionError, match="Single-writer violation"):
+        write_session_state(state, "auth:subject_token", "spoofed", writer="tool")
+    with pytest.raises(PermissionError, match="Single-writer violation"):
+        write_session_state(state, "pending_write", {"amount_usd": 9999}, writer="llm")

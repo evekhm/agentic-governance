@@ -14,6 +14,26 @@ def new_traceparent() -> tuple[str, str]:
     return trace_id, f"00-{trace_id}-{span_id}-01"
 
 
+CONTROL_PLANE_STATE_PREFIXES = ("auth:", "user:", "trace:")
+CONTROL_PLANE_STATE_KEYS = frozenset({"pending_write"})
+
+
+def write_session_state(
+    state: dict[str, Any],
+    key: str,
+    value: Any,
+    *,
+    writer: str,
+) -> None:
+    """Enforces single-writer ownership: only control_plane may write auth/user/trace/pending_write."""
+    is_protected = key in CONTROL_PLANE_STATE_KEYS or key.startswith(CONTROL_PLANE_STATE_PREFIXES)
+    if is_protected and writer != "control_plane":
+        raise PermissionError(
+            f"Single-writer violation: writer={writer!r} cannot mutate control-plane key {key!r}"
+        )
+    state[key] = value
+
+
 def build_trace_event(
     *,
     trace_id: str,

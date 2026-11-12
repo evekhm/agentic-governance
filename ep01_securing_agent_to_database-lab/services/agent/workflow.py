@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from google.adk import Workflow
 from google.adk.agents import LlmAgent
 from google.genai.types import ThinkingConfig
+from services.agent.app import write_session_state
 
 
 class RefundProposal(BaseModel):
@@ -34,13 +35,14 @@ def build_hitl_card(state: dict, proposal: RefundProposal) -> dict:
     if not verified_caller:
         raise PermissionError("Missing verified caller identity in server-side SessionService")
     idem_key = str(uuid.uuid5(uuid.NAMESPACE_URL, f"{verified_caller}:{proposal.order_id}:refund"))
-    state["pending_write"] = {
+    pending_payload = {
         "verified_caller": verified_caller,
         "order_id": proposal.order_id,
         "amount_usd": proposal.amount_usd,
         "reason_code": proposal.reason_code,
         "idempotency_key": idem_key,
     }
+    write_session_state(state, "pending_write", pending_payload, writer="control_plane")
     return state["pending_write"]
 
 
