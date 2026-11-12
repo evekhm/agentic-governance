@@ -5,7 +5,7 @@
 <meta name="author" content="Eva Khmelinskaya">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agentic Governance — Threat Models and Reference Architectures for AI Agents</title>
-<meta name="description" content="A series on securing AI agents that read and change production data. Episode 01 takes an agent-to-database connection from a three-box prototype to a zero-trust reference architecture, one control at a time.">
+<meta name="description" content="A series on securing AI agents that read and change production data. Episode 01 follows one request across an agent-to-database connection, from the top-level picture down to the low-level details, and builds a zero-trust reference architecture, one control at a time.">
 <meta property="og:title" content="Agentic Governance">
 <meta property="og:description" content="Threat models and reference architectures for AI agents that read and change production data, built up one control at a time.">
 <meta property="og:type" content="website">
@@ -227,7 +227,7 @@
           <p class="ep-meta">November 2026 · about 90 minutes in full</p>
 
           <p class="ep-summary">
-            A customer asks an agent, “What is the status of my order #104?” The first design that answers the question has three boxes: a chat interface, an agent and a database. This episode shows how that design leaks other customers’ data and performs writes nobody approved, then adds one control per stage until it becomes a zero-trust reference architecture. Every stage states which threats it closes and which remain open.
+            This episode follows a single request: a customer asks an agent, “What is the status of my order #104?” It starts from the top-level picture of a user, an agent and a database, and drills down hop by hop to the low-level details: which token travels on each call, which SQL runs, and whose identity the database sees. At each level it shows what can go wrong and which guardrail prevents it, so that the detailed architecture at the end still reads as one picture.
           </p>
 
           <dl class="facts">
@@ -263,8 +263,7 @@
       <section class="planned" aria-labelledby="planned-label">
         <p class="section-label" id="planned-label">Planned</p>
         <ul>
-          <li><span>Episode 02</span><div><b>Identity across multi-agent systems.</b> Delegation from one agent to another, and tokens that cross more than one hop.</div></li>
-          <li><span>Later</span><div>Event-driven and webhook trust chains, enterprise RAG and connector ACLs, and fleet governance.</div></li>
+          <li><span>Next</span><div><b>Dual LLM and CaMeL, in depth.</b></div></li>
         </ul>
       </section>
     </main>
