@@ -48,12 +48,12 @@ Project IDs, organization IDs and hostnames are kept out of this repository (loc
 
 | Item | Built | Verified | Evidence |
 | :--- | :--- | :--- | :--- |
-| Projects, shared VPC, gateway subnet and network attachment | no | no | |
-| Cloud SQL (private, row security applied) | no | no | |
-| BigQuery dataset, row access policy, policy tags | no | no | |
+| Projects, shared VPC, gateway subnet and network attachment | yes | no | Terraform written in `infra/terraform/01_gcp_foundation/{projects,network}.tf`; `terraform apply` pending |
+| Cloud SQL (private, row security applied) | yes | no | Terraform written in `infra/terraform/01_gcp_foundation/data.tf` + `db/postgres/01..04.sql`; apply pending |
+| BigQuery dataset, row access policy, policy tags | yes | no | Terraform written in `infra/terraform/01_gcp_foundation/data.tf` + `db/bigquery/01..02.sql`; apply pending |
 | Keycloak on Cloud Run, realm, demo users | no | no | |
-| Workforce Identity Federation from Keycloak | no | no | |
-| Prototype project: naive agent, synthetic database, attacker sink | no | no | |
+| Workforce Identity Federation from Keycloak | yes | no | Workforce pool + OIDC provider skeleton in `infra/terraform/01_gcp_foundation/identity.tf`; apply pending |
+| Prototype project: naive agent, synthetic database, attacker sink | yes | no | `naive` project provisioned in `projects.tf`; Cloud Run naive deploy pending |
 
 ## Phase 3: Track A (Cloud Run with self-managed Envoy)
 

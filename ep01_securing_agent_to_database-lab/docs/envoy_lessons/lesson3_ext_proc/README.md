@@ -1,11 +1,27 @@
 # Lesson 3: `ext_proc` Header Mutation (`L2` / `L5`)
 
-## Goal
-See how `envoy.filters.http.ext_proc` pauses an outgoing request, calls our real [ext_proc_server.py](../../../services/envoy_sidecar/ext_proc_server.py) over HTTP/2 gRPC, and rewrites `Authorization` **outside** the client process (the exact same `REQUEST_HEADERS` pattern used by Track A's sidecar and Track B's `AgentGateway` `AuthzExtension`).
+**Estimated time:** 15 minutes  
+**Episode 01 context:** [Stage 6 (Token Exchange)](../../../ep01_securing_agent_to_database.html#part-06) · [Stage 8 (Screening)](../../../ep01_securing_agent_to_database.html#part-08) · [01 · Gateway Spike](../../01_GATEWAY_INJECTION_SPIKE.md)
+
+---
+
+## Concept: Out-of-Process Inspection & Token Translation
+
+In **Track A** and **Track B**, we want **credentials (`Token_obo`) and safety screening (`Model Armor` / `Cloud SDP`) to stay outside the agent container**. Envoy's `envoy.filters.http.ext_proc` filter makes this possible:
+
+1. Envoy places `ext_proc` **before** `envoy.filters.http.router` in `http_filters`.
+2. When a request arrives, Envoy opens a **bidirectional HTTP/2 gRPC stream** to `ext-proc-upstream:8080` (running our real [ext_proc_server.py](../../../services/envoy_sidecar/ext_proc_server.py)).
+3. Because `processing_mode` sets `request_header_mode: SEND` and `request_body_mode: NONE`, Envoy sends `request_headers` only (matching the `REQUEST_AUTHZ` profile we verified on `AgentGateway`).
+4. `ext_proc_server.py` reads `x-user-token`, computes a new `Authorization` header, and returns a `HeaderMutation` (`OVERWRITE_IF_EXISTS_OR_ADD`). Envoy applies the mutation and forwards the request to `echo-upstream`.
+
+> **Fail-Closed (`failure_mode_allow: false`):** If `ext-proc-upstream` is down or times out, Envoy rejects the request with `500` rather than letting unauthenticated or unscreened traffic pass.
+
+---
 
 ## Run
 
 ```bash
+cd docs/envoy_lessons/lesson3_ext_proc
 docker compose up -d --build
 
 curl -s -H "Host: orders-read-mcp.internal" \
@@ -14,15 +30,20 @@ curl -s -H "Host: orders-read-mcp.internal" \
   http://localhost:10002/mcp
 ```
 
-## What to Observe
-- Even though the client sent `Authorization: Bearer ORIGINAL_AGENT_TOKEN`, `echo` receives:
-  - `"authorization": "Bearer OBO_..."`
-  - `"x-ext-proc-user-token-seen": "yes"`
-- Notice `processing_mode` in [envoy.yaml](envoy.yaml): `request_header_mode: SEND` and `request_body_mode: NONE`, matching the `REQUEST_AUTHZ` profile that worked on `AgentGateway`.
-- Notice `failure_mode_allow: false` (fail-closed): if you run `docker compose stop ext-proc-upstream`, Envoy returns `500` rather than letting unscreened/unexchanged traffic pass.
+Expected `headers_received` at `echo-upstream`:
+- `"authorization": "Bearer OBO_<hash>"` (the client's `ORIGINAL_AGENT_TOKEN` was replaced outside the client)
+- `"x-ext-proc-user-token-seen": "yes"`
+
+Now test **fail-closed** behavior:
+
+```bash
+docker compose stop ext-proc-upstream
+curl -i -H "Host: orders-read-mcp.internal" http://localhost:10002/mcp
+# Expect HTTP/1.1 500 Internal Server Error
+```
 
 ## Clean Up
 
 ```bash
-docker compose down
+docker compose down -t 1
 ```
