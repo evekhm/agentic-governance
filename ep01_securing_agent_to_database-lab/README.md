@@ -43,3 +43,19 @@ Use this map to jump between each stage of [Episode 01](../ep01_securing_agent_t
 | [Stage 10–11 · PSC & VPC-SC](../ep01_securing_agent_to_database.html#part-10) | `L6` | [03 · Phase 2 GCP Foundation](docs/03_PHASE2_GCP_FOUNDATION.md), [infra/terraform/01_gcp_foundation/](infra/terraform/01_gcp_foundation/network.tf) |
 | [Stage 12 · Workflows, HITL & Quarantine](../ep01_securing_agent_to_database.html#part-12) | `L3` `L8` | [services/agent/workflow.py](services/agent/workflow.py), [services/agent/quarantine.py](services/agent/quarantine.py) |
 | [Stage 13 · Audit & Kill Switch](../ep01_securing_agent_to_database.html#part-13) | `L9` | [db/bigquery/03_chain_of_custody.sql](db/bigquery/03_chain_of_custody.sql), [db/postgres/04_pgaudit.sql](db/postgres/04_pgaudit.sql) |
+
+---
+
+## Progression: Naive → Envoy → Full Governed
+
+This lab follows the same progression as Episode 01, showing **which traffic flows Envoy intercepts** and **which threats still require database, tool, and workflow layers**:
+
+1. **Stage A · Naive Baseline (`UI → Naive Agent → Database`):**
+   - The prototype agent ([naive_agent.py](services/agent/naive_agent.py)) exposes raw `execute_sql(sql, user_id)` over a shared admin connection with no proxies. All eight threats (`T1`–`T8`) succeed.
+2. **Stage B · Add Envoy on the HTTP Hops (Flows 1–3):**
+   - **Flow 1 (`UI → Ingress Envoy → Agent`):** `L1` (`jwt_authn`) verifies `Token_in`; `L2` (`ext_proc`) screens prompts via Model Armor.
+   - **Flow 2 (`Agent → Egress Envoy / Agent Gateway → MCP`):** `L6` blocks unregistered hosts (`403`, stopping `T6` network exfiltration); `L5` (`ext_proc` / `tokenx`) swaps `Token_in` → `Token_obo` outside the agent (`T5`); `L2` screens tool rows returning from MCP (`T2`).
+   - **Flow 3 (`Envoy → MCP Ingress → MCP Toolbox`, optional):** verifies `Token_obo` audience (`aud=orders-mcp`) and DPoP `cnf.jkt`.
+   - **What Envoy alone does *not* stop:** Even with Envoy active, a naive `execute_sql` tool on a shared DB role still allows `T3` (Confused Deputy) and `T4` (In-Band ID Spoofing), and valid-user `T7` double writes still succeed.
+3. **Stage C · Full Governed Stack (`L3` + `L4` + `L7` + `L8` + `L9`):**
+   - Adding parameterized MCP `authServices` (`L4`), `FORCE RLS` / `ROW ACCESS POLICY` (`L7`), `Quarantine` (`L3`), Workflow HITL + `idempotency_key` (`L8`), and `traceparent` audit + PAB kill switch (`L9`) closes all eight threats (`config/profiles.yaml`).
