@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-governance.dev/schemas/ep01/trace_schema.json",
+  "title": "Episode 01 Lab Trace Event",
+  "description": "Versioned per-hop trace event emitted from OpenTelemetry spans for the live workbench UI and static GitHub Pages replay.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "trace_id",
+    "time",
+    "component",
+    "layer",
+    "threat",
+    "track",
+    "model_mode",
+    "verdict",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "trace_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$"
+    },
+    "span_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{16}$"
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "component": {
+      "type": "string",
+      "enum": [
+        "browser_ui",
+        "ingress_gateway",
+        "adk_workflow",
+        "quarantine_llm",
+        "egress_gateway",
+        "token_exchange",
+        "model_armor",
+        "cloud_sdp",
+        "mcp_read",
+        "mcp_write",
+        "database",
+        "audit_sink"
+      ]
+    },
+    "layer": {
+      "type": "string",
+      "enum": ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8", "L9"]
+    },
+    "threat": {
+      "type": "string",
+      "enum": ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8"]
+    },
+    "track": {
+      "type": "string",
+      "enum": ["prototype", "track-a", "track-b"]
+    },
+    "model_mode": {
+      "type": "string",
+      "enum": ["stub", "live"]
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["pass", "sanitized", "paused_for_approval", "blocked", "leaked"]
+    },
+    "payload": {
+      "type": "object",
+      "description": "Hop-specific structured view (decoded JWT claims without signature, SQL/tool args, screening summary, or row count).",
+      "properties": {
+        "summary": { "type": "string" },
+        "token_diff": {
+          "type": "object",
+          "properties": {
+            "token_in": { "type": "object" },
+            "token_obo": { "type": "object" }
+          }
+        },
+        "tool_call": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "args": { "type": "object" }
+          }
+        },
+        "sql_preview": { "type": "string" },
+        "row_count": { "type": "integer", "minimum": 0 },
+        "redacted_fields": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

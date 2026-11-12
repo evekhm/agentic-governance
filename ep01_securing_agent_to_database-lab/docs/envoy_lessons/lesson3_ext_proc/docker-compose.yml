@@ -1,0 +1,23 @@
+services:
+  echo-upstream:
+    image: python:3.12-slim
+    command: ["python3", "/app/app.py"]
+    volumes:
+      - ../shared_echo/app.py:/app/app.py:ro
+
+  ext-proc-upstream:
+    build:
+      context: ../../..
+      dockerfile: docs/envoy_lessons/lesson3_ext_proc/Dockerfile.extproc
+    environment:
+      PORT: "8080"
+
+  envoy:
+    image: envoyproxy/envoy:v1.31-latest
+    ports:
+      - "10002:10002"
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml:ro
+    depends_on:
+      - echo-upstream
+      - ext-proc-upstream

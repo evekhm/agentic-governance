@@ -1,0 +1,62 @@
+sources:
+  orders-read-db:
+    kind: cloud-sql-postgres
+    project: ${DATA_PROJECT_ID}
+    region: ${REGION}
+    instance: ${CLOUDSQL_INSTANCE}
+    database: ${CLOUDSQL_DB}
+    user: ${TOOLBOX_READ_IAM_USER}
+    ipType: private
+
+authServices:
+  orders_obo_jwt:
+    kind: google
+    clientId: ${MCP_READ_AUDIENCE}
+
+tools:
+  get_order:
+    kind: postgres-sql
+    source: orders-read-db
+    description: Fetch a single order owned by the authenticated caller.
+    authRequired:
+      - orders_obo_jwt
+    parameters:
+      - name: owner_email
+        type: string
+        description: Authenticated caller email bound from verified OBO JWT.
+        authServices:
+          - name: orders_obo_jwt
+            field: email
+      - name: order_id
+        type: string
+        description: Order identifier (e.g., ORD-101).
+    statement: |
+      SELECT order_id, user_id, owner_email, status, total, phone_masked, delivery_notes, updated_at
+      FROM sales.agent_orders_v
+      WHERE owner_email = $1 AND order_id = $2
+      LIMIT 1;
+
+  list_my_orders:
+    kind: postgres-sql
+    source: orders-read-db
+    description: List up to 50 orders owned by the authenticated caller.
+    authRequired:
+      - orders_obo_jwt
+    parameters:
+      - name: owner_email
+        type: string
+        description: Authenticated caller email bound from verified OBO JWT.
+        authServices:
+          - name: orders_obo_jwt
+            field: email
+    statement: |
+      SELECT order_id, status, total, updated_at
+      FROM sales.agent_orders_v
+      WHERE owner_email = $1
+      ORDER BY updated_at DESC
+      LIMIT 50;
+
+toolsets:
+  orders_read_toolset:
+    - get_order
+    - list_my_orders

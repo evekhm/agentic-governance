@@ -1,0 +1,66 @@
+# Feature toggle profiles for Episode 01 walkthroughs (Track A per-request switches).
+# Track B enforces all layers unconditionally and ignores per-request toggles.
+
+profiles:
+  naive:
+    description: "Prototype baseline (no deterministic walls; all T1-T8 succeed)"
+    layers:
+      L2_screening: false
+      L3_quarantine: false
+      L4_tool_boundary: false
+      L5_token_exchange: false
+      L8_human_approval: false
+
+  governed_no_l2:
+    description: "Track A with L2 screening disabled"
+    layers:
+      L2_screening: false
+      L3_quarantine: true
+      L4_tool_boundary: true
+      L5_token_exchange: true
+      L8_human_approval: true
+
+  governed_no_l3:
+    description: "Track A with L3 quarantine disabled"
+    layers:
+      L2_screening: true
+      L3_quarantine: false
+      L4_tool_boundary: true
+      L5_token_exchange: true
+      L8_human_approval: true
+
+  governed_no_l4:
+    description: "Track A with L4 tool boundary disabled"
+    layers:
+      L2_screening: true
+      L3_quarantine: true
+      L4_tool_boundary: false
+      L5_token_exchange: true
+      L8_human_approval: true
+
+  governed_no_l5:
+    description: "Track A with L5 token exchange disabled (passes Token_in directly)"
+    layers:
+      L2_screening: true
+      L3_quarantine: true
+      L4_tool_boundary: true
+      L5_token_exchange: false
+      L8_human_approval: true
+
+  governed_no_l8:
+    description: "Track A with L8 human approval disabled"
+    layers:
+      L2_screening: true
+      L3_quarantine: true
+      L4_tool_boundary: true
+      L5_token_exchange: true
+      L8_human_approval: false
+
+  governed:
+    description: "Full governed posture (all layers L1-L9 enforced)"
+    layers:
+      L2_screening: true
+      L3_quarantine: true
+      L4_tool_boundary: true
+      L5_token_exchange: true
+      L8_human_approval: true

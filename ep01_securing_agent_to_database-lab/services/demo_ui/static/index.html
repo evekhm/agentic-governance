@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Episode 01 · Governance Workbench</title>
+  <style>
+    :root { --bg:#0f172a; --card:#1e293b; --border:#334155; --text:#f8fafc; --muted:#94a3b8; --green:#22c55e; --red:#ef4444; --amber:#f59e0b; --blue:#3b82f6; }
+    body { margin:0; font-family:system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text); }
+    header { padding:14px 24px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+    .grid { display:grid; grid-template-columns:1.2fr 1fr; gap:16px; padding:16px 24px; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; }
+    .flow { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:10px; }
+    .box { border:1px solid var(--border); border-radius:8px; padding:10px 12px; min-width:130px; background:#0b1220; font-size:13px; }
+    .box.blocked { border-color:var(--red); }
+    .box.pass { border-color:var(--green); }
+    .controls label { display:inline-flex; gap:6px; align-items:center; margin-right:12px; font-size:13px; }
+    .btn { background:var(--blue); color:#fff; border:none; border-radius:6px; padding:7px 12px; cursor:pointer; font-size:13px; margin:4px 4px 0 0; }
+    pre { background:#0b1220; border:1px solid var(--border); border-radius:8px; padding:12px; overflow:auto; max-height:280px; font-size:12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div><strong>Episode 01 Governance Workbench</strong> <span style="color:var(--muted);font-size:13px;">(Trace-Driven Live SSE &amp; Replay)</span></div>
+    <div style="font-size:13px;color:var(--muted);">Caller: <select id="caller"><option>alice@example.com</option><option>bob@example.com</option></select></div>
+  </header>
+  <div class="grid">
+    <div class="card">
+      <h3 style="margin-top:0;">Architecture Flow (Figure 4)</h3>
+      <div class="controls" id="toggles">
+        <label><input type="checkbox" checked data-layer="L2" /> L2 Screening</label>
+        <label><input type="checkbox" checked data-layer="L3" /> L3 Quarantine</label>
+        <label><input type="checkbox" checked data-layer="L4" /> L4 Tool Boundary</label>
+        <label><input type="checkbox" checked data-layer="L5" /> L5 Token Exchange</label>
+        <label><input type="checkbox" checked data-layer="L8" /> L8 Human Approval</label>
+      </div>
+      <div class="flow" id="flow">
+        <div class="box" data-comp="ingress_gateway">Ingress · Gateway</div>
+        <div class="box" data-comp="adk_workflow">ADK Workflow + Quarantine</div>
+        <div class="box" data-comp="token_exchange">Token Exchange · IdP / STS</div>
+        <div class="box" data-comp="egress_gateway">Who is calling · SPIFFE mTLS (agent)</div>
+        <div class="box" data-comp="mcp_read">Agent Registry + MCP</div>
+        <div class="box" data-comp="database">Cloud SQL / BigQuery</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;">Attack Presets (T1–T8)</h3>
+      <div id="presets">
+        <button class="btn" onclick="runPreset('T1')">T1 SQLi</button>
+        <button class="btn" onclick="runPreset('T2')">T2 Poisoned Row</button>
+        <button class="btn" onclick="runPreset('T3')">T3 Confused Deputy</button>
+        <button class="btn" onclick="runPreset('T4')">T4 ID Spoof</button>
+        <button class="btn" onclick="runPreset('T5')">T5 Token Passthrough</button>
+        <button class="btn" onclick="runPreset('T6')">T6 Exfiltration</button>
+        <button class="btn" onclick="runPreset('T7')">T7 Double Write</button>
+        <button class="btn" onclick="runPreset('T8')">T8 Kill Switch</button>
+      </div>
+      <p style="font-size:13px;color:var(--muted);">Select a preset to inspect hop-by-hop verdicts and wire payloads.</p>
+    </div>
+    <div class="card" style="grid-column:1 / span 2;">
+      <h3 style="margin-top:0;">Under the Hood · Wire &amp; Audit Inspector</h3>
+      <pre id="inspector">No trace loaded yet.</pre>
+    </div>
+  </div>
+  <script>
+    async function runPreset(tid) {
+      const resp = await fetch('/api/replay/' + tid);
+      const events = await resp.json();
+      document.getElementById('inspector').textContent = events.length
+        ? JSON.stringify(events, null, 2)
+        : 'No recorded trace bundle for ' + tid + ' yet (run integration suite in Phase 3/4).';
+      document.querySelectorAll('.box').forEach(b => b.classList.remove('blocked', 'pass'));
+      for (const ev of events) {
+        const el = document.querySelector(`.box[data-comp="${ev.component}"]`);
+        if (el) el.classList.add(ev.verdict === 'blocked' ? 'blocked' : 'pass');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+sources:
+  orders-write-db:
+    kind: cloud-sql-postgres
+    project: ${DATA_PROJECT_ID}
+    region: ${REGION}
+    instance: ${CLOUDSQL_INSTANCE}
+    database: ${CLOUDSQL_DB}
+    user: ${TOOLBOX_WRITE_IAM_USER}
+    ipType: private
+
+authServices:
+  orders_obo_jwt:
+    kind: google
+    clientId: ${MCP_WRITE_AUDIENCE}
+
+tools:
+  refund_order:
+    kind: postgres-sql
+    source: orders-write-db
+    description: Execute an idempotent, caller-scoped refund via stored procedure.
+    authRequired:
+      - orders_obo_jwt
+    parameters:
+      - name: owner_email
+        type: string
+        description: Authenticated caller email bound from verified OBO JWT.
+        authServices:
+          - name: orders_obo_jwt
+            field: email
+      - name: order_id
+        type: string
+        description: Order identifier (e.g., ORD-104).
+      - name: amount_usd
+        type: float
+        description: Refund amount in USD (must be > 0 and <= 500).
+      - name: reason_code
+        type: string
+        description: Reason code (DAMAGED, LATE_DELIVERY, WRONG_ITEM).
+      - name: idempotency_key
+        type: string
+        description: Deterministic UUIDv5 key preventing duplicate refunds.
+    statement: |
+      SELECT * FROM sales.refund_order($1, $2, $3::numeric, $4, $5);
+
+toolsets:
+  orders_write_toolset:
+    - refund_order

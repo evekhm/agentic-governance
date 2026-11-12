@@ -1,0 +1,16 @@
+# Local environment & Terraform state (contains project/org/billing IDs - never commit)
+.env
+.env.*
+!.env.example
+*.tfvars
+!*.tfvars.example
+.terraform/
+*.tfstate
+*.tfstate.*
+.venv/
+__pycache__/
+*.pyc
+recorded_traces/*.raw.json
+__pycache__/
+*.pyc
+.pytest_cache/

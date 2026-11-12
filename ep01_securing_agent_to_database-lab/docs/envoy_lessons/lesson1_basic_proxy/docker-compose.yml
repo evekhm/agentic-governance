@@ -1,0 +1,15 @@
+services:
+  echo-upstream:
+    image: python:3.12-slim
+    command: ["python3", "/app/app.py"]
+    volumes:
+      - ../shared_echo/app.py:/app/app.py:ro
+
+  envoy:
+    image: envoyproxy/envoy:v1.31-latest
+    ports:
+      - "10000:10000"
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml:ro
+    depends_on:
+      - echo-upstream
