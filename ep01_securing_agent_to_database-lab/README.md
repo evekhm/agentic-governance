@@ -2,6 +2,7 @@
 
 Companion runnable lab for [Episode 01](../ep01_securing_agent_to_database.html).
 
+- **Start Here (Step-by-Step Walkthrough):** [docs/START_HERE.md](docs/START_HERE.md)
 - **Architecture & Roadmap:** [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md)
 - **Live Build & Verification Tracker:** [PROGRESS.md](PROGRESS.md)
 
