@@ -12,5 +12,5 @@ Follows a single request from the top-level picture (user chat UI, LLM agent, an
 
 ## Up Next
 
-- **System Design:** *The Mental Model for Designing Agentic Systems* — problem-first architecture, deterministic vs. LLM boundaries, async queues, circuit breakers, and staged autonomy (worked through on a self-healing code repository).
+- **System Design:** *The Mental Model for Designing Agentic Systems* — problem-first architecture, deterministic vs. LLM boundaries, async queues, circuit breakers, and staged autonomy.
 - **Governance:** *Dual LLM and CaMeL, in depth.*
