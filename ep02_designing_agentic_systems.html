@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="author" content="Eva Khmelinskaya">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A mental model for designing systems built from AI agents: one reusable drawing and twelve questions, practised on a self-healing code repository with three agents.">
+<title>All About Agents — A Mental Model for Designing Agentic Systems</title>
+<style>
+  :root,
+  html[data-theme="light"] {
+    --bg: #f6f8fb;
+    --bg-grid: rgba(15, 23, 42, 0.035);
+    --panel: #ffffff;
+    --panel-2: #f8fafc;
+    --panel-3: #f1f5f9;
+    --ink: #0f172a;
+    --muted: #475569;
+    --dim: #64748b;
+    --line: #cbd5e1;
+    --line-2: #e2e8f0;
+    --cyan: #0369a1;
+    --cyan-soft: rgba(3, 105, 161, 0.09);
+    --amber: #b45309;
+    --amber-soft: rgba(180, 83, 9, 0.10);
+    --good: #15803d;
+    --good-soft: rgba(21, 128, 61, 0.09);
+    --warn: #c2410c;
+    --warn-soft: rgba(194, 65, 12, 0.10);
+    --stop: #b91c1c;
+    --stop-soft: rgba(185, 28, 28, 0.08);
+    --violet: #6d28d9;
+    --violet-soft: rgba(109, 40, 217, 0.09);
+    --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #09131c;
+    --bg-grid: rgba(148, 198, 235, 0.055);
+    --panel: #0e1c2a;
+    --panel-2: #132536;
+    --panel-3: #0b1723;
+    --ink: #ecf3fb;
+    --muted: #b5c9de;
+    --dim: #7f9ab5;
+    --line: #21405c;
+    --line-2: #183149;
+    --cyan: #5fd4ff;
+    --cyan-soft: rgba(95, 212, 255, 0.13);
+    --amber: #ffbe55;
+    --amber-soft: rgba(255, 190, 85, 0.14);
+    --good: #52e29a;
+    --good-soft: rgba(82, 226, 154, 0.13);
+    --warn: #ff9a52;
+    --warn-soft: rgba(255, 154, 82, 0.14);
+    --stop: #ff6b7c;
+    --stop-soft: rgba(255, 107, 124, 0.14);
+    --violet: #b695ff;
+    --violet-soft: rgba(182, 149, 255, 0.14);
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(to right, var(--bg-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--bg-grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 28px;
+    background: color-mix(in srgb, var(--panel) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cyan);
+  }
+  .brand-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 0 3px var(--cyan-soft);
+  }
+  .navlinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .navlinks a, .theme-btn {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--line-2);
+    background: var(--panel-2);
+    color: var(--muted);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .navlinks a:hover, .theme-btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  .app {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 72px;
+  }
+
+  .sheet {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .sheet-h {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--line-2);
+    background: var(--panel-2);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .sec-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--cyan);
+    background: var(--cyan-soft);
+    padding: 3px 9px;
+    border-radius: 5px;
+    border: 1px solid color-mix(in srgb, var(--cyan) 30%, transparent);
+    display: inline-block;
+    margin-bottom: 6px;
+  }
+  .sheet-h h1, .sheet-h h2 {
+    margin: 0;
+    font-size: 23px;
+    letter-spacing: -0.015em;
+  }
+  .sheet-h p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 14.5px;
+  }
+  .sheet-b {
+    padding: 28px;
+  }
+
+  .post-prose {
+    max-width: 100%;
+    font-size: 17px;
+    line-height: 1.78;
+    color: var(--ink);
+  }
+  .post-prose p {
+    margin: 0 0 18px;
+  }
+  .post-prose h3 {
+    margin: 26px 0 10px;
+    font-size: 20px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .scenario-callout {
+    margin: 20px 0;
+    padding: 16px 20px;
+    border-left: 4px solid var(--cyan);
+    background: var(--cyan-soft);
+    border-radius: 0 10px 10px 0;
+    font-size: 16px;
+  }
+  .scenario-callout strong {
+    color: var(--cyan);
+  }
+
+  .diagram-frame {
+    background: var(--panel-2);
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+    margin: 20px 0 4px;
+    overflow-x: auto;
+  }
+  .diagram-frame svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .fig-caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line-2);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend-items {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .swatch-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    border: 1.5px solid;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+
+  .zone-box { fill: var(--panel); stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  .node-card { fill: var(--panel); stroke: var(--line); stroke-width: 1.75; }
+  .node-cyan { fill: var(--cyan-soft); stroke: var(--cyan); stroke-width: 1.8; }
+  .node-amber { fill: var(--amber-soft); stroke: var(--amber); stroke-width: 1.8; }
+  .node-good { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.8; }
+  .node-warn { fill: var(--warn-soft); stroke: var(--warn); stroke-width: 1.6; }
+  .node-bad { fill: var(--stop-soft); stroke: var(--stop); stroke-width: 1.8; }
+  .node-violet { fill: var(--violet-soft); stroke: var(--violet); stroke-width: 1.8; }
+
+  .t-zone { font-family: var(--mono); font-size: 11px; font-weight: 700; fill: var(--muted); letter-spacing: 0.08em; }
+  .t-title { font-family: var(--sans); font-size: 15px; font-weight: 700; fill: var(--ink); }
+  .t-sub { font-family: var(--sans); font-size: 12px; fill: var(--muted); }
+  .t-mono { font-family: var(--mono); font-size: 11.5px; font-weight: 600; fill: var(--ink); }
+
+  .edge-line { stroke: var(--ink); stroke-width: 2; fill: none; }
+  .edge-cyan { stroke: var(--cyan); stroke-width: 2.2; fill: none; }
+  .edge-amber { stroke: var(--amber); stroke-width: 2.2; fill: none; }
+  .edge-good { stroke: var(--good); stroke-width: 2.2; fill: none; }
+  .edge-bad { stroke: var(--stop); stroke-width: 2.2; stroke-dasharray: 6 4; fill: none; }
+
+  .node-callout { fill: var(--panel); stroke: var(--stop); stroke-width: 1.4; stroke-dasharray: 5 3; }
+  .t-callout { font-family: var(--mono); font-size: 11px; fill: var(--ink); }
+  .t-callout-h { font-family: var(--mono); font-size: 11px; font-weight: 700; fill: var(--stop); letter-spacing: 0.04em; }
+  .t-badge { font-family: var(--mono); font-size: 10.5px; font-weight: 700; fill: #fff; text-anchor: middle; }
+  .badge-dot { fill: var(--stop); stroke: var(--panel); stroke-width: 1.5; }
+  .badge-dot.add { fill: var(--good); }
+  .tbl-wrap { overflow-x: auto; margin: 18px 0 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line-2); }
+  th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); background: var(--panel-2); }
+  td code, .post-prose code { font-family: var(--mono); font-size: 0.9em; background: var(--panel-3); padding: 1px 5px; border-radius: 4px; }
+  .b-pill { display: inline-block; font-family: var(--mono); font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin: 1px 2px 1px 0; white-space: nowrap; border: 1px solid; text-decoration: none; }
+  a.b-pill:hover { text-decoration: none; filter: brightness(0.95); }
+  .b-pill.asi { color: var(--violet); background: var(--violet-soft); border-color: color-mix(in srgb, var(--violet) 35%, transparent); }
+  .b-pill.llm { color: var(--cyan); background: var(--cyan-soft); border-color: color-mix(in srgb, var(--cyan) 35%, transparent); }
+  .b-pill.api { color: var(--amber); background: var(--amber-soft); border-color: color-mix(in srgb, var(--amber) 35%, transparent); }
+  .b-pill.t { color: var(--stop); background: var(--stop-soft); border-color: color-mix(in srgb, var(--stop) 35%, transparent); }
+  .b-pill.g { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 35%, transparent); }
+  .nine-q-wrap {
+    margin: 18px 0 8px;
+    padding: 16px 20px 18px;
+    background: var(--panel-2);
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+  }
+  .nine-q-head {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--cyan);
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1.5px solid var(--line);
+  }
+  .nine-q-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+  @media (max-width: 960px) { .nine-q-grid { grid-template-columns: 1fr; } }
+  .nine-q-card {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 14px 16px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--cyan);
+    border-radius: 8px;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+  .nine-q-card .lq-id {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+  }
+  .nine-q-card b {
+    font-size: 14.5px;
+    color: var(--ink);
+  }
+  .nine-q-card span:not(.lq-id) {
+    color: var(--muted);
+  }
+  .opt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 18px 0; }
+  @media (max-width: 900px) { .opt-grid { grid-template-columns: 1fr; } }
+  .opt-card { border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); padding: 16px 18px; font-size: 14.5px; }
+  .opt-card h4 { margin: 0 0 6px; font-size: 16px; }
+  .opt-card .opt-tag { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--cyan); }
+  .opt-card ul { margin: 8px 0 0 18px; padding: 0; }
+  .opt-card li { margin-bottom: 5px; }
+  .code-card { background: #0f172a; color: #f1f5f9; border-radius: 10px; padding: 14px 16px; margin: 12px 0 18px; overflow-x: auto; }
+  .code-card .code-title { font-family: var(--mono); font-size: 11px; color: #94a3b8; margin-bottom: 8px; letter-spacing: 0.06em; }
+  .code-card pre { margin: 0; font-family: var(--mono); font-size: 12.5px; line-height: 1.55; white-space: pre; }
+  /* Syntax Highlighting for Code & Payload Blocks */
+  .code-card pre .hl-c { color: #94a3b8; font-style: italic; }
+  .code-card pre .hl-k { color: #38bdf8; font-weight: 600; }
+  .code-card pre .hl-b { color: #c084fc; }
+  .code-card pre .hl-f { color: #fde047; font-weight: 600; }
+  .code-card pre .hl-s { color: #4ade80; }
+  .code-card pre .hl-n { color: #fb923c; }
+  .code-card pre .hl-v { color: #93c5fd; }
+  .code-card pre .hl-err { color: #fb7185; font-weight: 600; }
+
+  .t-card-full pre .hl-c { color: #64748b; font-style: italic; }
+  .t-card-full pre .hl-k { color: #0284c7; font-weight: 700; }
+  .t-card-full pre .hl-b { color: #7c3aed; font-weight: 600; }
+  .t-card-full pre .hl-f { color: #b45309; font-weight: 700; }
+  .t-card-full pre .hl-s { color: #15803d; }
+  .t-card-full pre .hl-n { color: #c2410c; font-weight: 600; }
+  .t-card-full pre .hl-v { color: #1d4ed8; }
+  .t-card-full pre .hl-err { color: #be123c; font-weight: 600; }
+
+  .beat { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--cyan); margin: 22px 0 6px; }
+  .beat:first-child { margin-top: 0; }
+  .closes { display: flex; gap: 14px; flex-wrap: wrap; margin: 14px 0 6px; padding: 12px 16px; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--line-2); font-family: var(--mono); font-size: 12.5px; }
+  .closes b { color: var(--good); }
+  .closes i { color: var(--stop); font-style: normal; }
+  .deeper { margin: 10px 0 0; font-size: 14.5px; }
+  .deeper a { color: var(--cyan); font-weight: 600; }
+  .node-dim { fill: var(--panel-3); stroke: var(--line); stroke-width: 1.2; }
+  .t-dim { font-family: var(--sans); font-size: 11px; fill: var(--dim); }
+  .node-new { fill: var(--good-soft); stroke: var(--good); stroke-width: 2.2; }
+  .node-done { fill: var(--panel); stroke: var(--good); stroke-width: 1.4; }
+
+
+  /* Progressive Hero Build Styles */
+  .prog-hero-frame svg text { font-family: var(--sans); font-size: 13.5px; fill: var(--ink); }
+  .prog-hero-frame .pt-b { font-weight: 600; font-size: 14px; }
+  .prog-hero-frame .pt-d { font-size: 17px; font-weight: 700; }
+  .prog-hero-frame .pt-s { font-size: 12px; fill: var(--muted); }
+  .prog-hero-frame .pt-m { font-family: var(--mono); font-size: 11.5px; }
+  .prog-hero-frame .pt-c { text-anchor: middle; }
+  .prog-hero-frame .p-zone { fill: var(--panel-3); stroke: var(--line-2); stroke-width: 1; }
+  .prog-hero-frame .p-zl { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .1em; fill: var(--muted); }
+  .prog-hero-frame .p-zl-v { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .1em; fill: var(--violet); }
+  .prog-hero-frame .p-edge { fill: none; stroke: var(--ink); stroke-width: 2; }
+  .prog-hero-frame .p-edge-id { fill: none; stroke: var(--good); stroke-width: 3; }
+
+  .prog-hero-frame .p-new rect.pb { fill: var(--good-soft); stroke: var(--good); stroke-width: 2.8; }
+  .prog-hero-frame .p-new text.pt-b, .prog-hero-frame .p-new text.pt-d { fill: var(--good); }
+  .prog-hero-frame .p-done rect.pb { fill: var(--panel); stroke: var(--good); stroke-width: 1.6; }
+  .prog-hero-frame .p-wait { opacity: 0.28; }
+  .prog-hero-frame .p-wait rect.pb { fill: var(--panel-3); stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 4 3; }
+
+  .prog-hero-frame .p-vpc-rect { fill: var(--violet-soft); stroke: var(--violet); stroke-width: 1.5; }
+  .prog-hero-frame .p-prod-rect { fill: var(--panel); stroke: var(--violet); stroke-width: 1.2; stroke-dasharray: 4 3; }
+  .prog-hero-frame .p-new .p-vpc-rect, .prog-hero-frame .p-new .p-prod-rect { stroke: var(--good); stroke-width: 2.6; }
+
+  .prog-hero-frame .p-perim-rect { fill: none; stroke: var(--warn); stroke-width: 2; stroke-dasharray: 10 6; }
+  .prog-hero-frame .p-perim-txt { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; fill: var(--warn); }
+  .prog-hero-frame .p-wait-perim { opacity: 0.22; }
+  .prog-hero-frame .p-new-perim .p-perim-rect { stroke: var(--good); stroke-width: 3.2; }
+  .prog-hero-frame .p-new-perim .p-perim-txt { fill: var(--good); }
+
+  /* Lethal Trifecta & Mode Cards & Spotlight Grids */
+  .tri-group-head {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--stop);
+    background: var(--stop-soft);
+    border: 1px solid color-mix(in srgb, var(--stop) 35%, transparent);
+    border-radius: 6px;
+    padding: 7px 12px;
+    margin: 16px 0 10px;
+  }
+  .trifecta-grid, .mode-3-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin: 10px 0 18px;
+  }
+  .trifecta-grid.two-col {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .tri-card, .mode-card {
+    border: 1.5px solid var(--line);
+    border-top: 4px solid var(--stop);
+    border-radius: 8px;
+    padding: 16px 18px;
+    background: var(--panel-2);
+  }
+  .mode-card { border-top-color: var(--cyan); }
+  .mode-card.m-teal { border-top-color: var(--good); }
+  .mode-card.m-violet { border-top-color: var(--violet); }
+  .tri-card .leg-tag, .mode-card .leg-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--stop);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .mode-card .leg-tag { color: var(--cyan); }
+  .mode-card.m-teal .leg-tag { color: var(--good); }
+  .mode-card.m-violet .leg-tag { color: var(--violet); }
+  .tri-card h4, .mode-card h4 { margin: 0 0 8px; font-size: 16.5px; }
+  .tri-card p, .mode-card p, .mode-card li { margin: 0; font-size: 14px; line-height: 1.55; }
+  .mode-card ol { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 5px; }
+
+  .duo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 18px 0;
+    align-items: start;
+  }
+  .info-card {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 20px;
+    background: var(--panel-2);
+    font-size: 14.5px;
+  }
+  .info-card h3, .info-card h4 { margin: 0 0 10px; font-size: 17px; }
+  .info-card ul, .info-card ol { margin: 0; padding-left: 20px; display: grid; gap: 7px; }
+
+  .threat-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .t-card-full {
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--stop);
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: var(--panel-2);
+    font-size: 13.8px;
+  }
+  .t-card-full h4 { margin: 4px 0 6px; font-size: 15.5px; color: var(--ink); }
+  .t-card-full p { margin: 0 0 8px; color: var(--muted); }
+  .t-card-full pre {
+    margin: 0 0 8px;
+    padding: 8px 10px;
+    background: var(--panel);
+    border: 1px solid var(--line-2);
+    border-radius: 5px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    white-space: pre-wrap;
+  }
+  .t-fix-row {
+    font-size: 12.8px;
+    padding: 6px 9px;
+    border-radius: 5px;
+    margin-top: 5px;
+    background: var(--panel);
+    border-left: 3px solid var(--good);
+  }
+  .t-fix-row.mit { border-left-color: var(--amber); }
+  .t-fix-row.gcp {
+    border-left-color: var(--cyan);
+    background: color-mix(in srgb, var(--cyan-soft) 55%, var(--panel));
+    font-size: 12.3px;
+  }
+  .t-fix-row.gcp b { color: var(--cyan); }
+
+  .t-card-full.l-card-full {
+    border-left: 4px solid var(--good);
+  }
+  .t-fix-row.threat-rem {
+    border-left-color: var(--stop);
+    background: color-mix(in srgb, var(--stop-soft) 45%, var(--panel));
+    font-size: 12.4px;
+  }
+  .t-fix-row.threat-rem b { color: var(--stop); }
+  .t-fix-row.oss {
+    border-left-color: var(--good);
+    background: color-mix(in srgb, var(--good-soft) 45%, var(--panel));
+    font-size: 12.3px;
+  }
+  .t-fix-row.oss b { color: var(--good); }
+
+  .p-stage {
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+    background: var(--panel-2);
+    margin-bottom: 14px;
+  }
+  .p-stage-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .p-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .p-col {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
+    background: var(--panel);
+    font-size: 13.5px;
+  }
+  .p-col.flawed-col { border-left: 4px solid var(--stop); }
+  .p-col.guarded-col { border-left: 4px solid var(--good); }
+  .p-col-title { font-family: var(--mono); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; display: block; margin-bottom: 6px; }
+  .p-col.flawed-col .p-col-title { color: var(--stop); }
+  .p-col.guarded-col .p-col-title { color: var(--good); }
+  .p-code { font-family: var(--mono); font-size: 12px; background: var(--panel-2); padding: 8px 10px; border-radius: 5px; white-space: pre-wrap; margin-bottom: 8px; border: 1px solid var(--line-2); }
+
+  @media (max-width: 960px) {
+    .trifecta-grid, .mode-3-grid, .duo-grid, .threat-cards-grid, .p-cols { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    table { font-size: 11px; }
+    th, td { padding: 6px 7px; }
+    .b-pill { font-size: 9px; padding: 1px 4px; }
+    .tbl-wrap { break-inside: auto; }
+    .topbar { display: none !important; }
+    .app { max-width: 100%; padding: 0; }
+    .sheet { break-inside: auto; box-shadow: none; margin-bottom: 18px; }
+    .diagram-frame, .opt-card, .code-card, .nine-q-card, .t-card-full { break-inside: avoid; }
+    tr { break-inside: avoid; }
+  }
+
+
+
+
+  /* Ensure .t-badge inside any SVG always renders crisp white text */
+  .diagram-frame svg text.t-badge { fill: #ffffff !important; }
+
+  /* concept → implementation strip used in every section */
+  .concept-map { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0; margin: 0 0 18px; border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel-2); }
+  .concept-map > div { padding: 10px 14px; border-right: 1px solid var(--line-2); font-size: 13.5px; }
+  .concept-map > div:last-child { border-right: 0; }
+  .concept-map .cm-k { display: block; font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 3px; }
+  .concept-map .cm-concept .cm-k { color: var(--ink); }
+  .concept-map .cm-oss .cm-k { color: var(--cyan); }
+  .concept-map .cm-gcp .cm-k { color: var(--good); }
+  .concept-map .cm-fig .cm-k { color: var(--violet); }
+  .concept-map a { color: inherit; }
+  @media (max-width: 960px) { .concept-map { grid-template-columns: 1fr 1fr; } }
+  .cm-pill { display:inline-block; font-family: var(--mono); font-size: 10.5px; font-weight: 700; padding: 1px 7px; border-radius: 4px; border: 1px solid; margin: 1px 4px 1px 0; }
+  .cm-pill.oss { color: var(--cyan); background: var(--cyan-soft); border-color: color-mix(in srgb, var(--cyan) 35%, transparent); }
+  .cm-pill.gcp { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 35%, transparent); }
+  @media print { .concept-map { break-inside: avoid; } }
+
+  main a:not(.b-pill) { color: var(--cyan); }
+  @media screen and (max-width: 960px) {
+    .topbar { position: static; }
+    .diagram-frame svg { min-width: 860px; }
+  }
+    /* Page numbers in the PDF export */
+    @page {
+      margin: 10mm 10mm 14mm 10mm;
+      @bottom-center {
+        content: counter(page) " / " counter(pages);
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        font-size: 9pt;
+        color: #64748b;
+      }
+    }
+
+  /* Playbook question cards & skeleton SVG styles */
+  .say {
+    border-left: 4px solid var(--cyan);
+    background: var(--cyan-soft);
+    padding: 14px 18px;
+    margin: 14px 0 20px;
+    border-radius: 0 8px 8px 0;
+    font-size: 16.5px;
+    font-weight: 600;
+  }
+  .say .eyebrow {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 4px;
+  }
+  .qb {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin: 14px 0 18px;
+    overflow: hidden;
+    background: var(--panel);
+    break-inside: avoid;
+  }
+  .qh {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 18px;
+    background: var(--panel-2);
+    border-bottom: 1px solid var(--line-2);
+  }
+  .qh .n {
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--panel);
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 34px;
+    text-align: center;
+  }
+  .qh h3 {
+    margin: 0;
+    font-size: 17.5px;
+    color: var(--ink);
+  }
+  .q3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .q3 > div {
+    padding: 14px 16px;
+    font-size: 14.5px;
+    line-height: 1.55;
+    border-right: 1px solid var(--line-2);
+    min-width: 0;
+  }
+  .q3 > div:last-child { border-right: 0; }
+  .q3 .lab {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .q3 .a { background: var(--stop-soft); }
+  .q3 .a .lab { color: var(--stop); }
+  .q3 .b .lab { color: var(--good); }
+  .q3 .c { background: var(--cyan-soft); }
+  .q3 .c .lab { color: var(--cyan); }
+  .q3 ul { margin: 0; padding-left: 1.15em; }
+  .q3 li { margin-bottom: 4px; }
+  @media screen and (max-width: 820px) {
+    .q3 { grid-template-columns: 1fr; }
+    .q3 > div { border-right: 0; border-bottom: 1px solid var(--line-2); }
+    .q3 > div:last-child { border-bottom: 0; }
+  }
+  .q-group-title {
+    margin: 26px 0 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cyan);
+  }
+  .check {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+  .check li {
+    padding-left: 28px;
+    position: relative;
+    margin-bottom: 10px;
+  }
+  .check li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 15px;
+    height: 15px;
+    border: 2px solid var(--cyan);
+    border-radius: 3px;
+  }
+  svg .t-b { font-family: var(--sans); font-size: 15px; font-weight: 700; fill: var(--ink); }
+  svg .t-s { font-family: var(--sans); font-size: 13px; fill: var(--muted); }
+  svg .t-c { text-anchor: middle; }
+  svg .t-e { text-anchor: end; }
+  svg .zone-ours { fill: none; stroke: var(--cyan); stroke-width: 1.5; stroke-dasharray: 8 5; }
+  svg .zl { font-family: var(--mono); font-size: 12px; letter-spacing: 0.09em; fill: var(--muted); font-weight: 700; }
+  svg .b-ext { fill: var(--panel); stroke: var(--muted); stroke-width: 1.4; stroke-dasharray: 5 4; }
+  svg .b-code { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.8; }
+  svg .b-model { fill: var(--violet-soft); stroke: var(--violet); stroke-width: 1.8; }
+  svg .b-store { fill: var(--amber-soft); stroke: var(--amber); stroke-width: 1.6; }
+  svg .flow { stroke: var(--ink); stroke-width: 2.1; fill: none; }
+  svg .flow-d { stroke: var(--muted); stroke-width: 1.8; fill: none; stroke-dasharray: 6 4; }
+  svg .flow-g { stroke: var(--good); stroke-width: 2.4; fill: none; }
+
+  .chain {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin: 14px 0 22px;
+  }
+  .link {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--panel);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .link header {
+    padding: 10px 14px;
+    background: var(--cyan-soft);
+    font-weight: 700;
+    font-size: 15.5px;
+    color: var(--ink);
+    border-bottom: 1px solid var(--line-2);
+  }
+  .link header span {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--cyan);
+    margin-bottom: 2px;
+  }
+  .link pre {
+    margin: 0;
+    padding: 12px 14px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.5;
+    background: #0f1b30;
+    color: #e6edf7;
+    overflow-x: auto;
+    flex: 1;
+  }
+  .link pre .hl-k { color: #8fc1ff; }
+  .link pre .hl-s { color: #a5e0b4; }
+  .link pre .hl-n { color: #f5c37a; }
+  .link footer {
+    padding: 10px 14px;
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--muted);
+    background: var(--panel-2);
+    border-top: 1px solid var(--line-2);
+  }
+  @media screen and (max-width: 820px) {
+    .chain { grid-template-columns: 1fr; }
+  }
+  .opt-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media screen and (max-width: 900px) { .opt-grid.two { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="brand">
+    <span class="brand-dot"></span>
+    <span>All About Agents · System Design</span>
+  </div>
+  <div class="navlinks">
+    <a id="home-link" href="index.html">Home</a>
+    <a href="#problem">The Task</a>
+    <a href="#skeleton">The Skeleton</a>
+    <a href="#questions">Twelve Questions</a>
+    <a href="#handoffs">Handoffs &amp; State</a>
+    <a href="#model-or-code">Model or Code</a>
+    <a href="#cheatsheet">Cheat Sheet</a>
+    <a href="#references">References</a>
+    <button class="theme-btn" id="theme-toggle" type="button">◑ Switch to Dark Mode</button>
+  </div>
+</nav>
+
+<main class="app">
+
+  <section class="sheet" id="problem">
+    <div class="sheet-h">
+      <div>
+        <span class="sec-badge">All About Agents · System Design</span>
+        <h1>A Mental Model for Designing Agentic Systems</h1>
+        <p>A 20-minute design exercise for a self-healing code repository, and the twelve questions that turn three wishes into a design.</p>
+        <p style="font-family:var(--mono);font-size:12px;">By Eva Khmelinskaya · November 2026 · about 15 minutes to read</p>
+      </div>
+    </div>
+    <div class="sheet-b">
+      <div class="post-prose">
+        <p>
+          It is tempting to treat an AI agent as a genie in a bottle. You state the wish, and the result appears: an agent that finds the problem, an agent that fixes it, an agent that ships the fix. We put language models into systems precisely for that flexibility—so we no longer have to anticipate and hardcode every trajectory in advance. As frontier models improve and earn trust in everyday work, handing them a vague goal and watching them figure out the steps becomes routine. The more capable they get, the easier it is to draw each agent as an autonomous black box that just works.
+        </p>
+        <p>
+          At the same time, the tooling around these models moves fast. New frameworks, SDKs, and APIs keep arriving, and there is always another interface to learn. Underneath that churn, the architectural questions change far more slowly. This post is the checklist I wrote to shift my own mental model and keep myself from treating every agent like a black box that will figure it out on its own—one drawing and twelve questions that I can reuse on any system of this kind.
+        </p>
+        <h3>The Task</h3>
+        <p>
+          This episode is set up as a design exercise that aims for about twenty minutes—intentionally tight, so you have to focus on the right priorities instead of getting lost in details.
+        </p>
+        <div class="scenario-callout">
+          <strong>The task:</strong> Design a self-healing code repository system with three agents: an agent that detects issues, an agent that suggests a fix, and an agent that opens a pull request with the fix. It is expected to handle <code>10,000</code> deployments a day across <code>20</code> to <code>30</code> repositories, of which <code>1%</code> fail.
+        </div>
+        <div class="scenario-callout">
+          <strong>Challenge yourself before reading on.</strong> Take a few minutes and think about how you would design this system. What would you draw first? Which questions come to your mind, and which would you ask before you called the design finished?
+        </div>
+        <p>
+          Figure 1 shows the three agents named in the task.
+        </p>
+      </div>
+      <div class="diagram-frame" id="fig-first-design">
+        <svg viewBox="0 0 880 180" role="img" aria-label="Figure 1: the task as given, three agents in a row">
+          <defs>
+<marker id="f1-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--ink)"/></marker>
+<marker id="f1-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--good)"/></marker>
+<marker id="f1-stop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--stop)"/></marker>
+<marker id="f1-violet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--violet)"/></marker>
+<marker id="f1-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--cyan)"/></marker>
+<marker id="f1-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--amber)"/></marker>
+</defs>
+          <rect class="zone-box" x="12" y="12" width="856" height="156" rx="10"/>
+          <text class="t-zone" x="30" y="36">THE TASK AS GIVEN · THREE AGENTS</text>
+          <rect class="node-card" x="22" y="58" width="128" height="92" rx="8"/>
+          <text class="t-title" x="34" y="86">Failed deploy</text>
+          <text class="t-sub" x="34" y="108">build, rollout</text>
+          <text class="t-sub" x="34" y="126">or canary</text>
+          <rect class="node-violet" x="176" y="58" width="174" height="92" rx="8"/>
+          <text class="t-title" x="188" y="86">Agent 1 · Detect</text>
+          <text class="t-sub" x="188" y="108">Detects the issue</text>
+          <text class="t-sub" x="188" y="126">behind the failure</text>
+          <rect class="node-violet" x="376" y="58" width="176" height="92" rx="8"/>
+          <text class="t-title" x="388" y="86">Agent 2 · Suggest fix</text>
+          <text class="t-sub" x="388" y="108">Works out a fix</text>
+          <text class="t-sub" x="388" y="126">for the code</text>
+          <rect class="node-violet" x="578" y="58" width="174" height="92" rx="8"/>
+          <text class="t-title" x="590" y="86">Agent 3 · Open PR</text>
+          <text class="t-sub" x="590" y="108">Opens a pull request</text>
+          <text class="t-sub" x="590" y="126">with the fix</text>
+          <rect class="node-card" x="778" y="58" width="80" height="92" rx="8"/>
+          <text class="t-title" x="790" y="86">Repo</text>
+          <text class="t-sub" x="790" y="108">pull</text>
+          <text class="t-sub" x="790" y="126">request</text>
+          <path d="M150 104 H172" style="stroke:var(--ink);stroke-width:2;fill:none" marker-end="url(#f1-ink)"/>
+          <path d="M350 104 H372" style="stroke:var(--ink);stroke-width:2;fill:none" marker-end="url(#f1-ink)"/>
+          <path d="M552 104 H574" style="stroke:var(--ink);stroke-width:2;fill:none" marker-end="url(#f1-ink)"/>
+          <path d="M752 104 H774" style="stroke:var(--ink);stroke-width:2;fill:none" marker-end="url(#f1-ink)"/>
+        </svg>
+        <div class="fig-caption"><span>Figure 1 — The task, drawn as given.</span>
+          <div class="legend-items"><span><i class="swatch-dot" style="background:var(--violet-soft);border-color:var(--violet)"></i> Agent</span></div>
+        </div>
+      </div>
+      <div class="post-prose">
+        <h3>The Genie in the Bottle</h3>
+        <p>
+          This is the point where I keep going wrong. Each agent in Figure 1 has a clear job, and the three jobs together cover the task. So the drawing looks finished, and the next step seems to be picking a model and writing three prompts.
+        </p>
+        <p>
+          Naming what each agent does is not an architecture. Each box is still a sealed bottle, and it is easy to let the model inside stand in for every unanswered question:
+        </p>
+        <ul>
+          <li>How does the first agent tell a bug in the code from an outage in a shared service? <em>It figures it out.</em></li>
+          <li>What if the fix from the second agent is wrong? <em>It will test it.</em></li>
+          <li>What does the third agent need from the second? <em>Whatever the second one found.</em></li>
+        </ul>
+        <p>
+          To carry one failure through the whole post, here is the running example.
+        </p>
+        <div class="scenario-callout">
+          <strong>The running example:</strong> At 14:00 the <code>payments</code> repository deploys commit <code>a3f91c2</code>. A canary instance starts failing with <code>KeyError: 'vat_rate'</code> in <code>payments/tax.py</code>. The new code reads a tax rate that is missing for one country. The right fix is a few lines in <code>tax.py</code> and a test for the missing case.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" id="skeleton">
+    <div class="sheet-h">
+      <div>
+        <span class="sec-badge">The Skeleton</span>
+        <h2>The Skeleton Most Agent Systems Share</h2>
+        <p>The agents are the small part. Most of the system is the plain machinery around them.</p>
+      </div>
+    </div>
+    <div class="sheet-b">
+      <div class="post-prose">
+        <p>
+          For every box in an architecture diagram, first ask what goes wrong without it. If you cannot name the failure mode it prevents, you do not need the box.
+        </p>
+      </div>
+      <div class="say">
+        <span class="eyebrow">The rule that organizes the whole design</span>
+        “The model does the reading and the trying. Code does the deciding, the counting and the writing.”
+      </div>
+      <div class="diagram-frame" id="fig-skeleton">
+        <svg viewBox="0 0 1200 522" role="img" aria-label="Figure 2A: generic skeleton of an event-driven agent system. Triggers feed a receiver and a queue. A fast path lets an existing control act in seconds without a model. Inside one worker job (the harness), a guard, read agent, work agent, verifier and act gate hand off to a human and a record, backed by state stores.">
+          <defs>
+            <marker id="ahp1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--ink)"/></marker>
+            <marker id="ahdp1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker>
+            <marker id="ahgp1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--good)"/></marker>
+          </defs>
+          <rect class="b-ext" x="20" y="70" width="170" height="96" rx="7"/>
+          <text class="t-b" x="32" y="93">Triggers</text>
+          <text class="t-s" x="32" y="112">events, alerts, users</text>
+          <text class="t-s" x="32" y="146">question 1</text>
+
+          <rect class="b-code" x="240" y="70" width="180" height="96" rx="7"/>
+          <text class="t-b" x="252" y="93">Ingress / Receiver</text>
+          <text class="t-s" x="252" y="112">authenticate, filter,</text>
+          <text class="t-s" x="252" y="129">normalize, reply 200</text>
+          <text class="t-s" x="252" y="146">question 4</text>
+
+          <rect class="b-store" x="470" y="70" width="170" height="96" rx="7"/>
+          <text class="t-b" x="482" y="93">Queue</text>
+          <text class="t-s" x="482" y="112">holds work until done</text>
+          <text class="t-s" x="482" y="129">retries, dead-letter</text>
+          <text class="t-s" x="482" y="146">question 4</text>
+
+          <rect class="b-ext" x="760" y="70" width="420" height="96" rx="7"/>
+          <text class="t-b" x="772" y="93">Fast path · existing control · no model</text>
+          <text class="t-s" x="772" y="112">rollback, block, drain, fall back: seconds</text>
+          <text class="t-s" x="772" y="146">question 3</text>
+
+          <path class="flow" d="M190 118 H236" marker-end="url(#ahp1)"/>
+          <path class="flow" d="M420 118 H466" marker-end="url(#ahp1)"/>
+          <path class="flow-g" d="M105 70 V36 H970 V66" marker-end="url(#ahgp1)"/>
+          <text class="t-b t-c" x="540" y="28">if something is on fire right now</text>
+
+          <rect class="b-code" x="20" y="270" width="172" height="100" rx="7"/>
+          <text class="t-b" x="32" y="293">Dispatcher / Guard</text>
+          <text class="t-s" x="32" y="312">storm check + lock,</text>
+          <text class="t-s" x="32" y="329">starts workflow graph</text>
+          <text class="t-s" x="32" y="346">questions 5, 6, 7</text>
+
+          <rect class="b-model" x="218" y="270" width="172" height="100" rx="7"/>
+          <text class="t-b" x="230" y="293">Read agent</text>
+          <text class="t-s" x="230" y="312">untrusted text in,</text>
+          <text class="t-s" x="230" y="329">typed report out</text>
+          <text class="t-s" x="230" y="346">questions 8, 9, 11</text>
+
+          <rect class="b-model" x="416" y="270" width="172" height="100" rx="7"/>
+          <text class="t-b" x="428" y="293">Work agent</text>
+          <text class="t-s" x="428" y="312">bounded loop,</text>
+          <text class="t-s" x="428" y="329">tools run in a sandbox</text>
+          <text class="t-s" x="428" y="346">questions 8, 10, 11</text>
+
+          <rect class="b-code" x="614" y="270" width="172" height="100" rx="7"/>
+          <text class="t-b" x="626" y="293">Verifier</text>
+          <text class="t-s" x="626" y="312">re-checks by code,</text>
+          <text class="t-s" x="626" y="329">counts retries</text>
+          <text class="t-s" x="626" y="346">questions 8, 9</text>
+
+          <rect class="b-code" x="812" y="270" width="172" height="100" rx="7"/>
+          <text class="t-b" x="824" y="293">Act gate</text>
+          <text class="t-s" x="824" y="312">policy, one-time key,</text>
+          <text class="t-s" x="824" y="329">smallest write</text>
+          <text class="t-s" x="824" y="346">questions 5, 11</text>
+
+          <rect class="b-ext" x="1010" y="270" width="172" height="100" rx="7"/>
+          <text class="t-b" x="1022" y="293">Human + record</text>
+          <text class="t-s" x="1022" y="312">reviews, approves,</text>
+          <text class="t-s" x="1022" y="329">audit trail</text>
+          <text class="t-s" x="1022" y="346">question 12</text>
+
+          <path class="flow" d="M192 320 H214" marker-end="url(#ahp1)"/>
+          <path class="flow" d="M390 320 H412" marker-end="url(#ahp1)"/>
+          <path class="flow" d="M588 320 H610" marker-end="url(#ahp1)"/>
+          <path class="flow" d="M786 320 H808" marker-end="url(#ahp1)"/>
+          <path class="flow" d="M984 320 H1006" marker-end="url(#ahp1)"/>
+          <path class="flow" d="M555 166 V220 H106 V266" marker-end="url(#ahp1)"/>
+          <text class="t-s t-c" x="330" y="212">a worker pulls one item</text>
+          <path class="flow-d" d="M700 370 V388 H502 V374" marker-end="url(#ahdp1)"/>
+          <text class="t-s t-c" x="601" y="403">retry, capped</text>
+
+          <path class="flow-d" d="M60 370 V414 H880 V370"/>
+          <path class="flow-d" d="M720 370 V414"/>
+          <path class="flow-d" d="M106 414 V428" marker-end="url(#ahdp1)"/>
+          <text class="t-s" x="130" y="409">state reads and writes</text>
+
+          <rect class="b-store" x="20" y="430" width="380" height="70" rx="7"/>
+          <text class="t-b" x="32" y="452">State stores and kill switch</text>
+          <text class="t-s" x="32" y="470">Fast: kill switch, short-window storm counter</text>
+          <text class="t-s" x="32" y="487">Durable: one record per item (lock, lease, attempts)</text>
+
+          <rect class="b-store" x="640" y="430" width="340" height="70" rx="7"/>
+          <text class="t-b" x="652" y="452">Audit and eval store</text>
+          <text class="t-s" x="652" y="470">One trace per case: model calls, tools, verdicts</text>
+          <text class="t-s" x="652" y="487">Feeds offline replay and online acceptance</text>
+          <path class="flow-d" d="M940 370 V428" marker-end="url(#ahdp1)"/>
+          <path class="flow-d" d="M1096 370 V465 H984" marker-end="url(#ahdp1)"/>
+
+          <rect class="zone-ours" x="8" y="246" width="990" height="266" rx="10"/>
+          <text class="zl t-e" x="990" y="263">ONE WORKER JOB · THE HARNESS AROUND THE MODEL STEPS</text>
+        </svg>
+        <div class="fig-caption"><span>Figure 2A — The generic skeleton: two model steps with code on every side. In the example, Read agent = Agent 1, Work agent = Agent 2, Act gate = Agent 3.</span>
+          <div class="legend-items"><span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good)"></i> Plain code</span><span><i class="swatch-dot" style="background:var(--violet-soft);border-color:var(--violet)"></i> Model call</span><span><i class="swatch-dot" style="background:var(--amber-soft);border-color:var(--amber)"></i> State / queue</span><span><i class="swatch-dot" style="background:var(--panel);border-color:var(--muted)"></i> Existing control / human</span></div>
+        </div>
+      </div>
+
+      <div class="diagram-frame" id="fig-gcp" style="margin-top:22px;">
+        <svg viewBox="0 0 1200 522" role="img" aria-label="Figure 2B: the same skeleton mapped to Google Cloud services: Cloud Build/Monitoring, Cloud Run Receiver, Cloud Pub/Sub, Cloud Deploy fast path, Cloud Run Worker running ADK 2.x Workflow, Model Armor + Gemini 3.8 Flash, gVisor Sandbox, Secret Manager, Cloud Trace/BigQuery, Memorystore and Cloud Spanner.">
+          <defs>
+            <marker id="ahp2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--ink)"/></marker>
+            <marker id="ahdp2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker>
+            <marker id="ahgp2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--good)"/></marker>
+          </defs>
+          <rect class="b-ext" x="20" y="70" width="170" height="96" rx="7"/>
+          <text class="t-b" x="32" y="93">Event Sources</text>
+          <text class="t-s" x="32" y="112">Cloud Build, GitHub,</text>
+          <text class="t-s" x="32" y="129">Cloud Monitoring</text>
+          <text class="t-s" x="32" y="146">triggers</text>
+
+          <rect class="b-code" x="240" y="70" width="180" height="96" rx="7"/>
+          <text class="t-b" x="252" y="93">Cloud Run Ingress</text>
+          <text class="t-s" x="252" y="112">HMAC / OIDC check,</text>
+          <text class="t-s" x="252" y="129">fingerprint, 200 &lt;100ms</text>
+          <text class="t-s" x="252" y="146">stateless receiver</text>
+
+          <rect class="b-store" x="470" y="70" width="170" height="96" rx="7"/>
+          <text class="t-b" x="482" y="93">Cloud Pub/Sub</text>
+          <text class="t-s" x="482" y="112">ack at completion,</text>
+          <text class="t-s" x="482" y="129">backoff + DLQ topic</text>
+          <text class="t-s" x="482" y="146">durable queue</text>
+
+          <rect class="b-ext" x="760" y="70" width="420" height="96" rx="7"/>
+          <text class="t-b" x="772" y="93">Existing control · fast path · no model</text>
+          <text class="t-s" x="772" y="112">Cloud Deploy rollback, Cloud Armor block, failover</text>
+          <text class="t-s" x="772" y="146">acts in seconds, before any agent runs</text>
+
+          <path class="flow" d="M190 118 H236" marker-end="url(#ahp2)"/>
+          <path class="flow" d="M420 118 H466" marker-end="url(#ahp2)"/>
+          <path class="flow-g" d="M105 70 V36 H970 V66" marker-end="url(#ahgp2)"/>
+          <text class="t-b t-c" x="540" y="28">containment in seconds</text>
+
+          <rect class="b-code" x="20" y="270" width="172" height="100" rx="7"/>
+          <text class="t-b" x="32" y="293">Guard &amp; Lease</text>
+          <text class="t-s" x="32" y="312">Redis storm check,</text>
+          <text class="t-s" x="32" y="329">Spanner lease,</text>
+          <text class="t-s" x="32" y="346">starts ADK Workflow</text>
+
+          <rect class="b-model" x="218" y="270" width="172" height="100" rx="7"/>
+          <text class="t-b" x="230" y="293">Read agent · Gemini</text>
+          <text class="t-s" x="230" y="312">Cloud Logging +</text>
+          <text class="t-s" x="230" y="329">Model Armor → Flash</text>
+          <text class="t-s" x="230" y="346">one call, no tools</text>
+
+          <rect class="b-model" x="416" y="270" width="172" height="100" rx="7"/>
+          <text class="t-b" x="428" y="293">Work agent · Sandbox</text>
+          <text class="t-s" x="428" y="312">bounded model loop,</text>
+          <text class="t-s" x="428" y="329">tools in gVisor sandbox:</text>
+          <text class="t-s" x="428" y="346">no network, no IAM</text>
+
+          <rect class="b-code" x="614" y="270" width="172" height="100" rx="7"/>
+          <text class="t-b" x="626" y="293">Verifier Node</text>
+          <text class="t-s" x="626" y="312">re-check in fresh sandbox,</text>
+          <text class="t-s" x="626" y="329">policy gate in code,</text>
+          <text class="t-s" x="626" y="346">code picks the route</text>
+
+          <rect class="b-code" x="812" y="270" width="172" height="100" rx="7"/>
+          <text class="t-b" x="824" y="293">Act gate</text>
+          <text class="t-s" x="824" y="312">Spanner fencing check,</text>
+          <text class="t-s" x="824" y="329">Secret Manager token</text>
+          <text class="t-s" x="824" y="346">narrow, idempotent write</text>
+
+          <rect class="b-ext" x="1010" y="270" width="172" height="100" rx="7"/>
+          <text class="t-b" x="1022" y="293">Human + Trace</text>
+          <text class="t-s" x="1022" y="312">reviewer approves,</text>
+          <text class="t-s" x="1022" y="329">Cloud Trace + BQ</text>
+          <text class="t-s" x="1022" y="346">offline/online evals</text>
+
+          <path class="flow" d="M192 320 H214" marker-end="url(#ahp2)"/>
+          <path class="flow" d="M390 320 H412" marker-end="url(#ahp2)"/>
+          <path class="flow" d="M588 320 H610" marker-end="url(#ahp2)"/>
+          <path class="flow" d="M786 320 H808" marker-end="url(#ahp2)"/>
+          <path class="flow" d="M984 320 H1006" marker-end="url(#ahp2)"/>
+          <path class="flow" d="M555 166 V220 H106 V266" marker-end="url(#ahp2)"/>
+          <text class="t-s t-c" x="330" y="212">Cloud Run Worker pulls message</text>
+          <path class="flow-d" d="M700 370 V388 H502 V374" marker-end="url(#ahdp2)"/>
+          <text class="t-s t-c" x="601" y="403">retry, capped</text>
+
+          <path class="flow-d" d="M60 370 V414 H880 V370"/>
+          <path class="flow-d" d="M720 370 V414"/>
+          <path class="flow-d" d="M106 414 V428" marker-end="url(#ahdp2)"/>
+          <text class="t-s" x="130" y="409">state reads and writes</text>
+
+          <rect class="b-store" x="20" y="430" width="380" height="70" rx="7"/>
+          <text class="t-b" x="32" y="452">Memorystore + Cloud Spanner</text>
+          <text class="t-s" x="32" y="470">Redis: kill switch, storm counter</text>
+          <text class="t-s" x="32" y="487">Spanner: one row per item (lock, lease, attempts)</text>
+
+          <rect class="b-store" x="640" y="430" width="340" height="70" rx="7"/>
+          <text class="t-b" x="652" y="452">Cloud Trace + BigQuery</text>
+          <text class="t-s" x="652" y="470">One trace per case and per tool call</text>
+          <text class="t-s" x="652" y="487">BigQuery tables feed offline and online evals</text>
+          <path class="flow-d" d="M940 370 V428" marker-end="url(#ahdp2)"/>
+          <path class="flow-d" d="M1096 370 V465 H984" marker-end="url(#ahdp2)"/>
+
+          <rect class="zone-ours" x="8" y="246" width="990" height="266" rx="10"/>
+          <text class="zl t-e" x="990" y="263">CLOUD RUN WORKER OR AGENT RUNTIME · ADK 2.x WORKFLOW GRAPH</text>
+        </svg>
+        <div class="fig-caption"><span>Figure 2B — The same skeleton on Google Cloud. Each box keeps the role it has in Figure 2A.</span>
+          <div class="legend-items"><span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good)"></i> Plain code</span><span><i class="swatch-dot" style="background:var(--violet-soft);border-color:var(--violet)"></i> Model call</span><span><i class="swatch-dot" style="background:var(--amber-soft);border-color:var(--amber)"></i> State / queue</span><span><i class="swatch-dot" style="background:var(--panel);border-color:var(--muted)"></i> Existing control / human</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" id="questions">
+    <div class="sheet-h">
+      <div>
+        <span class="sec-badge">The Playbook</span>
+        <h2>Twelve Questions for Any Agentic System</h2>
+        <p>Ask them in this order. Each card shows what breaks if you skip it, what to decide, and how it applies to the self-healing repo.</p>
+      </div>
+    </div>
+    <div class="sheet-b">
+      <div class="q-group-title">Before drawing</div>
+
+      <div class="qb" id="q1">
+        <div class="qh"><div class="n">1</div><h3>What wakes the system up, and what is in the wake-up message?</h3></div>
+        <div class="q3">
+          <div class="a"><span class="lab">Skip it and…</span><ul><li>You design for one trigger and miss two others.</li><li>Every agent has to understand every sender's format.</li><li>Someone puts 50 MB of logs inside a queue message.</li></ul></div>
+          <div class="b"><span class="lab">Decide</span><ul><li>List every source that can start the work.</li><li>Normalize into one common message: id, source, subject, exact version, duplicate key, and a <em>pointer</em> to the data.</li></ul></div>
+          <div class="c"><span class="lab">In the self-healing repo</span><ul><li>Sources: CI, the CD controller, and post-deploy monitoring.</li><li><code>FailureEvent(repo, commit_sha, failure_fingerprint, log_pointer)</code>.</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qb" id="q2">
+        <div class="qh"><div class="n">2</div><h3>How big is it really?</h3></div>
+        <div class="q3">
+          <div class="a"><span class="lab">Skip it and…</span><ul><li>You spend time sizing model capacity for the headline number.</li><li>You optimize for throughput when the real problem is correctness.</li></ul></div>
+          <div class="b"><span class="lab">Decide</span><ul><li>Multiply headline volume by failure rate to get events per day and per hour.</li><li>Name what kind of problem that makes it: scale, or correctness and safety.</li><li>Estimate cost per case, cache static instructions, and escalate to stronger models or higher thinking only on retries.</li></ul></div>
+          <div class="c"><span class="lab">In the self-healing repo</span><ul><li>10,000 × 1% = 100 failures a day, about 4 an hour.</li><li>Attempt 1 uses a fast model (<code>LOW</code> thinking) with cached repo rules; only <code>RETRY</code> escalates.</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qb" id="q3">
+        <div class="qh"><div class="n">3</div><h3>What must happen in seconds, and who does it?</h3></div>
+        <div class="q3">
+          <div class="a"><span class="lab">Skip it and…</span><ul><li>Users wait minutes while a model diagnoses the bug.</li><li>The agent ends up holding control of live production traffic.</li></ul></div>
+          <div class="b"><span class="lab">Decide</span><ul><li>Find the fast, model-free control that already exists: rollback, block, rate-limit, fallback.</li><li>Keep containment in existing tooling. The agents work on a second clock afterwards.</li></ul></div>
+          <div class="c"><span class="lab">In the self-healing repo</span><ul><li>The CD controller halts the canary and rolls back in seconds.</li><li>The agents repair the code afterwards and never touch live traffic.</li></ul></div>
+        </div>
+      </div>
+
+      <div class="q-group-title">The plumbing</div>
+
+      <div class="qb" id="q4">
+        <div class="qh"><div class="n">4</div><h3>How does work get from the event to a worker without being lost?</h3></div>
+        <div class="q3">
+          <div class="a"><span class="lab">Skip it and…</span><ul><li>The sender times out waiting for a slow model run.</li><li>A burst drops events.</li><li>Anyone can post fake events to the endpoint.</li></ul></div>
+          <div class="b"><span class="lab">Decide</span><ul><li>Put a small receiver in front: verify the sender, filter noise, reply at once.</li><li>Put a queue between receiver and worker; acknowledge only at completion.</li><li>Retry with exponential backoff (model quota errors included) and dead-letter after N failures.</li></ul></div>
+          <div class="c"><span class="lab">In the self-healing repo</span><ul><li>Webhook receiver → Pub/Sub → worker job.</li><li>Verify signature, reply 200 in under a second, dead-letter after 5 tries.</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qb" id="q5">
+        <div class="qh"><div class="n">5</div><h3>How do I avoid doing the same thing twice?</h3></div>
+        <div class="q3">
+          <div class="a"><span class="lab">Skip it and…</span><ul><li>Fifteen identical pull requests, tickets, or refunds.</li><li>A retry repeats a write that already succeeded.</li></ul></div>
+          <div class="b"><span class="lab">Decide</span><ul><li>Compute a deterministic key in code from stable fields—never by a model.</li><li>Keep one durable record per key with an explicit state.</li><li>Check the record before working, and pass an idempotency key on the write.</li></ul></div>
+          <div class="c"><span class="lab">In the self-healing repo</span><ul><li><code>failure_fingerprint</code>: hash of error type, code location, and cleaned message.</li><li>One <code>incidents</code> row per <code>(repo, fingerprint)</code>: <code>IN_PROGRESS</code>, <code>PR_OPENED</code>, <code>ESCALATED</code>.</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qb" id="q6">
+        <div class="qh"><div class="n">6</div><h3>How do I tell one problem from everything being on fire?</h3></div>
+        <div class="q3">
+          <div class="a"><span class="lab">Skip it and…</span><ul><li>A shared registry or base-image outage makes every worker "fix" healthy code.</li><li>Token budget burns and humans get flooded.</li></ul></div>
+          <div class="b"><span class="lab">Decide</span><ul><li>Maintain a shared, short-window count of <em>distinct</em> things failing.</li><li>Above a threshold, trip a circuit breaker, park incoming work, and alert once.</li><li>Provide a manual kill switch, and let one probe through after cool-off.</li></ul></div>
+          <div class="c"><span class="lab">In the self-healing repo</span><ul><li>Redis set of distinct repos failing in the last 5 minutes.</li><li>5 or more repos → pause PR creation for 15 minutes and page on-call.</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qb" id="q7">
+        <div class="qh"><div class="n">7</div><h3>What happens when a worker dies halfway?</h3></div>
+        <div class="q3">
+          <div class="a"><span class="lab">Skip it and…</span><ul><li>Acknowledged on receipt: the work is lost when the worker crashes.</li><li>Locked with no expiry: the work stays stuck forever.</li></ul></div>
+          <div class="b"><span class="lab">Decide</span><ul><li>Acknowledge the queue message only after the final step succeeds.</li><li>Claim work with a lease that expires, and renew it on a heartbeat while alive.</li><li>Right before any external write, re-check ownership (fencing) and that the target has not moved on.</li></ul></div>
+          <div class="c"><span class="lab">In the self-healing repo</span><ul><li>Pub/Sub redelivery if the worker dies.</li><li>120-second lease in the incident row, renewed every 30 seconds; fencing check before opening the PR.</li></ul></div>
+        </div>
+      </div>
+
+      <div class="q-group-title">The agents and the harness</div>
+
+      <div class="qb" id="q8">
+        <div class="qh"><div class="n">8</div><h3>Which steps need a model, which are code, and what is the harness?</h3></div>
+        <div class="q3">
+          <div class="a"><span class="lab">Skip it and…</span><ul><li>"Three models chatting": unpredictable, unbounded, impossible to audit.</li><li>A model grades its own work (and agrees with its own mistakes).</li><li>An agent runs on a host with credentials and cannot isolate itself.</li></ul></div>
+          <div class="b"><span class="lab">Decide</span><ul><li>Give each step the least autonomy that works (<a href="#model-or-code">four-row test</a>). If each of ten model steps is right 95% of the time, all ten are right about 60% of the time.</li><li>Wrap the model steps in a <strong>harness</strong>: the code around the model that owns state, what each model sees, retry counters, secrets and sandboxes.</li><li>Fix the control flow as a graph when every case follows the same steps or a mistake is costly. Let the model choose its steps only for open-ended, supervised work.</li></ul></div>
+          <div class="c"><span class="lab">In the self-healing repo</span><ul><li><strong>Agent 1 (Detect):</strong> rules + one schema-bound call, no tools.</li><li><strong>Agent 2 (Fix):</strong> bounded loop. Its tools run in Sandbox 1 (no network, no IAM).</li><li><strong>Verifier and Agent 3 (Open PR):</strong> plain code. The verifier also rejects a patch that deletes or skips tests.</li></ul></div>
+        </div>
+      </div>
+
+      <div class="diagram-frame" id="fig-harness">
+        <svg viewBox="0 0 960 400" role="img" aria-label="Figure 3: the deterministic workflow worker (harness) running the full workflow graph: Agent 1, Agent 2 in Sandbox 1, Verifier in Sandbox 2, and Agent 3 on the worker host">
+          <defs>
+            <marker id="f3h-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--ink)"/></marker>
+            <marker id="f3h-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--good)"/></marker>
+            <marker id="f3h-stop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--stop)"/></marker>
+          </defs>
+          <rect x="10" y="10" width="940" height="380" rx="12" style="fill:var(--good-soft);stroke:var(--good);stroke-width:1.8"/>
+          <text x="26" y="34" style="font-family:var(--mono);font-size:13px;font-weight:700;fill:var(--good)">DETERMINISTIC WORKFLOW WORKER · THE HARNESS AROUND THE AGENTS</text>
+          <text x="934" y="34" text-anchor="end" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">Plain code owns state, retries, credentials &amp; sandboxes</text>
+
+          <!-- Agent 1 -->
+          <rect x="24" y="88" width="180" height="114" rx="8" style="fill:var(--violet-soft);stroke:var(--violet);stroke-width:1.6"/>
+          <text x="114" y="114" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Agent 1 · Detect</text>
+          <text x="114" y="136" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">One call · no tools</text>
+          <text x="114" y="158" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">100 screened log lines</text>
+          <text x="114" y="178" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--good)">→ IncidentReport</text>
+
+          <line x1="204" y1="145" x2="234" y2="145" style="stroke:var(--ink);stroke-width:1.8" marker-end="url(#f3h-ink)"/>
+
+          <!-- Sandbox 1 + Agent 2 -->
+          <rect x="236" y="54" width="244" height="164" rx="10" style="fill:var(--panel-2);stroke:var(--cyan);stroke-width:1.6;stroke-dasharray:6 4"/>
+          <text x="358" y="75" text-anchor="middle" style="font-family:var(--mono);font-size:10.5px;font-weight:700;fill:var(--cyan)">TOOLS RUN IN SANDBOX 1 · NO NET</text>
+          <rect x="250" y="88" width="216" height="114" rx="8" style="fill:var(--violet-soft);stroke:var(--violet);stroke-width:1.6"/>
+          <text x="358" y="114" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Agent 2 · Suggest fix</text>
+          <text x="358" y="136" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">Bounded model loop</text>
+          <text x="358" y="158" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">search · read · patch · test</text>
+          <text x="358" y="178" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--good)">→ ProposedPatch</text>
+
+          <line x1="480" y1="145" x2="510" y2="145" style="stroke:var(--ink);stroke-width:1.8" marker-end="url(#f3h-ink)"/>
+
+          <!-- Sandbox 2 + Verifier -->
+          <rect x="512" y="54" width="218" height="164" rx="10" style="fill:var(--panel-2);stroke:var(--cyan);stroke-width:1.6;stroke-dasharray:6 4"/>
+          <text x="621" y="75" text-anchor="middle" style="font-family:var(--mono);font-size:10.5px;font-weight:700;fill:var(--cyan)">SANDBOX 2 · FRESH CHECK</text>
+          <rect x="526" y="88" width="190" height="114" rx="8" style="fill:var(--panel);stroke:var(--good);stroke-width:1.6"/>
+          <text x="621" y="114" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Verifier (Code)</text>
+          <text x="621" y="136" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">Code · no model</text>
+          <text x="621" y="158" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">Re-runs full pytest</text>
+          <text x="621" y="178" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">Protected paths &amp; diff cap</text>
+
+          <line x1="730" y1="145" x2="760" y2="145" style="stroke:var(--good);stroke-width:1.8" marker-end="url(#f3h-good)"/>
+          <text x="745" y="130" text-anchor="middle" style="font-family:var(--mono);font-size:10.5px;font-weight:700;fill:var(--good)">PASS</text>
+
+          <!-- Agent 3 -->
+          <rect x="762" y="88" width="174" height="114" rx="8" style="fill:var(--violet-soft);stroke:var(--violet);stroke-width:1.6"/>
+          <text x="849" y="114" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Agent 3 · Open PR</text>
+          <text x="849" y="136" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">Code · no model</text>
+          <text x="849" y="158" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">Fencing + PR token</text>
+          <text x="849" y="178" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--good)">→ Draft PR</text>
+
+          <!-- Retry back-edge -->
+          <path d="M580 202 V250 H358 V206" style="fill:none;stroke:var(--stop);stroke-width:1.8;stroke-dasharray:5 4" marker-end="url(#f3h-stop)"/>
+          <text x="469" y="242" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;font-weight:700;fill:var(--stop)">RETRY (&lt;3) with test output</text>
+
+          <!-- Escalate -->
+          <path d="M690 202 V242 H758" style="fill:none;stroke:var(--ink);stroke-width:1.6" marker-end="url(#f3h-ink)"/>
+          <text x="724" y="236" text-anchor="middle" style="font-family:var(--mono);font-size:11px;font-weight:700;fill:var(--muted)">FAIL</text>
+          <rect x="762" y="222" width="174" height="40" rx="8" style="fill:var(--panel);stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4"/>
+          <text x="849" y="247" text-anchor="middle" style="font-family:var(--sans);font-size:13px;font-weight:700;fill:var(--ink)">Escalate to a person</text>
+
+          <!-- Host-only box -->
+          <rect x="24" y="282" width="912" height="90" rx="8" style="fill:var(--panel);stroke:var(--stop);stroke-width:1.5"/>
+          <text x="40" y="306" style="font-family:var(--mono);font-size:12px;font-weight:700;fill:var(--stop)">HELD ON WORKER HOST BY HARNESS (NEVER IN SANDBOX 1 OR 2)</text>
+          <text x="40" y="330" style="font-family:var(--sans);font-size:12.5px;fill:var(--ink)">• GitHub App PR write token &amp; worker cloud IAM credentials (used only by Agent 3 on the host)</text>
+          <text x="40" y="352" style="font-family:var(--sans);font-size:12.5px;fill:var(--ink)">• State machine, attempt counter, lease, protected-path rules, and raw logs (never passed past Agent 1)</text>
+        </svg>
+        <div class="fig-caption"><span>Figure 3 — Inside the harness for the example. Agent 3 is named an agent by the task and contains no model.</span>
+          <div class="legend-items"><span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good)"></i> Harness / Code</span><span><i class="swatch-dot" style="background:var(--violet-soft);border-color:var(--violet)"></i> Agent named in the task</span><span><i class="swatch-dot" style="background:var(--panel-2);border-color:var(--cyan)"></i> Isolated sandbox</span></div>
+        </div>
+      </div>
+
+      <div class="code-card">
+        <div class="code-title">The same graph sketched with ADK 2.x Workflow (agent and helper definitions omitted)</div>
+<pre><span class="hl-k">from</span> google.adk <span class="hl-k">import</span> Agent, Context, Event, Workflow
+
+<span class="hl-k">def</span> <span class="hl-b">verify_patch_in_sandbox</span>(ctx: Context, patch: ProposedPatch) -&gt; Event:
+    <span class="hl-k">if</span> touches_protected_path(patch.target_files):
+        <span class="hl-k">return</span> Event(route=<span class="hl-s">"ESCALATE"</span>, output={<span class="hl-s">"reason"</span>: <span class="hl-s">"protected_path"</span>})
+    result = run_sandbox_tests(patch.unified_diff)  <span class="hl-c"># --network=none, 0 creds</span>
+    <span class="hl-k">if</span> result[<span class="hl-s">"passed"</span>]:
+        <span class="hl-k">return</span> Event(route=<span class="hl-s">"OPEN_PR"</span>, output={<span class="hl-s">"patch"</span>: patch, <span class="hl-s">"stdout"</span>: result[<span class="hl-s">"stdout"</span>]})
+    attempts = ctx.state.get(<span class="hl-s">"fix_attempts"</span>, <span class="hl-n">0</span>) + <span class="hl-n">1</span>
+    ctx.state[<span class="hl-s">"fix_attempts"</span>] = attempts
+    <span class="hl-k">if</span> attempts &lt; <span class="hl-n">3</span>:
+        <span class="hl-k">return</span> Event(route=<span class="hl-s">"RETRY"</span>, output={<span class="hl-s">"stderr"</span>: result[<span class="hl-s">"stderr"</span>][:<span class="hl-n">2000</span>]})
+    <span class="hl-k">return</span> Event(route=<span class="hl-s">"ESCALATE"</span>, output={<span class="hl-s">"reason"</span>: <span class="hl-s">"max_attempts_exhausted"</span>})
+
+self_healing_workflow = Workflow(
+    name=<span class="hl-s">"self_healing_code_repo"</span>,
+    edges=[
+        (<span class="hl-s">"START"</span>, dedup_and_circuit_breaker),
+        (dedup_and_circuit_breaker, {<span class="hl-s">"ANALYZE"</span>: detector_agent, <span class="hl-s">"SKIP"</span>: skip_node, <span class="hl-s">"ESCALATE"</span>: escalate_node}),
+        (detector_agent, fixer_coding_agent),         <span class="hl-c"># typed IncidentReport handoff</span>
+        (fixer_coding_agent, verify_patch_in_sandbox), <span class="hl-c"># typed ProposedPatch handoff</span>
+        (verify_patch_in_sandbox, {
+            <span class="hl-s">"OPEN_PR"</span>: open_draft_pr,                 <span class="hl-c"># Agent 3: plain code + PR token</span>
+            <span class="hl-s">"RETRY"</span>: fixer_coding_agent,              <span class="hl-c"># code-owned back-edge</span>
+            <span class="hl-s">"ESCALATE"</span>: escalate_node,
+        }),
+    ],
+)</pre>
+      </div>
+
+      <div class="post-prose">
+        <h3>What Is Deployed</h3>
+        <p>
+          The three agents are not three deployments. They are nodes of one workflow graph inside one worker service. The guard is the first node: plain code that decides whether this case should run at all. Agent 1 and Agent 2 are model nodes. Agent 3 is a function node, and so are the guard, the verifier and the escalation step. One queue message starts one run of the graph, and the message is acknowledged when the run ends.
+        </p>
+        <p>
+          Agent 2's model calls leave from the worker, which can reach the model endpoint. Only its tools run in the sandbox, which has no network and no credentials.
+        </p>
+        <p>
+          A node becomes its own service only for a reason: it needs a different identity or network boundary, it scales differently, or another team owns it. The typed contract between the two stays the same.
+        </p>
+      </div>
+      <div class="diagram-frame" id="fig-deploy">
+        <svg viewBox="0 0 960 500" role="img" aria-label="Figure 4: deployment view on Google Cloud. A Cloud Run receiver publishes to Pub/Sub. One Cloud Run worker service runs one ADK Workflow whose nodes are a guard function, Agent 1 and Agent 2 as model nodes, a verifier function and Agent 3 as a function node. Each node calls only the Google Cloud services its step needs.">
+          <defs>
+            <marker id="f4-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--ink)"/></marker>
+            <marker id="f4-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker>
+            <marker id="f4-stop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--stop)"/></marker>
+          </defs>
+          <rect x="24" y="30" width="172" height="70" rx="8" style="fill:var(--panel);stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4"/>
+          <text x="36" y="58" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Event sources</text>
+          <text x="36" y="80" style="font-family:var(--sans);font-size:12px;fill:var(--muted)">CI, CD, monitoring</text>
+          <line x1="196" y1="65" x2="217" y2="65" style="stroke:var(--ink);stroke-width:1.8" marker-end="url(#f4-ink)"/>
+          <rect x="220" y="30" width="220" height="70" rx="8" style="fill:var(--good-soft);stroke:var(--good);stroke-width:1.6"/>
+          <text x="232" y="58" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Cloud Run · receiver</text>
+          <text x="232" y="80" style="font-family:var(--sans);font-size:12px;fill:var(--muted)">verify sender, normalize, reply</text>
+          <line x1="440" y1="65" x2="461" y2="65" style="stroke:var(--ink);stroke-width:1.8" marker-end="url(#f4-ink)"/>
+          <rect x="464" y="30" width="236" height="70" rx="8" style="fill:var(--amber-soft);stroke:var(--amber);stroke-width:1.6"/>
+          <text x="476" y="58" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Pub/Sub + dead-letter topic</text>
+          <text x="476" y="80" style="font-family:var(--sans);font-size:12px;fill:var(--muted)">redelivers until acknowledged</text>
+          <line x1="582" y1="100" x2="582" y2="126" style="stroke:var(--ink);stroke-width:1.8" marker-end="url(#f4-ink)"/>
+          <text x="596" y="119" style="font-family:var(--sans);font-size:12px;fill:var(--muted)">one message = one run</text>
+          <rect x="724" y="30" width="212" height="70" rx="8" style="fill:var(--panel);stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4"/>
+          <text x="736" y="54" style="font-family:var(--sans);font-size:12.5px;font-weight:700;fill:var(--ink)">Alternative host</text>
+          <text x="736" y="73" style="font-family:var(--sans);font-size:12px;fill:var(--muted)">Agent Runtime runs the same</text>
+          <text x="736" y="90" style="font-family:var(--sans);font-size:12px;fill:var(--muted)">graph; a dispatcher calls it</text>
+
+          <rect x="12" y="130" width="936" height="182" rx="12" style="fill:var(--good-soft);stroke:var(--good);stroke-width:1.8"/>
+          <text x="26" y="153" style="font-family:var(--mono);font-size:12.5px;font-weight:700;fill:var(--good)">ONE CLOUD RUN SERVICE · ONE ADK APP · root_agent = Workflow</text>
+          <text x="934" y="153" text-anchor="end" style="font-family:var(--mono);font-size:11px;fill:var(--muted)">PASS → Agent 3 · RETRY → Agent 2 · FAIL → escalate node</text>
+          <rect x="24" y="170" width="164" height="104" rx="8" style="fill:var(--panel);stroke:var(--good);stroke-width:1.6"/>
+          <text x="106" y="194" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Guard</text>
+          <text x="106" y="214" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">function node</text>
+          <text x="106" y="238" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">duplicate? storm?</text>
+          <text x="106" y="258" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--good)">claims the case</text>
+          <line x1="106" y1="274" x2="106" y2="386" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:5 4" marker-end="url(#f4-muted)"/>
+          <rect x="211" y="170" width="164" height="104" rx="8" style="fill:var(--violet-soft);stroke:var(--violet);stroke-width:1.6"/>
+          <text x="293" y="194" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Agent 1 · Detect</text>
+          <text x="293" y="214" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">LlmAgent node</text>
+          <text x="293" y="238" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">one turn, no tools</text>
+          <text x="293" y="258" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--good)">→ IncidentReport</text>
+          <line x1="293" y1="274" x2="293" y2="386" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:5 4" marker-end="url(#f4-muted)"/>
+          <rect x="398" y="170" width="164" height="104" rx="8" style="fill:var(--violet-soft);stroke:var(--violet);stroke-width:1.6"/>
+          <text x="480" y="194" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Agent 2 · Suggest fix</text>
+          <text x="480" y="214" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">LlmAgent node</text>
+          <text x="480" y="238" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">4 tools, step cap</text>
+          <text x="480" y="258" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--good)">→ ProposedPatch</text>
+          <line x1="480" y1="274" x2="480" y2="386" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:5 4" marker-end="url(#f4-muted)"/>
+          <rect x="585" y="170" width="164" height="104" rx="8" style="fill:var(--panel);stroke:var(--good);stroke-width:1.6"/>
+          <text x="667" y="194" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Verifier</text>
+          <text x="667" y="214" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">function node</text>
+          <text x="667" y="238" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">tests and policy</text>
+          <text x="667" y="258" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--good)">returns the route</text>
+          <line x1="667" y1="274" x2="667" y2="386" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:5 4" marker-end="url(#f4-muted)"/>
+          <rect x="772" y="170" width="164" height="104" rx="8" style="fill:var(--violet-soft);stroke:var(--violet);stroke-width:1.6"/>
+          <text x="854" y="194" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Agent 3 · Open PR</text>
+          <text x="854" y="214" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">function node</text>
+          <text x="854" y="238" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">code, no model</text>
+          <text x="854" y="258" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--good)">→ draft PR</text>
+          <line x1="854" y1="274" x2="854" y2="386" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:5 4" marker-end="url(#f4-muted)"/>
+          <line x1="188" y1="222" x2="208" y2="222" style="stroke:var(--ink);stroke-width:1.8" marker-end="url(#f4-ink)"/>
+          <line x1="375" y1="222" x2="395" y2="222" style="stroke:var(--ink);stroke-width:1.8" marker-end="url(#f4-ink)"/>
+          <line x1="562" y1="222" x2="582" y2="222" style="stroke:var(--ink);stroke-width:1.8" marker-end="url(#f4-ink)"/>
+          <line x1="749" y1="222" x2="769" y2="222" style="stroke:var(--ink);stroke-width:1.8" marker-end="url(#f4-ink)"/>
+          <path d="M640 274 V296 H520 V278" style="fill:none;stroke:var(--stop);stroke-width:1.8;stroke-dasharray:5 4" marker-end="url(#f4-stop)"/>
+          <rect x="24" y="390" width="164" height="96" rx="8" style="fill:var(--amber-soft);stroke:var(--amber);stroke-width:1.5"/>
+          <text x="34" y="412" style="font-family:var(--sans);font-size:12.5px;font-weight:700;fill:var(--ink)">Memorystore, Spanner</text>
+          <text x="34" y="434" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">storm count, kill switch</text>
+          <text x="34" y="453" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">claim row with a lease</text>
+          <rect x="211" y="390" width="164" height="96" rx="8" style="fill:var(--amber-soft);stroke:var(--amber);stroke-width:1.5"/>
+          <text x="221" y="412" style="font-family:var(--sans);font-size:12.5px;font-weight:700;fill:var(--ink)">Logging, Model Armor</text>
+          <text x="221" y="434" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">fetch and screen lines</text>
+          <text x="221" y="453" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">Gemini: one schema call</text>
+          <rect x="398" y="390" width="164" height="96" rx="8" style="fill:var(--amber-soft);stroke:var(--amber);stroke-width:1.5"/>
+          <text x="408" y="412" style="font-family:var(--sans);font-size:12.5px;font-weight:700;fill:var(--ink)">Gemini + Sandbox 1</text>
+          <text x="408" y="434" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">model call from worker</text>
+          <text x="408" y="453" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">tools run in sandbox:</text>
+          <text x="408" y="472" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">no network, no IAM</text>
+          <rect x="585" y="390" width="164" height="96" rx="8" style="fill:var(--amber-soft);stroke:var(--amber);stroke-width:1.5"/>
+          <text x="595" y="412" style="font-family:var(--sans);font-size:12.5px;font-weight:700;fill:var(--ink)">Sandbox 2, Spanner</text>
+          <text x="595" y="434" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">fresh copy, re-run tests</text>
+          <text x="595" y="453" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">attempt count in row</text>
+          <rect x="772" y="390" width="164" height="96" rx="8" style="fill:var(--amber-soft);stroke:var(--amber);stroke-width:1.5"/>
+          <text x="782" y="412" style="font-family:var(--sans);font-size:12.5px;font-weight:700;fill:var(--ink)">Secret Manager, GitHub</text>
+          <text x="782" y="434" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">fencing check, Spanner</text>
+          <text x="782" y="453" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">token → draft PR → ack</text>
+        </svg>
+        <div class="fig-caption"><span>Figure 4 — The example deployed on Google Cloud: one worker service, one workflow graph, and what each node calls.</span>
+          <div class="legend-items"><span><i class="swatch-dot" style="background:var(--violet-soft);border-color:var(--violet)"></i> Agent named in the task</span><span><i class="swatch-dot" style="background:var(--panel);border-color:var(--good)"></i> Function node</span><span><i class="swatch-dot" style="background:var(--amber-soft);border-color:var(--amber)"></i> Google Cloud service</span></div>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th style="width:11%">Step</th><th style="width:11%">Kind</th><th style="width:14%">Receives</th><th style="width:26%">What it does</th><th style="width:24%">Tools and services it calls</th><th>Returns</th></tr></thead>
+          <tbody>
+              <tr><td><b>Receiver</b></td><td>Separate Cloud Run service, no model</td><td>Webhook from CI, the CD controller or monitoring</td><td>Verifies the signature or identity token. Drops healthy deployments. Computes <code>failure_fingerprint</code> from error type, code location and cleaned message. Replies at once.</td><td>Pub/Sub publish</td><td><code>FailureEvent(repo, commit_sha, failure_fingerprint, log_pointer)</code></td></tr>
+              <tr><td><b>Guard</b></td><td>Function node</td><td><code>FailureEvent</code></td><td>Reads the kill switch. Adds the repo to the five-minute storm set and counts distinct repos. Looks up the incident row for <code>(repo, fingerprint)</code>: if a pull request is open or another worker holds a live lease, it stops. Otherwise it claims the row with a 120-second lease, renewed every 30 seconds.</td><td>Memorystore (Redis) for the kill switch and storm set. Spanner transaction on the incident row.</td><td>Route: <code>ANALYZE</code>, <code>SKIP</code> or <code>ESCALATE</code></td></tr>
+              <tr><td><b>Agent 1 · Detect</b></td><td><code>LlmAgent</code> node, one turn</td><td>A pointer to the logs, resolved by worker code into at most 100 screened error lines</td><td>Classifies the failure and names the suspected files. Treats log text as data. May answer <code>flaky</code> or <code>unknown</code>.</td><td>Tools: none. Worker code before the call: Cloud Logging query by deployment id, Model Armor screening. Model: Gemini with a fixed output schema.</td><td><code>IncidentReport(category, suspected_files, failing_test, confidence)</code></td></tr>
+              <tr><td><b>Agent 2 · Suggest fix</b></td><td><code>LlmAgent</code> node, bounded loop</td><td><code>IncidentReport</code>. On a retry, also the verifier's test output, truncated.</td><td>Reproduces the failure, reads around it, applies the smallest patch, runs the tests. Stops at a step cap and a time cap.</td><td>Tools, all executing in Sandbox 1 at the failing commit: <code>ripgrep_search(pattern, path)</code>, <code>read_file_lines(path, start, end)</code>, <code>apply_patch(unified_diff)</code>, <code>run_sandbox_tests()</code>. Model: Gemini, called from the worker, with a stronger setting on retries.</td><td><code>ProposedPatch(target_files, unified_diff, explanation)</code></td></tr>
+              <tr><td><b>Verifier</b></td><td>Function node, no model</td><td><code>ProposedPatch</code></td><td>Applies the diff to a fresh copy and re-runs the full test suite. Rejects protected paths, oversized diffs, and deleted or skipped tests. Increments the attempt counter.</td><td>Sandbox 2. The attempt counter is written by code: workflow state in the sketch above, the incident row if it has to survive a worker crash.</td><td>Route: <code>OPEN_PR</code>, <code>RETRY</code> (fewer than 3 attempts) or <code>ESCALATE</code></td></tr>
+              <tr><td><b>Agent 3 · Open PR</b></td><td>Function node, no model</td><td>The verified patch and the verifier's test output</td><td>Checks that this worker still owns the incident row. Pushes a branch, opens a draft pull request with the evidence, requests review from the code owners, records <code>PR_OPENED</code>. The run ends and the message is acknowledged.</td><td>Spanner for the ownership check and final state. Secret Manager for the GitHub App token. GitHub API, limited to <code>autofix/*</code> branches.</td><td>Draft pull request</td></tr>
+              <tr><td><b>Escalate</b></td><td>Function node, no model</td><td>The reason and what was tried</td><td>Opens an issue for a person, records <code>ESCALATED</code>. No pull request.</td><td>GitHub issue or pager. Spanner for the final state.</td><td>Issue for a person</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="qb" id="q9">
+        <div class="qh"><div class="n">9</div><h3>What passes between the agents, and who decides what is next?</h3></div>
+        <div class="q3">
+          <div class="a"><span class="lab">Skip it and…</span><ul><li>Each agent reinterprets the previous one's prose; errors compound.</li><li>Injected text travels straight into the agent that can act.</li><li>A retry loop has no exit.</li></ul></div>
+          <div class="b"><span class="lab">Decide</span><ul><li>Use typed contracts with a few validated fields—never raw chat history.</li><li>Keep routing (<code>PASS</code>, <code>RETRY</code>, <code>ESCALATE</code>) and retry counters in code.</li><li>If subtasks run in parallel, keep helper subagents read-only and leave writes to one owner.</li></ul></div>
+          <div class="c"><span class="lab">In the self-healing repo</span><ul><li><code>FailureEvent</code> → <code>IncidentReport</code> → <code>ProposedPatch</code>.</li><li>The verifier returns one of three routes; capped at 3 attempts.</li><li>Agent 1 may answer <code>flaky</code> or <code>unknown</code>: no patch, escalate.</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qb" id="q10">
+        <div class="qh"><div class="n">10</div><h3>Where does the data live, and how does the agent read it?</h3></div>
+        <div class="q3">
+          <div class="a"><span class="lab">Skip it and…</span><ul><li>A pre-built copy goes stale or drops access rules.</li><li>The model gets flooded with whole files or noisy stack traces.</li><li>Models poison shared long-term memory across runs.</li></ul></div>
+          <div class="b"><span class="lab">Decide</span><ul><li>Leave data where it lives; read by pointer with strict bounds (version, time window, line range).</li><li>Read with the identity whose permissions should apply, and give each component the least it needs.</li><li>Keep tools narrow with bounded output. Operational state is written by code, not by models.</li></ul></div>
+          <div class="c"><span class="lab">In the self-healing repo</span><ul><li>Repo checked out at exact failing <code>commit_sha</code> (no stale search index).</li><li>Pointer tools (<code>ripgrep_search</code>, <code>read_file_lines</code>) and truncated test output; 100 error lines max.</li></ul></div>
+        </div>
+      </div>
+
+      <div class="q-group-title">Safety and launch</div>
+
+      <div class="qb" id="q11">
+        <div class="qh"><div class="n">11</div><h3>What would an attacker do with it?</h3></div>
+        <div class="q3">
+          <div class="a"><span class="lab">Skip it and…</span><ul><li>Text an outsider controls reaches a model that can run tools.</li><li>Model-written code runs next to real cloud credentials.</li><li>Write permissions are wider than the job requires.</li></ul></div>
+          <div class="b"><span class="lab">Decide</span><ul><li>Mark where untrusted input enters; give that reader no tools.</li><li>Run generated code in a sandbox with no network and no credentials.</li><li>Keep write permission narrow and enforced in code. Irreversible actions wait for a person.</li></ul></div>
+          <div class="c"><span class="lab">In the self-healing repo</span><ul><li>Webhook signature, content screening, and toolless Agent 1.</li><li>Sandboxed tests, protected-path check, GitHub App limited to <code>autofix/*</code>, draft PRs.</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qb" id="q12">
+        <div class="qh"><div class="n">12</div><h3>How do I switch it on, and how do I know it is working?</h3></div>
+        <div class="q3">
+          <div class="a"><span class="lab">Skip it and…</span><ul><li>A noisy bot is muted by engineers within a week.</li><li>You have no evidence that it is safe to grant more autonomy.</li></ul></div>
+          <div class="b"><span class="lab">Decide</span><ul><li><strong>Offline evals:</strong> run a golden replay set before launch and on every prompt, model, or tool change (track pass@1 vs. pass@3).</li><li><strong>Online evals &amp; rollout:</strong> launch in stages (shadow → drafts → bounded) and track live human acceptance with automatic demotion.</li><li>Keep one trace per case: every model call, tool call and verdict.</li></ul></div>
+          <div class="c"><span class="lab">In the self-healing repo</span><ul><li>Offline replay gates every change against historical fixes.</li><li>Online: shadow → draft PRs → ready-for-review; watch PRs merged without edits and human diff-edit distance.</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" id="handoffs">
+    <div class="sheet-h">
+      <div>
+        <span class="sec-badge">Contracts &amp; State</span>
+        <h2>What Passes Between Agents, and Who Owns State</h2>
+        <p>Typed contracts at every boundary, what stays behind, and where short-term and long-term state live.</p>
+      </div>
+    </div>
+    <div class="sheet-b">
+      <div class="post-prose">
+        <h3>Typed Handoffs (and What Stays Behind)</h3>
+        <p>
+          Each handoff is a small typed contract validated by workflow code on exit and on entry. Anything that does not fit the schema is rejected or retried before any side effect runs.
+        </p>
+      </div>
+      <div class="chain">
+        <div class="link">
+          <header><span>RECEIVER → WORKER</span>FailureEvent</header>
+<pre>{
+  <span class="hl-k">"repo"</span>: <span class="hl-s">"acme/payments"</span>,
+  <span class="hl-k">"commit_sha"</span>: <span class="hl-s">"a3f91c2b"</span>,
+  <span class="hl-k">"fingerprint"</span>: <span class="hl-s">"fp_8d4e"</span>,
+  <span class="hl-k">"log_pointer"</span>: <span class="hl-s">"dep_4471"</span>
+}</pre>
+          <footer>A pointer to the logs, not the 50 MB log payload.</footer>
+        </div>
+        <div class="link">
+          <header><span>AGENT 1 → AGENT 2</span>IncidentReport</header>
+<pre>{
+  <span class="hl-k">"category"</span>: <span class="hl-s">"test_regression"</span>,
+  <span class="hl-k">"suspected_files"</span>: [<span class="hl-s">"payments/tax.py"</span>],
+  <span class="hl-k">"failing_test"</span>: <span class="hl-s">"tests/test_tax.py"</span>,
+  <span class="hl-k">"confidence"</span>: <span class="hl-n">0.86</span>
+}</pre>
+          <footer><strong>Raw logs stop here.</strong> Agent 2 never sees log text or Agent 1's prompt.</footer>
+        </div>
+        <div class="link">
+          <header><span>AGENT 2 → VERIFIER → AGENT 3</span>ProposedPatch</header>
+<pre>{
+  <span class="hl-k">"target_files"</span>: [<span class="hl-s">"payments/tax.py"</span>],
+  <span class="hl-k">"unified_diff"</span>: <span class="hl-s">"--- a/… +++ b/…"</span>,
+  <span class="hl-k">"explanation"</span>: <span class="hl-s">"… ≤ 400 chars …"</span>
+}</pre>
+          <footer>Agent 3 receives it only after the verifier's own test run passes.</footer>
+        </div>
+      </div>
+      <div class="post-prose">
+        <h3>Who Owns Which State</h3>
+        <p>
+          Operational state is written by workflow code and never by a model, so one bad run or one injected instruction cannot poison the next run.
+        </p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>State</th><th>Where it lives</th><th>Who writes it</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td><b>Storm counter and kill switch</b></td><td>Shared short-window store (e.g. Redis)</td><td>Workflow code only</td><td>Counts distinct failing repos over 5 minutes; trips the circuit breaker at 5 or more. A person can flip the kill switch.</td></tr>
+            <tr><td><b>Incident lock, lease &amp; attempt count</b></td><td>Durable incident row per <code>(repo, fingerprint)</code></td><td>Workflow code only</td><td>Prevents duplicate PRs, expires dead worker claims, and caps retries at 3.</td></tr>
+            <tr><td><b>Loop working history</b></td><td>In-memory trace inside Sandbox 1</td><td>Agent 2 loop (ephemeral)</td><td>Tracks files read and test output for one attempt; destroyed with the sandbox.</td></tr>
+            <tr><td><b>Audit trace &amp; replay cases</b></td><td>Append-only log / eval store</td><td>Harness on every call</td><td>Records every prompt, tool call, and verifier exit for debugging and regression replay.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" id="model-or-code">
+    <div class="sheet-h">
+      <div>
+        <span class="sec-badge">Rules of Thumb</span>
+        <h2>Model or Code? And How the Skeleton Transfers</h2>
+        <p>A four-row test for every step you draw, and two other systems built on the same skeleton.</p>
+      </div>
+    </div>
+    <div class="sheet-b">
+      <div class="post-prose">
+        <h3>Model or Code? A Four-Row Test</h3>
+        <p>Apply this test to every box in the diagram. Use the lowest level of autonomy that solves the step.</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>If the step…</th><th>Build it as</th><th>Limits to state</th><th>In the self-healing repo</th></tr></thead>
+          <tbody>
+            <tr><td><b>follows a rule</b></td><td>Plain code</td><td>None needed. Same input, same result.</td><td>Filter, duplicate key, storm count, path rules, retry counter, opening the PR</td></tr>
+            <tr><td><b>must understand messy text</b></td><td>One model call</td><td>No tools. Output must fit a fixed schema. Bounded input.</td><td>Turn 100 screened error lines into an <code>IncidentReport</code></td></tr>
+            <tr><td><b>must try things to find out</b></td><td>Bounded model loop + code check</td><td>Step cap, time cap, isolated sandbox. Code re-checks the result.</td><td>Reproduce, patch, test; verifier re-runs full suite in a clean sandbox</td></tr>
+            <tr><td><b>changes the outside world</b></td><td>Plain code + human</td><td>Narrow permission, idempotency key, size limits, review.</td><td>Draft PR on a restricted <code>autofix/*</code> branch</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="post-prose">
+        <h3>The Same Skeleton on Other Problems</h3>
+        <p>The questions stay the same across domains; only the nouns change.</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th></th><th>Self-healing repo</th><th>Weather alert → reroute shipments</th><th>Risk review of 100,000 bank clients</th></tr></thead>
+          <tbody>
+            <tr><td><b>Wakes it up</b></td><td>CI, CD controller, monitoring</td><td>Weather alert feed, carrier status</td><td>Nightly feed of clients whose data changed</td></tr>
+            <tr><td><b>Real size</b></td><td>100 failures a day</td><td>Few alerts, each touching thousands of shipments</td><td>Only the changed clients, not all 100,000</td></tr>
+            <tr><td><b>Fast, no model</b></td><td>Rollback by the CD controller</td><td>Rule-based hold on departures in the alert area</td><td>None needed; batch workload</td></tr>
+            <tr><td><b>Duplicate key</b></td><td><code>(repo, failure_fingerprint)</code></td><td><code>(alert_id, shipment_id)</code></td><td><code>(client_id, review_period)</code></td></tr>
+            <tr><td><b>Everything on fire?</b></td><td>5 repos fail in 5 minutes</td><td>Broken feed flags every region at once</td><td>Broken data feed flags thousands at once</td></tr>
+            <tr><td><b>Model steps</b></td><td>Read logs; try a fix</td><td>Read the alert; propose reroute options</td><td>Extract facts from filings; draft narrative</td></tr>
+            <tr><td><b>Code steps</b></td><td>Verify tests; path rules; open PR</td><td>Cost/capacity limits; booking with idempotency key</td><td>Financial ratios in code; route to review tiers</td></tr>
+            <tr><td><b>Human</b></td><td>Reviews and merges the draft PR</td><td>Approves reroutes above a cost threshold</td><td>Signs off by risk tier</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" id="cheatsheet">
+    <div class="sheet-h">
+      <div>
+        <span class="sec-badge">Summary</span>
+        <h2>One-Page Cheat Sheet</h2>
+        <p>The rule, the order, and the twelve questions in a few words each.</p>
+      </div>
+    </div>
+    <div class="sheet-b">
+      <div class="say">
+        <span class="eyebrow">The rule</span>
+        The model does the reading and the trying. Code does the deciding, the counting and the writing.
+      </div>
+      <div class="post-prose">
+        <p>
+          The order is the path of one event through <a href="#fig-skeleton">Figure 2A</a>: it arrives (1 to 3), survives the plumbing (4 to 7), passes through the agents (8 to 10), and is allowed to act (11 and 12). For every box, name what breaks without it.
+        </p>
+      </div>
+      <div class="opt-grid two">
+        <div class="opt-card">
+          <span class="opt-tag">Before drawing</span>
+          <ul>
+            <li><b><a href="#q1">1 · Wake-up.</a></b> Every trigger. One normalized message with a pointer to the data.</li>
+            <li><b><a href="#q2">2 · Size.</a></b> Volume × rate. Scale problem or correctness problem? Cost per case.</li>
+            <li><b><a href="#q3">3 · Seconds.</a></b> An existing, model-free control contains. The agents work afterwards.</li>
+          </ul>
+        </div>
+        <div class="opt-card">
+          <span class="opt-tag">The plumbing</span>
+          <ul>
+            <li><b><a href="#q4">4 · Intake.</a></b> Receiver, queue, acknowledge at the end, backoff, dead-letter.</li>
+            <li><b><a href="#q5">5 · Twice.</a></b> Key computed in code, one record per key, idempotent write.</li>
+            <li><b><a href="#q6">6 · Storm.</a></b> Count distinct failures, circuit breaker, kill switch.</li>
+            <li><b><a href="#q7">7 · Crash.</a></b> Expiring lease, heartbeat, re-check before the write.</li>
+          </ul>
+        </div>
+        <div class="opt-card">
+          <span class="opt-tag">The agents and the harness</span>
+          <ul>
+            <li><b><a href="#q8">8 · Model or code.</a></b> Least autonomy that works. The harness owns state, context, retries, secrets, sandboxes.</li>
+            <li><b><a href="#q9">9 · Handoffs.</a></b> Typed contracts. Code routes: pass, retry, escalate.</li>
+            <li><b><a href="#q10">10 · Data.</a></b> Read in place, by pointer, bounded. Least-privilege identity. Code writes the state.</li>
+          </ul>
+        </div>
+        <div class="opt-card">
+          <span class="opt-tag">Safety and launch</span>
+          <ul>
+            <li><b><a href="#q11">11 · Attacker.</a></b> The reader of untrusted text has no tools. Sandbox. Narrow writes. A person on irreversible actions.</li>
+            <li><b><a href="#q12">12 · Launch.</a></b> Replay set, then shadow, draft, bounded. One acceptance number, automatic demotion, a trace per case.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="post-prose">
+        <p>
+          In a design session of about twenty minutes: questions 1 to 3 first, then draw Figure 2A and walk one event through it (4, 8, 9), go deep on two of 5, 6, 7 or 11, and finish with 12.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" id="references">
+    <div class="sheet-h">
+      <div>
+        <span class="sec-badge">Sources</span>
+        <h2>References</h2>
+        <p>External sources on agentic system design, and the related episode.</p>
+      </div>
+    </div>
+    <div class="sheet-b">
+      <div class="post-prose">
+        <ul>
+          <li>Cemri et al., <a href="https://arxiv.org/abs/2503.13657" target="_blank" rel="noopener">Why Do Multi-Agent LLM Systems Fail?</a> (arXiv:2503.13657). A taxonomy of failures in multi-agent systems, built from annotated execution traces.</li>
+          <li>Anthropic, <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Building Effective Agents</a>. The distinction between workflows and agents, tool interface design, and the case for starting simple.</li>
+          <li>Anthropic, <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">How We Built Our Multi-Agent Research System</a>. Effort scaling, context isolation across subagents, and production reliability lessons.</li>
+          <li>Google Cloud, <a href="https://cloud.google.com/architecture/choose-design-pattern-agentic-ai-system" target="_blank" rel="noopener">Choose a Design Pattern for Your Agentic AI System</a>. Selecting single-agent, workflow, loop, or multi-agent patterns from task shape, latency, and budget.</li>
+          <li>Cognition, <a href="https://www.cognition.ai/blog/dont-build-multi-agents" target="_blank" rel="noopener">Don't Build Multi-Agents</a>. Why parallel writer swarms fail from fragmented context, and keeping writes single-threaded.</li>
+          <li>HumanLayer, <a href="https://github.com/humanlayer/12-factor-agents" target="_blank" rel="noopener">12-Factor Agents</a>. Engineering principles for production agents: owning your context window, structured tool outputs, unified state, and explicit control flow.</li>
+          <li>Simon Willison, <a href="https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/" target="_blank" rel="noopener">The Lethal Trifecta for AI Agents</a>. Private data, untrusted content and external communication in one agent.</li>
+          <li>Meta, <a href="https://ai.meta.com/blog/practical-ai-agent-security/" target="_blank" rel="noopener">Agents Rule of Two: A Practical Approach to AI Agent Security</a>. At most two of three risky properties in one agent without human approval.</li>
+          <li><a href="ep01_securing_agent_to_database.html">Episode 01 — Securing the Agent-to-Database Connection</a>. The identity, tool boundary, content screening and audit controls behind questions 10 and 11.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+document.getElementById("theme-toggle").addEventListener("click", function() {
+  const root = document.documentElement;
+  const current = root.getAttribute("data-theme") || "light";
+  const next = current === "light" ? "dark" : "light";
+  root.setAttribute("data-theme", next);
+  this.textContent = next === "light" ? "◑ Switch to Dark Mode" : "◐ Switch to Light Mode";
+});
+</script>
+</body>
+</html>
