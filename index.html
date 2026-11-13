@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="author" content="Eva Khmelinskaya">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agentic Governance — Threat Models and Reference Architectures for AI Agents</title>
-<meta name="description" content="A series on securing AI agents that read and change production data. Episode 01 follows one request across an agent-to-database connection, from the top-level picture down to the low-level details, and builds a zero-trust reference architecture, one control at a time.">
-<meta property="og:title" content="Agentic Governance">
-<meta property="og:description" content="Threat models and reference architectures for AI agents that read and change production data, built up one control at a time.">
+<title>All About Agents — Architecture, Mental Models, and Governance for AI Agents</title>
+<meta name="description" content="Notes, reference architectures, and mental models for building and governing production AI agents—covering system design, security, and hands-on reference labs.">
+<meta property="og:title" content="All About Agents">
+<meta property="og:description" content="Notes, reference architectures, and mental models for building and governing production AI agents.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://evekhm.github.io/agentic-governance/">
 <style>
@@ -200,26 +200,20 @@
 <body>
   <div class="wrap">
     <header class="masthead">
-      <h1>Agentic Governance</h1>
-      <p class="lede">Threat models and reference architectures for AI agents that read and change production data, built up one control at a time.</p>
-      <p class="byline">A series by Eva Khmelinskaya</p>
+      <h1>All About Agents</h1>
+      <p class="lede">Architecture notes, system-design mental models, and governance blueprints for production AI agents.</p>
+      <p class="byline">By Eva Khmelinskaya</p>
     </header>
 
     <main>
-      <section class="about" aria-label="About the series">
+      <section class="about" aria-label="About this site">
         <p>
-          I started this series to bring the different pieces of agentic governance into one structured picture. I want to understand, at the top level, what kinds of threats are possible when an AI agent is connected to real systems, which guardrails prevent them, and how it all fits together.
-        </p>
-        <p>
-          The series does not give a bulletproof, guaranteed-safe solution. It is meant as a foundation: the known problems, the controls that address them, and a way to see the whole picture at once.
-        </p>
-        <p>
-          I could not find much material on this topic that was easy to follow, so I began compiling my own notes. I am sharing them here as I go through each topic.
+          These notes cover how production AI agents are designed, connected to real systems, and secured—from problem-first system design mental models to zero-trust governance architectures and runnable reference labs.
         </p>
       </section>
 
       <section aria-labelledby="episodes-label">
-        <p class="section-label" id="episodes-label">Episodes</p>
+        <p class="section-label" id="episodes-label">Topic · Agentic Governance</p>
 
         <article class="episode">
           <p class="ep-num">Episode 01</p>
@@ -261,9 +255,10 @@
       </section>
 
       <section class="planned" aria-labelledby="planned-label">
-        <p class="section-label" id="planned-label">Planned</p>
+        <p class="section-label" id="planned-label">Up Next</p>
         <ul>
-          <li><span>Next</span><div><b>Dual LLM and CaMeL, in depth.</b></div></li>
+          <li><span>System Design</span><div><b>The Mental Model for Designing Agentic Systems.</b> Problem-first architecture, deterministic vs. LLM boundaries, async queues, circuit breakers, and staged autonomy—walked through on a self-healing code repository.</div></li>
+          <li><span>Governance</span><div><b>Dual LLM and CaMeL, in depth.</b></div></li>
         </ul>
       </section>
     </main>
