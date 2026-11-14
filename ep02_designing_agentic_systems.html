@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="author" content="Eva Khmelinskaya">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="A mental model for designing systems built from AI agents: one reusable drawing and twelve questions, practised on a self-healing code repository with three agents.">
+<meta name="description" content="A mental model for designing systems built from AI agents: one reusable drawing and twelve questions, practiced on a self-healing code repository with three agents.">
 <title>All About Agents — A Mental Model for Designing Agentic Systems</title>
 <style>
   :root,
@@ -573,14 +573,27 @@
   }
 
   @media print {
-    table { font-size: 11px; }
-    th, td { padding: 6px 7px; }
+    table { font-size: 10.5px; table-layout: auto; }
+    th, td { padding: 5px 6px; overflow-wrap: break-word; }
+    td code { white-space: normal; overflow-wrap: break-word; font-size: 9.5px; }
     .b-pill { font-size: 9px; padding: 1px 4px; }
-    .tbl-wrap { break-inside: auto; }
+    .tbl-wrap { break-inside: auto; overflow: visible; }
     .topbar { display: none !important; }
     .app { max-width: 100%; padding: 0; }
-    .sheet { break-inside: auto; box-shadow: none; margin-bottom: 18px; }
-    .diagram-frame, .opt-card, .code-card, .nine-q-card, .t-card-full { break-inside: avoid; }
+    .sheet { break-inside: auto; box-shadow: none; margin-bottom: 14px; }
+    .diagram-frame, .opt-card, .code-card, .nine-q-card, .t-card-full, .chain, .link { break-inside: avoid; }
+    .code-card, .link pre { overflow: visible !important; }
+    .code-card pre { white-space: pre-wrap; word-break: break-word; font-size: 10.5px; line-height: 1.45; }
+    .link pre { white-space: pre-wrap; word-break: break-word; font-size: 9.2px; line-height: 1.45; padding: 10px 10px; }
+    .q-group-title, .post-prose h3, .sheet-h { break-after: avoid; }
+    #cheatsheet { break-before: page; break-inside: avoid; margin-bottom: 12px; }
+    #cheatsheet .sheet-h { padding: 14px 22px; }
+    #cheatsheet .sheet-b { padding: 16px 22px; }
+    #cheatsheet .say { margin: 8px 0 12px; padding: 10px 14px; font-size: 14.5px; }
+    #cheatsheet .post-prose p { margin: 0 0 10px; font-size: 13.5px; line-height: 1.5; }
+    #cheatsheet .opt-grid { gap: 10px; margin: 10px 0; }
+    #cheatsheet .opt-card { padding: 10px 14px; font-size: 12.5px; }
+    #cheatsheet .opt-card li { margin-bottom: 3px; }
     tr { break-inside: avoid; }
   }
 
@@ -860,7 +873,7 @@
           <strong>The task:</strong> Design a self-healing code repository system with three agents: an agent that detects issues, an agent that suggests a fix, and an agent that opens a pull request with the fix. It is expected to handle <code>10,000</code> deployments a day across <code>20</code> to <code>30</code> repositories, of which <code>1%</code> fail.
         </div>
         <div class="scenario-callout">
-          <strong>Challenge yourself before reading on.</strong> Take a few minutes and think about how you would design this system. What would you draw first? Which questions come to your mind, and which would you ask before you called the design finished?
+          <strong>Challenge yourself before reading on.</strong> Take a few minutes and think about how you would design this system. What would you draw first? Which questions come to mind, and which would you ask before calling the design finished?
         </div>
         <p>
           Figure 1 shows the three agents named in the task.
@@ -910,7 +923,7 @@
       <div class="post-prose">
         <h3>The Genie in the Bottle</h3>
         <p>
-          This is the point where I keep going wrong. Each agent in Figure 1 has a clear job, and the three jobs together cover the task. So the drawing looks finished, and the next step seems to be picking a model and writing three prompts.
+          This is the point where I used to go wrong. Each agent in Figure 1 has a clear job, and the three jobs together cover the task. So the drawing looks finished, and the next step seems to be picking a model and writing three prompts.
         </p>
         <p>
           Naming what each agent does is not an architecture. Each box is still a sealed bottle, and it is easy to let the model inside stand in for every unanswered question:
@@ -946,7 +959,7 @@
       </div>
       <div class="say">
         <span class="eyebrow">The rule that organizes the whole design</span>
-        “The model does the reading and the trying. Code does the deciding, the counting and the writing.”
+        “The model does the reading and the trying. Code does the deciding, the counting, and the writing.”
       </div>
       <div class="diagram-frame" id="fig-skeleton">
         <svg viewBox="0 0 1200 522" role="img" aria-label="Figure 2A: generic skeleton of an event-driven agent system. Triggers feed a receiver and a queue. A fast path lets an existing control act in seconds without a model. Inside one worker job (the harness), a guard, read agent, work agent, verifier and act gate hand off to a human and a record, backed by state stores.">
@@ -1215,7 +1228,7 @@
         <div class="q3">
           <div class="a"><span class="lab">Skip it and…</span><ul><li>Fifteen identical pull requests, tickets, or refunds.</li><li>A retry repeats a write that already succeeded.</li></ul></div>
           <div class="b"><span class="lab">Decide</span><ul><li>Compute a deterministic key in code from stable fields—never by a model.</li><li>Keep one durable record per key with an explicit state.</li><li>Check the record before working, and pass an idempotency key on the write.</li></ul></div>
-          <div class="c"><span class="lab">In the self-healing repo</span><ul><li><code>failure_fingerprint</code>: hash of error type, code location, and cleaned message.</li><li>One <code>incidents</code> row per <code>(repo, fingerprint)</code>: <code>IN_PROGRESS</code>, <code>PR_OPENED</code>, <code>ESCALATED</code>.</li></ul></div>
+          <div class="c"><span class="lab">In the self-healing repo</span><ul><li><code>failure_fingerprint</code>: hash of error type, code location, and cleaned message.</li><li>One <code>incidents</code> row per <code>(repo, failure_fingerprint)</code>: <code>IN_PROGRESS</code>, <code>PR_OPENED</code>, <code>ESCALATED</code>.</li></ul></div>
         </div>
       </div>
 
@@ -1243,76 +1256,83 @@
         <div class="qh"><div class="n">8</div><h3>Which steps need a model, which are code, and what is the harness?</h3></div>
         <div class="q3">
           <div class="a"><span class="lab">Skip it and…</span><ul><li>"Three models chatting": unpredictable, unbounded, impossible to audit.</li><li>A model grades its own work (and agrees with its own mistakes).</li><li>An agent runs on a host with credentials and cannot isolate itself.</li></ul></div>
-          <div class="b"><span class="lab">Decide</span><ul><li>Give each step the least autonomy that works (<a href="#model-or-code">four-row test</a>). If each of ten model steps is right 95% of the time, all ten are right about 60% of the time.</li><li>Wrap the model steps in a <strong>harness</strong>: the code around the model that owns state, what each model sees, retry counters, secrets and sandboxes.</li><li>Fix the control flow as a graph when every case follows the same steps or a mistake is costly. Let the model choose its steps only for open-ended, supervised work.</li></ul></div>
+          <div class="b"><span class="lab">Decide</span><ul><li>Give each step the least autonomy that works (<a href="#model-or-code">four-row test</a>). If each of ten model steps is right 95% of the time, all ten are right about 60% of the time.</li><li>Wrap the model steps in a <strong>harness</strong>: the code around the model that owns state, what each model sees, retry counters, secrets, and sandboxes.</li><li>Fix the control flow as a graph when every case follows the same steps or a mistake is costly. Let the model choose its steps only for open-ended, supervised work.</li></ul></div>
           <div class="c"><span class="lab">In the self-healing repo</span><ul><li><strong>Agent 1 (Detect):</strong> rules + one schema-bound call, no tools.</li><li><strong>Agent 2 (Fix):</strong> bounded loop. Its tools run in Sandbox 1 (no network, no IAM).</li><li><strong>Verifier and Agent 3 (Open PR):</strong> plain code. The verifier also rejects a patch that deletes or skips tests.</li></ul></div>
         </div>
       </div>
 
       <div class="diagram-frame" id="fig-harness">
-        <svg viewBox="0 0 960 400" role="img" aria-label="Figure 3: the deterministic workflow worker (harness) running the full workflow graph: Agent 1, Agent 2 in Sandbox 1, Verifier in Sandbox 2, and Agent 3 on the worker host">
+        <svg viewBox="0 0 960 412" role="img" aria-label="Figure 3: the deterministic workflow worker (harness) running the workflow graph on the host while dispatching Agent 2's tools to Sandbox 1 and the Verifier's test suite to Sandbox 2">
           <defs>
             <marker id="f3h-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--ink)"/></marker>
             <marker id="f3h-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--good)"/></marker>
             <marker id="f3h-stop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--stop)"/></marker>
+            <marker id="f3h-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--cyan)"/></marker>
           </defs>
-          <rect x="10" y="10" width="940" height="380" rx="12" style="fill:var(--good-soft);stroke:var(--good);stroke-width:1.8"/>
+          <rect x="10" y="10" width="940" height="392" rx="12" style="fill:var(--good-soft);stroke:var(--good);stroke-width:1.8"/>
           <text x="26" y="34" style="font-family:var(--mono);font-size:13px;font-weight:700;fill:var(--good)">DETERMINISTIC WORKFLOW WORKER · THE HARNESS AROUND THE AGENTS</text>
           <text x="934" y="34" text-anchor="end" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">Plain code owns state, retries, credentials &amp; sandboxes</text>
 
           <!-- Agent 1 -->
-          <rect x="24" y="88" width="180" height="114" rx="8" style="fill:var(--violet-soft);stroke:var(--violet);stroke-width:1.6"/>
-          <text x="114" y="114" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Agent 1 · Detect</text>
-          <text x="114" y="136" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">One call · no tools</text>
-          <text x="114" y="158" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">100 screened log lines</text>
-          <text x="114" y="178" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--good)">→ IncidentReport</text>
+          <rect x="24" y="56" width="178" height="106" rx="8" style="fill:var(--violet-soft);stroke:var(--violet);stroke-width:1.6"/>
+          <text x="113" y="80" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Agent 1 · Detect</text>
+          <text x="113" y="101" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">One call · no tools</text>
+          <text x="113" y="122" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">100 screened log lines</text>
+          <text x="113" y="143" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--good)">→ IncidentReport</text>
 
-          <line x1="204" y1="145" x2="234" y2="145" style="stroke:var(--ink);stroke-width:1.8" marker-end="url(#f3h-ink)"/>
+          <line x1="202" y1="98" x2="234" y2="98" style="stroke:var(--ink);stroke-width:1.8" marker-end="url(#f3h-ink)"/>
 
-          <!-- Sandbox 1 + Agent 2 -->
-          <rect x="236" y="54" width="244" height="164" rx="10" style="fill:var(--panel-2);stroke:var(--cyan);stroke-width:1.6;stroke-dasharray:6 4"/>
-          <text x="358" y="75" text-anchor="middle" style="font-family:var(--mono);font-size:10.5px;font-weight:700;fill:var(--cyan)">TOOLS RUN IN SANDBOX 1 · NO NET</text>
-          <rect x="250" y="88" width="216" height="114" rx="8" style="fill:var(--violet-soft);stroke:var(--violet);stroke-width:1.6"/>
-          <text x="358" y="114" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Agent 2 · Suggest fix</text>
-          <text x="358" y="136" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">Bounded model loop</text>
-          <text x="358" y="158" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">search · read · patch · test</text>
-          <text x="358" y="178" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--good)">→ ProposedPatch</text>
+          <!-- Agent 2 on host + Sandbox 1 below -->
+          <rect x="238" y="56" width="212" height="106" rx="8" style="fill:var(--violet-soft);stroke:var(--violet);stroke-width:1.6"/>
+          <text x="344" y="80" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Agent 2 · Suggest fix</text>
+          <text x="344" y="101" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">Bounded model loop</text>
+          <text x="344" y="122" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">Model calls leave worker</text>
+          <text x="344" y="143" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--good)">→ ProposedPatch</text>
 
-          <line x1="480" y1="145" x2="510" y2="145" style="stroke:var(--ink);stroke-width:1.8" marker-end="url(#f3h-ink)"/>
+          <line x1="344" y1="162" x2="344" y2="180" style="stroke:var(--cyan);stroke-width:1.6;stroke-dasharray:4 3" marker-end="url(#f3h-cyan)"/>
+          <rect x="238" y="184" width="212" height="54" rx="8" style="fill:var(--panel-2);stroke:var(--cyan);stroke-width:1.6;stroke-dasharray:6 4"/>
+          <text x="344" y="204" text-anchor="middle" style="font-family:var(--mono);font-size:10.5px;font-weight:700;fill:var(--cyan)">SANDBOX 1 · NO NET, NO IAM</text>
+          <text x="344" y="224" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">Tools: search · read · patch · test</text>
 
-          <!-- Sandbox 2 + Verifier -->
-          <rect x="512" y="54" width="218" height="164" rx="10" style="fill:var(--panel-2);stroke:var(--cyan);stroke-width:1.6;stroke-dasharray:6 4"/>
-          <text x="621" y="75" text-anchor="middle" style="font-family:var(--mono);font-size:10.5px;font-weight:700;fill:var(--cyan)">SANDBOX 2 · FRESH CHECK</text>
-          <rect x="526" y="88" width="190" height="114" rx="8" style="fill:var(--panel);stroke:var(--good);stroke-width:1.6"/>
-          <text x="621" y="114" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Verifier (Code)</text>
-          <text x="621" y="136" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">Code · no model</text>
-          <text x="621" y="158" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">Re-runs full pytest</text>
-          <text x="621" y="178" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">Protected paths &amp; diff cap</text>
+          <line x1="450" y1="98" x2="486" y2="98" style="stroke:var(--ink);stroke-width:1.8" marker-end="url(#f3h-ink)"/>
 
-          <line x1="730" y1="145" x2="760" y2="145" style="stroke:var(--good);stroke-width:1.8" marker-end="url(#f3h-good)"/>
-          <text x="745" y="130" text-anchor="middle" style="font-family:var(--mono);font-size:10.5px;font-weight:700;fill:var(--good)">PASS</text>
+          <!-- Verifier on host + Sandbox 2 below -->
+          <rect x="490" y="56" width="194" height="106" rx="8" style="fill:var(--panel);stroke:var(--good);stroke-width:1.6"/>
+          <text x="587" y="80" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Verifier (Code)</text>
+          <text x="587" y="101" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">Code · no model</text>
+          <text x="587" y="122" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">Protected paths &amp; diff cap</text>
+          <text x="587" y="143" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--good)">Counts attempts, routes</text>
+
+          <line x1="587" y1="162" x2="587" y2="180" style="stroke:var(--cyan);stroke-width:1.6;stroke-dasharray:4 3" marker-end="url(#f3h-cyan)"/>
+          <rect x="490" y="184" width="194" height="54" rx="8" style="fill:var(--panel-2);stroke:var(--cyan);stroke-width:1.6;stroke-dasharray:6 4"/>
+          <text x="587" y="204" text-anchor="middle" style="font-family:var(--mono);font-size:10.5px;font-weight:700;fill:var(--cyan)">SANDBOX 2 · FRESH CHECK</text>
+          <text x="587" y="224" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">Re-runs full pytest</text>
+
+          <line x1="684" y1="98" x2="758" y2="98" style="stroke:var(--good);stroke-width:1.8" marker-end="url(#f3h-good)"/>
+          <text x="721" y="87" text-anchor="middle" style="font-family:var(--mono);font-size:10.5px;font-weight:700;fill:var(--good)">PASS</text>
 
           <!-- Agent 3 -->
-          <rect x="762" y="88" width="174" height="114" rx="8" style="fill:var(--violet-soft);stroke:var(--violet);stroke-width:1.6"/>
-          <text x="849" y="114" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Agent 3 · Open PR</text>
-          <text x="849" y="136" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">Code · no model</text>
-          <text x="849" y="158" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">Fencing + PR token</text>
-          <text x="849" y="178" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--good)">→ Draft PR</text>
+          <rect x="762" y="56" width="174" height="106" rx="8" style="fill:var(--violet-soft);stroke:var(--violet);stroke-width:1.6"/>
+          <text x="849" y="80" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Agent 3 · Open PR</text>
+          <text x="849" y="101" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">Code · no model</text>
+          <text x="849" y="122" text-anchor="middle" style="font-family:var(--sans);font-size:12px;fill:var(--ink)">Fencing + PR token</text>
+          <text x="849" y="143" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--good)">→ Draft PR</text>
 
-          <!-- Retry back-edge -->
-          <path d="M580 202 V250 H358 V206" style="fill:none;stroke:var(--stop);stroke-width:1.8;stroke-dasharray:5 4" marker-end="url(#f3h-stop)"/>
-          <text x="469" y="242" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;font-weight:700;fill:var(--stop)">RETRY (&lt;3) with test output</text>
+          <!-- Retry back-edge (Verifier -> Agent 2) -->
+          <path d="M490 132 H470 V266 H220 V132 H234" style="fill:none;stroke:var(--stop);stroke-width:1.8;stroke-dasharray:5 4" marker-end="url(#f3h-stop)"/>
+          <text x="345" y="258" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;font-weight:700;fill:var(--stop)">RETRY (&lt;3) with test output</text>
 
-          <!-- Escalate -->
-          <path d="M690 202 V242 H758" style="fill:none;stroke:var(--ink);stroke-width:1.6" marker-end="url(#f3h-ink)"/>
-          <text x="724" y="236" text-anchor="middle" style="font-family:var(--mono);font-size:11px;font-weight:700;fill:var(--muted)">FAIL</text>
-          <rect x="762" y="222" width="174" height="40" rx="8" style="fill:var(--panel);stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4"/>
-          <text x="849" y="247" text-anchor="middle" style="font-family:var(--sans);font-size:13px;font-weight:700;fill:var(--ink)">Escalate to a person</text>
+          <!-- Escalate (Verifier -> Escalate node) -->
+          <path d="M684 132 H700 V211 H758" style="fill:none;stroke:var(--ink);stroke-width:1.6" marker-end="url(#f3h-ink)"/>
+          <text x="729" y="203" text-anchor="middle" style="font-family:var(--mono);font-size:10px;font-weight:700;fill:var(--muted)">ESCALATE</text>
+          <rect x="762" y="191" width="174" height="40" rx="8" style="fill:var(--panel);stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4"/>
+          <text x="849" y="216" text-anchor="middle" style="font-family:var(--sans);font-size:13px;font-weight:700;fill:var(--ink)">Escalate to a person</text>
 
           <!-- Host-only box -->
-          <rect x="24" y="282" width="912" height="90" rx="8" style="fill:var(--panel);stroke:var(--stop);stroke-width:1.5"/>
-          <text x="40" y="306" style="font-family:var(--mono);font-size:12px;font-weight:700;fill:var(--stop)">HELD ON WORKER HOST BY HARNESS (NEVER IN SANDBOX 1 OR 2)</text>
-          <text x="40" y="330" style="font-family:var(--sans);font-size:12.5px;fill:var(--ink)">• GitHub App PR write token &amp; worker cloud IAM credentials (used only by Agent 3 on the host)</text>
-          <text x="40" y="352" style="font-family:var(--sans);font-size:12.5px;fill:var(--ink)">• State machine, attempt counter, lease, protected-path rules, and raw logs (never passed past Agent 1)</text>
+          <rect x="24" y="290" width="912" height="90" rx="8" style="fill:var(--panel);stroke:var(--stop);stroke-width:1.5"/>
+          <text x="40" y="314" style="font-family:var(--mono);font-size:12px;font-weight:700;fill:var(--stop)">HELD ON WORKER HOST BY HARNESS (NEVER IN SANDBOX 1 OR 2)</text>
+          <text x="40" y="338" style="font-family:var(--sans);font-size:12.5px;fill:var(--ink)">• GitHub App PR write token &amp; worker cloud IAM credentials (used only by Agent 3 on the host)</text>
+          <text x="40" y="360" style="font-family:var(--sans);font-size:12.5px;fill:var(--ink)">• State machine, attempt counter, lease, protected-path rules, and raw logs (never passed past Agent 1)</text>
         </svg>
         <div class="fig-caption"><span>Figure 3 — Inside the harness for the example. Agent 3 is named an agent by the task and contains no model.</span>
           <div class="legend-items"><span><i class="swatch-dot" style="background:var(--good-soft);border-color:var(--good)"></i> Harness / Code</span><span><i class="swatch-dot" style="background:var(--violet-soft);border-color:var(--violet)"></i> Agent named in the task</span><span><i class="swatch-dot" style="background:var(--panel-2);border-color:var(--cyan)"></i> Isolated sandbox</span></div>
@@ -1328,7 +1348,10 @@
         <span class="hl-k">return</span> Event(route=<span class="hl-s">"ESCALATE"</span>, output={<span class="hl-s">"reason"</span>: <span class="hl-s">"protected_path"</span>})
     result = run_sandbox_tests(patch.unified_diff)  <span class="hl-c"># --network=none, 0 creds</span>
     <span class="hl-k">if</span> result[<span class="hl-s">"passed"</span>]:
-        <span class="hl-k">return</span> Event(route=<span class="hl-s">"OPEN_PR"</span>, output={<span class="hl-s">"patch"</span>: patch, <span class="hl-s">"stdout"</span>: result[<span class="hl-s">"stdout"</span>]})
+        <span class="hl-k">return</span> Event(
+            route=<span class="hl-s">"PASS"</span>,
+            output={<span class="hl-s">"patch"</span>: patch, <span class="hl-s">"stdout"</span>: result[<span class="hl-s">"stdout"</span>]},
+        )
     attempts = ctx.state.get(<span class="hl-s">"fix_attempts"</span>, <span class="hl-n">0</span>) + <span class="hl-n">1</span>
     ctx.state[<span class="hl-s">"fix_attempts"</span>] = attempts
     <span class="hl-k">if</span> attempts &lt; <span class="hl-n">3</span>:
@@ -1339,11 +1362,16 @@ self_healing_workflow = Workflow(
     name=<span class="hl-s">"self_healing_code_repo"</span>,
     edges=[
         (<span class="hl-s">"START"</span>, dedup_and_circuit_breaker),
-        (dedup_and_circuit_breaker, {<span class="hl-s">"ANALYZE"</span>: detector_agent, <span class="hl-s">"SKIP"</span>: skip_node, <span class="hl-s">"ESCALATE"</span>: escalate_node}),
-        (detector_agent, fixer_coding_agent),         <span class="hl-c"># typed IncidentReport handoff</span>
+        (dedup_and_circuit_breaker, {
+            <span class="hl-s">"ANALYZE"</span>: detector_agent,
+            <span class="hl-s">"SKIP"</span>: skip_node,
+            <span class="hl-s">"ESCALATE"</span>: escalate_node,
+        }),
+        (detector_agent, route_incident),              <span class="hl-c"># typed IncidentReport handoff</span>
+        (route_incident, {<span class="hl-s">"FIX"</span>: fixer_coding_agent, <span class="hl-s">"ESCALATE"</span>: escalate_node}),
         (fixer_coding_agent, verify_patch_in_sandbox), <span class="hl-c"># typed ProposedPatch handoff</span>
         (verify_patch_in_sandbox, {
-            <span class="hl-s">"OPEN_PR"</span>: open_draft_pr,                 <span class="hl-c"># Agent 3: plain code + PR token</span>
+            <span class="hl-s">"PASS"</span>: open_draft_pr,                    <span class="hl-c"># Agent 3: plain code + PR token</span>
             <span class="hl-s">"RETRY"</span>: fixer_coding_agent,              <span class="hl-c"># code-owned back-edge</span>
             <span class="hl-s">"ESCALATE"</span>: escalate_node,
         }),
@@ -1354,7 +1382,7 @@ self_healing_workflow = Workflow(
       <div class="post-prose">
         <h3>What Is Deployed</h3>
         <p>
-          The three agents are not three deployments. They are nodes of one workflow graph inside one worker service. The guard is the first node: plain code that decides whether this case should run at all. Agent 1 and Agent 2 are model nodes. Agent 3 is a function node, and so are the guard, the verifier and the escalation step. One queue message starts one run of the graph, and the message is acknowledged when the run ends.
+          The three agents are not three deployments. They are nodes of one workflow graph inside one worker service. The guard is the first node: plain code that decides whether this case should run at all. Agent 1 and Agent 2 are model nodes. Agent 3 is a function node, and so are the guard, the verifier, and the escalation step. One queue message starts one run of the graph, and the message is acknowledged when the run ends.
         </p>
         <p>
           Agent 2's model calls leave from the worker, which can reach the model endpoint. Only its tools run in the sandbox, which has no network and no credentials.
@@ -1390,7 +1418,7 @@ self_healing_workflow = Workflow(
 
           <rect x="12" y="130" width="936" height="182" rx="12" style="fill:var(--good-soft);stroke:var(--good);stroke-width:1.8"/>
           <text x="26" y="153" style="font-family:var(--mono);font-size:12.5px;font-weight:700;fill:var(--good)">ONE CLOUD RUN SERVICE · ONE ADK APP · root_agent = Workflow</text>
-          <text x="934" y="153" text-anchor="end" style="font-family:var(--mono);font-size:11px;fill:var(--muted)">PASS → Agent 3 · RETRY → Agent 2 · FAIL → escalate node</text>
+          <text x="934" y="153" text-anchor="end" style="font-family:var(--mono);font-size:11px;fill:var(--muted)">PASS → Agent 3 · RETRY → Agent 2 · ESCALATE → escalate node</text>
           <rect x="24" y="170" width="164" height="104" rx="8" style="fill:var(--panel);stroke:var(--good);stroke-width:1.6"/>
           <text x="106" y="194" text-anchor="middle" style="font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--ink)">Guard</text>
           <text x="106" y="214" text-anchor="middle" style="font-family:var(--mono);font-size:11.5px;fill:var(--muted)">function node</text>
@@ -1456,11 +1484,11 @@ self_healing_workflow = Workflow(
         <table>
           <thead><tr><th style="width:11%">Step</th><th style="width:11%">Kind</th><th style="width:14%">Receives</th><th style="width:26%">What it does</th><th style="width:24%">Tools and services it calls</th><th>Returns</th></tr></thead>
           <tbody>
-              <tr><td><b>Receiver</b></td><td>Separate Cloud Run service, no model</td><td>Webhook from CI, the CD controller or monitoring</td><td>Verifies the signature or identity token. Drops healthy deployments. Computes <code>failure_fingerprint</code> from error type, code location and cleaned message. Replies at once.</td><td>Pub/Sub publish</td><td><code>FailureEvent(repo, commit_sha, failure_fingerprint, log_pointer)</code></td></tr>
-              <tr><td><b>Guard</b></td><td>Function node</td><td><code>FailureEvent</code></td><td>Reads the kill switch. Adds the repo to the five-minute storm set and counts distinct repos. Looks up the incident row for <code>(repo, fingerprint)</code>: if a pull request is open or another worker holds a live lease, it stops. Otherwise it claims the row with a 120-second lease, renewed every 30 seconds.</td><td>Memorystore (Redis) for the kill switch and storm set. Spanner transaction on the incident row.</td><td>Route: <code>ANALYZE</code>, <code>SKIP</code> or <code>ESCALATE</code></td></tr>
-              <tr><td><b>Agent 1 · Detect</b></td><td><code>LlmAgent</code> node, one turn</td><td>A pointer to the logs, resolved by worker code into at most 100 screened error lines</td><td>Classifies the failure and names the suspected files. Treats log text as data. May answer <code>flaky</code> or <code>unknown</code>.</td><td>Tools: none. Worker code before the call: Cloud Logging query by deployment id, Model Armor screening. Model: Gemini with a fixed output schema.</td><td><code>IncidentReport(category, suspected_files, failing_test, confidence)</code></td></tr>
-              <tr><td><b>Agent 2 · Suggest fix</b></td><td><code>LlmAgent</code> node, bounded loop</td><td><code>IncidentReport</code>. On a retry, also the verifier's test output, truncated.</td><td>Reproduces the failure, reads around it, applies the smallest patch, runs the tests. Stops at a step cap and a time cap.</td><td>Tools, all executing in Sandbox 1 at the failing commit: <code>ripgrep_search(pattern, path)</code>, <code>read_file_lines(path, start, end)</code>, <code>apply_patch(unified_diff)</code>, <code>run_sandbox_tests()</code>. Model: Gemini, called from the worker, with a stronger setting on retries.</td><td><code>ProposedPatch(target_files, unified_diff, explanation)</code></td></tr>
-              <tr><td><b>Verifier</b></td><td>Function node, no model</td><td><code>ProposedPatch</code></td><td>Applies the diff to a fresh copy and re-runs the full test suite. Rejects protected paths, oversized diffs, and deleted or skipped tests. Increments the attempt counter.</td><td>Sandbox 2. The attempt counter is written by code: workflow state in the sketch above, the incident row if it has to survive a worker crash.</td><td>Route: <code>OPEN_PR</code>, <code>RETRY</code> (fewer than 3 attempts) or <code>ESCALATE</code></td></tr>
+              <tr><td><b>Receiver</b></td><td>Separate Cloud Run service, no model</td><td>Webhook from CI, the CD controller, or monitoring</td><td>Verifies the signature or identity token. Drops healthy deployments. Computes <code>failure_fingerprint</code> from error type, code location, and cleaned message. Replies at once.</td><td>Pub/Sub publish</td><td><code>FailureEvent(<wbr>repo, commit_sha, failure_fingerprint, log_pointer)</code></td></tr>
+              <tr><td><b>Guard</b></td><td>Function node</td><td><code>FailureEvent</code></td><td>Reads the kill switch. Adds the repo to the five-minute storm set and counts distinct repos. Looks up the incident row for <code>(repo, failure_fingerprint)</code>: if a pull request is open or another worker holds a live lease, it stops. Otherwise it claims the row with a 120-second lease, renewed every 30 seconds.</td><td>Memorystore (Redis) for the kill switch and storm set. Spanner transaction on the incident row.</td><td>Route: <code>ANALYZE</code>, <code>SKIP</code>, or <code>ESCALATE</code></td></tr>
+              <tr><td><b>Agent 1 · Detect</b></td><td><code>LlmAgent</code> node, one turn</td><td>A pointer to the logs, resolved by worker code into at most 100 screened error lines</td><td>Classifies the failure and names the suspected files. Treats log text as data. May answer <code>flaky</code> or <code>unknown</code>.</td><td>Tools: none. Worker code before the call: Cloud Logging query by deployment id, Model Armor screening. Model: Gemini with a fixed output schema.</td><td><code>IncidentReport(<wbr>category, suspected_files, failing_test, confidence)</code></td></tr>
+              <tr><td><b>Agent 2 · Suggest fix</b></td><td><code>LlmAgent</code> node, bounded loop</td><td><code>IncidentReport</code>. On a retry, also the verifier's test output, truncated.</td><td>Reproduces the failure, reads around it, applies the smallest patch, runs the tests. Stops at a step cap and a time cap.</td><td>Tools, all executing in Sandbox 1 at the failing commit: <code>ripgrep_search(pattern, path)</code>, <code>read_file_lines(path, start, end)</code>, <code>apply_patch(unified_diff)</code>, <code>run_sandbox_tests()</code>. Model: Gemini, called from the worker, with a stronger setting on retries.</td><td><code>ProposedPatch(<wbr>target_files, unified_diff, explanation)</code></td></tr>
+              <tr><td><b>Verifier</b></td><td>Function node, no model</td><td><code>ProposedPatch</code></td><td>Applies the diff to a fresh copy and re-runs the full test suite. Rejects protected paths, oversized diffs, and deleted or skipped tests. Increments the attempt counter.</td><td>Sandbox 2. The attempt counter is written by code: workflow state in the sketch above, the incident row if it has to survive a worker crash.</td><td>Route: <code>PASS</code>, <code>RETRY</code> (fewer than 3 attempts), or <code>ESCALATE</code></td></tr>
               <tr><td><b>Agent 3 · Open PR</b></td><td>Function node, no model</td><td>The verified patch and the verifier's test output</td><td>Checks that this worker still owns the incident row. Pushes a branch, opens a draft pull request with the evidence, requests review from the code owners, records <code>PR_OPENED</code>. The run ends and the message is acknowledged.</td><td>Spanner for the ownership check and final state. Secret Manager for the GitHub App token. GitHub API, limited to <code>autofix/*</code> branches.</td><td>Draft pull request</td></tr>
               <tr><td><b>Escalate</b></td><td>Function node, no model</td><td>The reason and what was tried</td><td>Opens an issue for a person, records <code>ESCALATED</code>. No pull request.</td><td>GitHub issue or pager. Spanner for the final state.</td><td>Issue for a person</td></tr>
           </tbody>
@@ -1500,7 +1528,7 @@ self_healing_workflow = Workflow(
         <div class="qh"><div class="n">12</div><h3>How do I switch it on, and how do I know it is working?</h3></div>
         <div class="q3">
           <div class="a"><span class="lab">Skip it and…</span><ul><li>A noisy bot is muted by engineers within a week.</li><li>You have no evidence that it is safe to grant more autonomy.</li></ul></div>
-          <div class="b"><span class="lab">Decide</span><ul><li><strong>Offline evals:</strong> run a golden replay set before launch and on every prompt, model, or tool change (track pass@1 vs. pass@3).</li><li><strong>Online evals &amp; rollout:</strong> launch in stages (shadow → drafts → bounded) and track live human acceptance with automatic demotion.</li><li>Keep one trace per case: every model call, tool call and verdict.</li></ul></div>
+          <div class="b"><span class="lab">Decide</span><ul><li><strong>Offline evals:</strong> run a golden replay set before launch and on every prompt, model, or tool change (track pass@1 vs. pass@3).</li><li><strong>Online evals &amp; rollout:</strong> launch in stages (shadow → drafts → bounded) and track live human acceptance with automatic demotion.</li><li>Keep one trace per case: every model call, tool call, and verdict.</li></ul></div>
           <div class="c"><span class="lab">In the self-healing repo</span><ul><li>Offline replay gates every change against historical fixes.</li><li>Online: shadow → draft PRs → ready-for-review; watch PRs merged without edits and human diff-edit distance.</li></ul></div>
         </div>
       </div>
@@ -1527,8 +1555,8 @@ self_healing_workflow = Workflow(
           <header><span>RECEIVER → WORKER</span>FailureEvent</header>
 <pre>{
   <span class="hl-k">"repo"</span>: <span class="hl-s">"acme/payments"</span>,
-  <span class="hl-k">"commit_sha"</span>: <span class="hl-s">"a3f91c2b"</span>,
-  <span class="hl-k">"fingerprint"</span>: <span class="hl-s">"fp_8d4e"</span>,
+  <span class="hl-k">"commit_sha"</span>: <span class="hl-s">"a3f91c2"</span>,
+  <span class="hl-k">"failure_fingerprint"</span>: <span class="hl-s">"fp_8d4e"</span>,
   <span class="hl-k">"log_pointer"</span>: <span class="hl-s">"dep_4471"</span>
 }</pre>
           <footer>A pointer to the logs, not the 50 MB log payload.</footer>
@@ -1548,7 +1576,7 @@ self_healing_workflow = Workflow(
 <pre>{
   <span class="hl-k">"target_files"</span>: [<span class="hl-s">"payments/tax.py"</span>],
   <span class="hl-k">"unified_diff"</span>: <span class="hl-s">"--- a/… +++ b/…"</span>,
-  <span class="hl-k">"explanation"</span>: <span class="hl-s">"… ≤ 400 chars …"</span>
+  <span class="hl-k">"explanation"</span>: <span class="hl-s">"Default missing vat_rate"</span>
 }</pre>
           <footer>Agent 3 receives it only after the verifier's own test run passes.</footer>
         </div>
@@ -1564,7 +1592,7 @@ self_healing_workflow = Workflow(
           <thead><tr><th>State</th><th>Where it lives</th><th>Who writes it</th><th>Why</th></tr></thead>
           <tbody>
             <tr><td><b>Storm counter and kill switch</b></td><td>Shared short-window store (e.g. Redis)</td><td>Workflow code only</td><td>Counts distinct failing repos over 5 minutes; trips the circuit breaker at 5 or more. A person can flip the kill switch.</td></tr>
-            <tr><td><b>Incident lock, lease &amp; attempt count</b></td><td>Durable incident row per <code>(repo, fingerprint)</code></td><td>Workflow code only</td><td>Prevents duplicate PRs, expires dead worker claims, and caps retries at 3.</td></tr>
+            <tr><td><b>Incident lock, lease &amp; attempt count</b></td><td>Durable incident row per <code>(repo, failure_fingerprint)</code></td><td>Workflow code only</td><td>Prevents duplicate PRs, expires dead worker claims, and caps attempts at 3.</td></tr>
             <tr><td><b>Loop working history</b></td><td>In-memory trace inside Sandbox 1</td><td>Agent 2 loop (ephemeral)</td><td>Tracks files read and test output for one attempt; destroyed with the sandbox.</td></tr>
             <tr><td><b>Audit trace &amp; replay cases</b></td><td>Append-only log / eval store</td><td>Harness on every call</td><td>Records every prompt, tool call, and verifier exit for debugging and regression replay.</td></tr>
           </tbody>
@@ -1630,7 +1658,7 @@ self_healing_workflow = Workflow(
     <div class="sheet-b">
       <div class="say">
         <span class="eyebrow">The rule</span>
-        The model does the reading and the trying. Code does the deciding, the counting and the writing.
+        The model does the reading and the trying. Code does the deciding, the counting, and the writing.
       </div>
       <div class="post-prose">
         <p>
@@ -1673,7 +1701,7 @@ self_healing_workflow = Workflow(
       </div>
       <div class="post-prose">
         <p>
-          In a design session of about twenty minutes: questions 1 to 3 first, then draw Figure 2A and walk one event through it (4, 8, 9), go deep on two of 5, 6, 7 or 11, and finish with 12.
+          In a design session of about twenty minutes: questions 1 to 3 first, then draw Figure 2A and walk one event through it (Q4, Q8, Q9), go deep on two of Q5, Q6, Q7, or Q11, and finish with Q12.
         </p>
       </div>
     </div>
@@ -1691,14 +1719,12 @@ self_healing_workflow = Workflow(
       <div class="post-prose">
         <ul>
           <li>Cemri et al., <a href="https://arxiv.org/abs/2503.13657" target="_blank" rel="noopener">Why Do Multi-Agent LLM Systems Fail?</a> (arXiv:2503.13657). A taxonomy of failures in multi-agent systems, built from annotated execution traces.</li>
-          <li>Anthropic, <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Building Effective Agents</a>. The distinction between workflows and agents, tool interface design, and the case for starting simple.</li>
-          <li>Anthropic, <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">How We Built Our Multi-Agent Research System</a>. Effort scaling, context isolation across subagents, and production reliability lessons.</li>
-          <li>Google Cloud, <a href="https://cloud.google.com/architecture/choose-design-pattern-agentic-ai-system" target="_blank" rel="noopener">Choose a Design Pattern for Your Agentic AI System</a>. Selecting single-agent, workflow, loop, or multi-agent patterns from task shape, latency, and budget.</li>
-          <li>Cognition, <a href="https://www.cognition.ai/blog/dont-build-multi-agents" target="_blank" rel="noopener">Don't Build Multi-Agents</a>. Why parallel writer swarms fail from fragmented context, and keeping writes single-threaded.</li>
+          <li>Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener">Building Effective Agents</a>. The distinction between workflows and agents, tool interface design, and the case for starting simple.</li>
+          <li>Anthropic, <a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">How We Built Our Multi-Agent Research System</a>. Effort scaling, context isolation across subagents, and production reliability lessons.</li>
+          <li>Google Cloud, <a href="https://docs.cloud.google.com/architecture/choose-design-pattern-agentic-ai-system" target="_blank" rel="noopener">Choose a Design Pattern for Your Agentic AI System</a>. Selecting single-agent, workflow, loop, or multi-agent patterns from task shape, latency, and budget.</li>
+          <li>Cognition, <a href="https://cognition.com/blog/dont-build-multi-agents" target="_blank" rel="noopener">Don't Build Multi-Agents</a>. Why parallel writer swarms fail from fragmented context, and keeping writes single-threaded.</li>
           <li>HumanLayer, <a href="https://github.com/humanlayer/12-factor-agents" target="_blank" rel="noopener">12-Factor Agents</a>. Engineering principles for production agents: owning your context window, structured tool outputs, unified state, and explicit control flow.</li>
-          <li>Simon Willison, <a href="https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/" target="_blank" rel="noopener">The Lethal Trifecta for AI Agents</a>. Private data, untrusted content and external communication in one agent.</li>
-          <li>Meta, <a href="https://ai.meta.com/blog/practical-ai-agent-security/" target="_blank" rel="noopener">Agents Rule of Two: A Practical Approach to AI Agent Security</a>. At most two of three risky properties in one agent without human approval.</li>
-          <li><a href="ep01_securing_agent_to_database.html">Episode 01 — Securing the Agent-to-Database Connection</a>. The identity, tool boundary, content screening and audit controls behind questions 10 and 11.</li>
+          <li><a href="ep01_securing_agent_to_database.html">Episode 01 — Securing the Agent-to-Database Connection</a>. The identity, tool boundary, content screening, and audit controls behind questions 10 and 11.</li>
         </ul>
       </div>
     </div>

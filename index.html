@@ -9,7 +9,7 @@
 <meta property="og:title" content="All About Agents">
 <meta property="og:description" content="Notes, reference architectures, and mental models for building and governing production AI agents.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://evekhm.github.io/agentic-governance/">
+<meta property="og:url" content="https://evekhm.github.io/all-about-agents/">
 <style>
   :root {
     --bg: #f6f8fb;
@@ -249,15 +249,48 @@
           </div>
 
           <p class="ep-note">
-            Each stage links to a companion reference page with full configuration. A hands-on lab is in preparation; its <a id="ep01-lab-plan-link" href="https://github.com/evekhm/agentic-governance/blob/main/ep01_securing_agent_to_database-lab/IMPLEMENTATION_PLAN.md">implementation plan</a> is published.
+            Each stage links to a companion reference page with full configuration. A hands-on lab is in preparation; its <a id="ep01-lab-plan-link" href="https://github.com/evekhm/all-about-agents/blob/main/ep01_securing_agent_to_database-lab/IMPLEMENTATION_PLAN.md">implementation plan</a> is published.
           </p>
+        </article>
+      </section>
+
+      <section aria-labelledby="design-label" style="margin-top:40px;">
+        <p class="section-label" id="design-label">Topic · System Design</p>
+
+        <article class="episode">
+          <p class="ep-num">Episode 02</p>
+          <h2><a id="ep02-title-link" href="ep02_designing_agentic_systems.html">A Mental Model for Designing Agentic Systems</a></h2>
+          <p class="ep-meta">November 2026 · about 15 minutes</p>
+
+          <p class="ep-summary">
+            This episode takes one design task: a system with three agents that detects a failed deployment, suggests a fix, and opens a pull request. The first drawing is three agents in a row, and it looks finished. The episode asks what that drawing leaves out, and answers with one skeleton and twelve questions that can be reused on other systems of this kind.
+          </p>
+
+          <dl class="facts">
+            <div><dt>12</dt><dd>design questions</dd></div>
+            <div><dt>2</dt><dd>views of one skeleton: generic and Google Cloud</dd></div>
+            <div><dt>1</dt><dd>worked example</dd></div>
+            <div><dt>1</dt><dd>cheat sheet, one page</dd></div>
+          </dl>
+
+          <h3>What the questions cover</h3>
+          <ul class="stages">
+            <li><b>Before drawing.</b> What starts the work, how much of it there is, and what has to happen in seconds without a model.</li>
+            <li><b>Plumbing.</b> The queue, duplicates, many failures at once, and a worker that dies halfway.</li>
+            <li><b>Agents.</b> Which steps need a model and which are code, what passes between them, and who owns the state.</li>
+            <li><b>Safety and launch.</b> Untrusted input, sandboxing, and switching the system on in stages.</li>
+          </ul>
+
+          <div class="actions">
+            <a class="btn" id="ep02-read-btn" href="ep02_designing_agentic_systems.html">Read Episode 02</a>
+            <a class="btn secondary" id="ep02-pdf-btn" href="ep02_designing_agentic_systems.pdf">Download PDF</a>
+          </div>
         </article>
       </section>
 
       <section class="planned" aria-labelledby="planned-label">
         <p class="section-label" id="planned-label">Up Next</p>
         <ul>
-          <li><span>System Design</span><div><b>The Mental Model for Designing Agentic Systems.</b> Problem-first architecture, deterministic vs. LLM boundaries, async queues, circuit breakers, and staged autonomy.</div></li>
           <li><span>Governance</span><div><b>Dual LLM and CaMeL, in depth.</b></div></li>
         </ul>
       </section>
@@ -265,7 +298,7 @@
 
     <footer>
       <span>© 2026 Eva Khmelinskaya</span>
-      <a id="repo-link" href="https://github.com/evekhm/agentic-governance">Source on GitHub</a>
+      <a id="repo-link" href="https://github.com/evekhm/all-about-agents">Source on GitHub</a>
     </footer>
   </div>
 </body>
