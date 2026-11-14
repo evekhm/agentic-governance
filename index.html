@@ -111,21 +111,12 @@
   .ep-meta { margin: 0 0 20px; font-family: var(--mono); font-size: 13px; color: var(--dim); }
   .ep-summary { margin: 0 0 26px; color: var(--muted); }
 
-  .facts {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0;
-    margin: 0 0 28px;
-    padding: 18px 0;
+  .episode h3 {
+    margin: 0 0 12px;
+    padding-top: 20px;
     border-top: 1px solid var(--line-2);
-    border-bottom: 1px solid var(--line-2);
+    font-size: 16px;
   }
-  .facts div { padding: 0 16px; border-left: 1px solid var(--line-2); }
-  .facts div:first-child { padding-left: 0; border-left: 0; }
-  .facts dt { font-size: 30px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
-  .facts dd { margin: 6px 0 0; font-size: 14px; line-height: 1.35; color: var(--dim); }
-
-  .episode h3 { margin: 0 0 12px; font-size: 16px; }
   .stages {
     margin: 0 0 26px;
     padding: 0;
@@ -189,8 +180,6 @@
     body { font-size: 16px; }
     .masthead { padding: 48px 0 32px; }
     .episode { padding: 26px 22px 24px; border-radius: 14px; }
-    .facts { grid-template-columns: 1fr 1fr; row-gap: 18px; }
-    .facts div:nth-child(3) { padding-left: 0; border-left: 0; }
     .stages { grid-template-columns: 1fr; }
     .btn { width: 100%; text-align: center; }
     .planned li { grid-template-columns: 1fr; gap: 2px; }
@@ -224,13 +213,6 @@
             This episode follows a single request: a customer asks an agent, “What is the status of my order #104?” It starts from the top-level picture of a user, an agent and a database, and drills down hop by hop to the low-level details: which token travels on each call, which SQL runs, and whose identity the database sees. At each level it shows what can go wrong and which guardrail prevents it, so that the detailed architecture at the end still reads as one picture.
           </p>
 
-          <dl class="facts">
-            <div><dt>8</dt><dd>threats, <code>T1</code>–<code>T8</code></dd></div>
-            <div><dt>9</dt><dd>defense layers, <code>L1</code>–<code>L9</code></dd></div>
-            <div><dt>11</dt><dd>build stages</dd></div>
-            <div><dt>2</dt><dd>OWASP Top 10 lists mapped</dd></div>
-          </dl>
-
           <h3>What the stages add</h3>
           <ul class="stages">
             <li><b>Tool boundary.</b> Fixed, parameterized queries replace model-written SQL.</li>
@@ -263,22 +245,15 @@
           <p class="ep-meta">November 2026 · about 15 minutes</p>
 
           <p class="ep-summary">
-            This episode takes one design task: a system with three agents that detects a failed deployment, suggests a fix, and opens a pull request. The first drawing is three agents in a row, and it looks finished. The episode asks what that drawing leaves out, and answers with one skeleton and twelve questions that can be reused on other systems of this kind.
+            When designing an agentic system, it is easy to start with an abstract sequence of agents, name what each one does, and treat every component as a black box that will figure out the rest. This episode takes that high-level sketch and follows it down to what it actually means as an architecture: where a language model belongs versus deterministic code, how the surrounding harness coordinates control flow and state, and how structured context moves from one step to the next. Using a self-healing code repository system as a reference example, it lays out a systematic, reusable way to approach agentic system design.
           </p>
 
-          <dl class="facts">
-            <div><dt>12</dt><dd>design questions</dd></div>
-            <div><dt>2</dt><dd>views of one skeleton: generic and Google Cloud</dd></div>
-            <div><dt>1</dt><dd>worked example</dd></div>
-            <div><dt>1</dt><dd>cheat sheet, one page</dd></div>
-          </dl>
-
-          <h3>What the questions cover</h3>
+          <h3>What the approach covers</h3>
           <ul class="stages">
-            <li><b>Before drawing.</b> What starts the work, how much of it there is, and what has to happen in seconds without a model.</li>
-            <li><b>Plumbing.</b> The queue, duplicates, many failures at once, and a worker that dies halfway.</li>
-            <li><b>Agents.</b> Which steps need a model and which are code, what passes between them, and who owns the state.</li>
-            <li><b>Safety and launch.</b> Untrusted input, sandboxing, and switching the system on in stages.</li>
+            <li><b>Framing the problem.</b> Triggers, actual volume, latency bounds, and what deterministic controls handle before any agent runs.</li>
+            <li><b>Reliability and coordination.</b> Queuing work, preventing duplicate actions, containing failure storms, and recovering from mid-run crashes.</li>
+            <li><b>Agents and the harness.</b> Deciding which steps need a model and which are code, defining typed handoffs, and keeping operational state outside the model.</li>
+            <li><b>Verification and rollout.</b> Checking model outputs deterministically, evaluating against replay sets, and expanding autonomy in stages.</li>
           </ul>
 
           <div class="actions">
