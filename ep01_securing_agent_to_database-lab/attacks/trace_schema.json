@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agentic-governance.dev/schemas/ep01/trace_schema.json",
+  "$id": "https://evekhm.github.io/all-about-agents/ep01_securing_agent_to_database-lab/attacks/trace_schema.json",
   "title": "Episode 01 Lab Trace Event",
   "description": "Versioned per-hop trace event emitted from OpenTelemetry spans for the live workbench UI and static GitHub Pages replay.",
   "type": "object",

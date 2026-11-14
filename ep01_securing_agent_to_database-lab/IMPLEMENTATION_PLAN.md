@@ -1,6 +1,6 @@
 # Episode 01 Reference Lab: Enterprise Architecture & Implementation Plan
 
-> **Location:** `ep01_securing_agent_to_database-lab/` (inside the `agentic-governance` repository)
+> **Location:** `ep01_securing_agent_to_database-lab/` (inside the `all-about-agents` repository)
 > **Progress:** what is built and what is verified is tracked in [PROGRESS.md](PROGRESS.md).
 > **Target Audience:** Enterprise customers, security architects, and deep-dive engineering walkthroughs aligned to [Episode 01: Securing the Agent-to-Database Connection](../ep01_securing_agent_to_database.html).
 
